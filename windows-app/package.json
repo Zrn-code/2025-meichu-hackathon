@@ -35,7 +35,9 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.13",
+    "cors": "^2.8.5",
     "electron-squirrel-startup": "^1.0.1",
+    "express": "^4.21.2",
     "openai": "^5.20.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
