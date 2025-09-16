@@ -21,7 +21,7 @@ class LLMService {
     this.conversationHistory = [
       {
         role: "system",
-        content: "你是一個友善的桌面助手 avatar，請用繁體中文回答問題。回答必須非常簡潔，不超過30個字，可以使用 emoji 讓回答更生動。"
+        content: "你是一個友善的桌面助手 avatar，請用繁體中文回答問題。回答必須非常簡潔，不超過20個字。"
       }
     ];
   }
@@ -54,7 +54,7 @@ class LLMService {
       });
 
       let fullResponse = '';
-      const MAX_CHARS = 30; // 最大字符數限制
+      const MAX_CHARS = 50; // 最大字符數限制
 
       for await (const chunk of stream) {
         const content = chunk.choices[0]?.delta?.content || '';

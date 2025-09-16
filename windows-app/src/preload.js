@@ -22,6 +22,14 @@ contextBridge.exposeInMainWorld('electronAPI', {
     return () => ipcRenderer.removeListener('message-received', callback);
   },
   
+  // Tab Monitor 相關
+  getTabsData: () => ipcRenderer.invoke('get-tabs-data'),
+  getServerStatus: () => ipcRenderer.invoke('get-server-status'),
+  onTabsUpdated: (callback) => {
+    ipcRenderer.on('tabs-updated', (event, data) => callback(data));
+    return () => ipcRenderer.removeListener('tabs-updated', callback);
+  },
+  
   // 發送訊息到主程序
   sendMessage: (channel, data) => ipcRenderer.send(channel, data),
 });

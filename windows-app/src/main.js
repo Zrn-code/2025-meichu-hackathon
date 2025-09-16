@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
+import TabMonitorServer from '../api-server.js';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -10,6 +11,7 @@ if (started) {
 let mainWindow;
 let avatarWindow = null;
 let messageBoxWindow = null;
+let tabMonitorServer = null;
 
 const createWindow = () => {
   // Create the browser window.
@@ -217,7 +219,28 @@ const setupMessageBoxClickRegion = () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+  // 啟動 Tab Monitor 服務器
+  try {
+    tabMonitorServer = new TabMonitorServer();
+    await tabMonitorServer.start();
+    
+    // 監聽標籤頁更新事件
+    tabMonitorServer.on('tabsUpdated', (tabsData) => {
+      // 向所有打開的窗口發送標籤頁更新事件
+      const windows = BrowserWindow.getAllWindows();
+      windows.forEach(window => {
+        if (window && !window.isDestroyed()) {
+          window.webContents.send('tabs-updated', tabsData);
+        }
+      });
+    });
+    
+    console.log('✅ Tab Monitor 服務器已啟動');
+  } catch (error) {
+    console.error('❌ 無法啟動 Tab Monitor 服務器:', error);
+  }
+  
   createWindow();
 
   // On OS X it's common to re-create a window in the app when the
@@ -235,6 +258,18 @@ app.whenReady().then(() => {
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
+  }
+});
+
+// 應用程式退出前停止服務器
+app.on('before-quit', async () => {
+  if (tabMonitorServer) {
+    try {
+      await tabMonitorServer.stop();
+      console.log('✅ Tab Monitor 服務器已停止');
+    } catch (error) {
+      console.error('❌ 停止 Tab Monitor 服務器時發生錯誤:', error);
+    }
   }
 });
 
@@ -270,6 +305,26 @@ ipcMain.handle('close-message-box', () => {
 
 ipcMain.handle('is-message-box-visible', () => {
   return { visible: messageBoxWindow !== null && !messageBoxWindow.isDestroyed() };
+});
+
+// Tab Monitor IPC handlers
+ipcMain.handle('get-tabs-data', () => {
+  if (tabMonitorServer) {
+    const data = tabMonitorServer.getLatestData();
+    return { success: true, data: data };
+  }
+  return { success: false, error: 'Tab Monitor 服務器未運行' };
+});
+
+ipcMain.handle('get-server-status', () => {
+  if (tabMonitorServer) {
+    return { 
+      success: true, 
+      isRunning: tabMonitorServer.isServerRunning(),
+      port: 3001
+    };
+  }
+  return { success: false, isRunning: false };
 });
 
 // In this file you can include the rest of your app's specific main process
