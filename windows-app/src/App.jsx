@@ -10,7 +10,7 @@ function App() {
   
   // Tab Monitor 相關狀態
   const [tabsData, setTabsData] = useState(null);
-  const [serverStatus, setServerStatus] = useState({ isRunning: false, port: 3001 });
+  const [serverStatus, setServerStatus] = useState({ isRunning: false, port: 3000 });
   const [lastUpdateTime, setLastUpdateTime] = useState(null);
 
   // 檢查懸浮 avatar 的狀態和 LLM 連線狀態
