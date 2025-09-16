@@ -1,0 +1,13 @@
+{
+  "model": "Qwen-2.5-1.5B-Instruct-NPU",
+  "endpointUrl": "http://localhost:8000/api/v1",
+  "servers": [
+    {
+      "type": "stdio",
+      "command": "python",
+      "args": [
+        "mcp_server.py"
+      ]
+    }
+  ]
+}
