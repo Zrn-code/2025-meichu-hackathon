@@ -1,0 +1,45 @@
+@import "tailwindcss";
+@plugin "daisyui"{themes: dark --default;};
+
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  background: transparent !important;
+}
+
+/* Avatar 窗口特定樣式 */
+body.avatar-window {
+  background: transparent !important;
+  overflow: hidden;
+}
+
+body.avatar-window html,
+body.avatar-window body,
+body.avatar-window #root {
+  background: transparent !important;
+  overflow: hidden;
+}
+
+/* MessageBox 窗口特定樣式 */
+body.message-window {
+  background: transparent !important;
+  overflow: hidden;
+}
+
+body.message-window html,
+body.message-window body,
+body.message-window #root {
+  background: transparent !important;
+  overflow: hidden;
+}
+
+/* Electron 拖動功能 */
+.avatar-drag {
+  -webkit-app-region: drag;
+}
+
+.avatar-no-drag {
+  -webkit-app-region: no-drag;
+}
