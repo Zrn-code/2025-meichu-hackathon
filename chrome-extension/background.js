@@ -1,7 +1,7 @@
 // Chrome Extension Background Script
 // 監控標籤頁變化並將資訊傳送給 Windows 應用程式
 
-const WINDOWS_APP_URL = 'http://localhost:3001/api/tabs';
+const BACKEND_SERVER_URL = 'http://localhost:3000/api/tabs';
 const UPDATE_INTERVAL = 2000; // 每2秒更新一次
 
 let isMonitoring = false;
@@ -95,18 +95,18 @@ async function sendTabsInfo() {
       }))
     };
     
-    // 發送到 Windows 應用程式
-    await sendToWindowsApp(tabsInfo);
+    // 發送到後端服務器
+    await sendToBackendServer(tabsInfo);
     
   } catch (error) {
     console.error('收集標籤頁資訊時發生錯誤:', error);
   }
 }
 
-// 發送資料到 Windows 應用程式
-async function sendToWindowsApp(data) {
+// 發送資料到後端服務器
+async function sendToBackendServer(data) {
   try {
-    const response = await fetch(WINDOWS_APP_URL, {
+    const response = await fetch(BACKEND_SERVER_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -119,11 +119,11 @@ async function sendToWindowsApp(data) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     
-    console.log('成功發送標籤頁資訊到 Windows 應用程式');
+    console.log('成功發送標籤頁資訊到後端服務器');
     
   } catch (error) {
-    console.error('發送資料到 Windows 應用程式失敗:', error.message);
-    // 如果是網路錯誤，可能是 Windows app 未運行，暫時忽略
+    console.error('發送資料到後端服務器失敗:', error.message);
+    // 如果是網路錯誤，可能是後端服務器未運行，暫時忽略
   }
 }
 

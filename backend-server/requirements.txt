@@ -1,0 +1,4 @@
+requests
+flask
+flask-cors>=2.25.1
+asyncio
