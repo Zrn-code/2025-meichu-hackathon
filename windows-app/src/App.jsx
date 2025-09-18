@@ -1,8 +1,53 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './index.css';
 import llmService from './services/llmService';
+import { getAuthHeader } from './services/apikey'
+
+const MODEL = import.meta.env.VITE_STT_MODEL || 'whisper-1'
+const LANGUAGE = import.meta.env.VITE_LANGUAGE || 'zh'
+const TRANSCRIBE_URL = import.meta.env.VITE_TRANSCRIBE_URL
+
+
+
+function pickSupportedMime() {
+  const prefer = [
+    'audio/webm;codecs=opus',
+    'audio/webm',
+    'audio/ogg;codecs=opus',
+    'audio/mp4'
+  ]
+  for (const t of prefer) {
+    if (window.MediaRecorder?.isTypeSupported?.(t)) return t
+  }
+  return ''
+}
 
 function App() {
+  // ✅ 冷啟暖機：麥克風+編碼器先跑一下，之後再開始真正錄音
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const s = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const mime = pickSupportedMime();
+        const mr = new MediaRecorder(s, mime ? { mimeType: mime } : undefined);
+
+        // 微錄一段 300ms，確保產生 data
+        mr.start(200);
+        await new Promise(r => setTimeout(r, 300));
+        if (mr.state === 'recording') {
+          try { mr.requestData(); } catch {}
+          mr.stop();
+          await new Promise(r => (mr.onstop = () => r()));
+        }
+        s.getTracks().forEach(t => t.stop());
+        if (mounted) console.debug('[warmup] primed');
+      } catch (e) {
+        console.debug('[warmup] skipped:', e?.message || e);
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
   const [avatarVisible, setAvatarVisible] = useState(false);
   const [userInput, setUserInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -12,6 +57,18 @@ function App() {
   const [tabsData, setTabsData] = useState(null);
   const [serverStatus, setServerStatus] = useState({ isRunning: false, port: 3000 });
   const [lastUpdateTime, setLastUpdateTime] = useState(null);
+
+  // speech to text
+  const [recording, setRecording] = useState(false)
+  const [transcript, setTranscript] = useState('')
+  const [latencyMs, setLatencyMs] = useState(null)
+  const [error, setError] = useState('')
+  const [userKey, setUserKey] = useState('') // 僅在沒有代理端點時使用
+
+  // 音訊 chain refs
+  const mediaStreamRef = useRef(null)
+  const mediaRecorderRef = useRef(null)
+  const audioChunksRef = useRef([])
 
   // 檢查懸浮 avatar 的狀態和 LLM 連線狀態
   useEffect(() => {
@@ -66,6 +123,12 @@ function App() {
       });
     }
 
+    // enter 輸入音訊
+    const onKeyDown = e => { if (e.key === 'Enter' && !recording) startRecording().catch(err => setError(err.message)) }
+    const onKeyUp = e => { if (e.key === 'Enter' && recording) stopRecording().catch(err => setError(err.message)) }
+    window.addEventListener('keydown', onKeyDown)
+    window.addEventListener('keyup', onKeyUp)
+
     // 清理監聽器
     return () => {
       if (cleanupAvatar) {
@@ -74,8 +137,10 @@ function App() {
       if (cleanupTabs) {
         cleanupTabs();
       }
+      window.removeEventListener('keydown', onKeyDown); window.removeEventListener('keyup', onKeyUp)
+      // cleanupAudio()
     };
-  }, []);
+  }, [recording]);
 
   // 切換懸浮 avatar 的顯示狀態
   const toggleAvatar = async () => {
@@ -150,6 +215,74 @@ function App() {
       sendMessage("📚 目前沒有對話歷史");
     }
   };
+
+
+  // 開始錄音
+  async function startRecording() {
+    setError(''); setTranscript(''); audioChunksRef.current = []
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } })
+    mediaStreamRef.current = stream
+    const mimeType = pickSupportedMime()
+    const mr = new MediaRecorder(stream, mimeType ? { mimeType } : undefined)
+    mediaRecorderRef.current = mr
+    mr.ondataavailable = ev => { if (ev.data && ev.data.size > 0) audioChunksRef.current.push(ev.data) }
+    mr.start(50) // 收小分片，縮短等待
+    
+    setRecording(true)
+  }
+
+  async function stopRecording() {
+    const start = performance.now()
+    setRecording(false)
+    const mr = mediaRecorderRef.current; if (!mr) return
+    await new Promise(res => { mr.onstop = () => res(); mr.stop() })
+    mediaStreamRef.current?.getTracks().forEach(t => t.stop())
+
+    // 直接合併 webm/ogg/mp4，避免前端 decode/轉碼
+    const mimeType =  audioChunksRef.current[0]?.type || 'audio/webm'
+    const audioBlob = new Blob(audioChunksRef.current, { type: mimeType })
+    const filename =
+      mimeType.includes('ogg') ? 'audio.ogg' :
+      mimeType.includes('mp4') ? 'audio.mp4' : 'audio.webm'
+
+    console.log('[debug] filename = ',filename, 'mimeType = ',mimeType,' size=', audioBlob.size)
+    // console.log('has showSaveFilePicker =', !!window.showSaveFilePicker);
+
+    // 🔽🔽🔽 新增：停止錄音後立即下載音檔到本機
+    //建立好 audioBlob 和 filename 之後
+    // 取得 ArrayBuffer 丟給 main 寫檔
+    // try {
+    //   const buf = await audioBlob.arrayBuffer();
+    //   const saveRes = await window.electronAPI.saveAudioFile(buf, filename, mimeType);
+    //   if (!saveRes?.canceled) {
+    //     // 可選：在你現有的 messageBox 彈個成功訊息
+    //     await sendMessage?.(`✅ 已儲存音檔：${saveRes.filePath}`);
+    //   }
+    // } catch (e) {
+    //   console.warn('儲存音檔失敗（將繼續轉寫）：', e);
+    // }
+
+    // 🔼🔼🔼 新增
+    try {
+      const fd = new FormData()
+      fd.append('file', audioBlob, filename)
+      fd.append('model', MODEL)
+      fd.append('language', LANGUAGE)
+
+      const r = await fetch(TRANSCRIBE_URL || 'https://api.openai.com/v1/audio/transcriptions', {
+        method: 'POST',
+        headers: TRANSCRIBE_URL ? {} : { 'Authorization': await getAuthHeader(userKey) },
+        body: fd
+      })
+      
+      if (!r.ok) throw new Error('OpenAI/Relay error: ' + r.status + ' ' + (await r.text()))
+      const json = await r.json()
+      setTranscript(json.text ?? JSON.stringify(json))
+      setLatencyMs(Math.round(performance.now() - start))
+    } catch (e) {
+      setError(e.message || String(e))
+    }
+  }
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
@@ -391,6 +524,40 @@ function App() {
 
           </div>
         </div>
+        
+        {/* -------------------------------------------------------------------------------------- */}
+        {/* 語音輸入提示卡 */}
+        <div className="card shadow-lg border border-info">
+          <div className="card-body">
+            <h2 className="card-title text-info mb-2">
+              Speech 2 text 區塊
+            </h2>
+            <p className="text-base-content opacity-70 text-sm mb-4">
+              可以和Agent使用語音聊天
+            </p>
+            
+            {!TRANSCRIBE_URL && (
+        <div style={{ margin: '1rem 0', padding: '0.75rem', border: '1px solid #ddd', borderRadius: 8 }}>
+          <strong>開發模式（未設代理端點）：</strong>
+          <div>請貼上你的 OpenAI API Key（僅本機；正式環境請改用 Vercel Edge 代理）。</div>
+          <input type="password" placeholder="sk-..." value={userKey} onChange={e => setUserKey(e.target.value)}
+                 style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem' }} />
+        </div>
+      )}
+
+      <button onMouseDown={() => !recording && startRecording()} onMouseUp={() => recording && stopRecording()}
+              disabled={recording} style={{ padding: '0.75rem 1.25rem', fontSize: '1.1rem', borderRadius: 12 }}>
+        {recording ? '錄音中…放開停止' : '按住開始錄音（也可按 Enter）'}
+      </button>
+
+      {latencyMs !== null && <p>⏱️ 往返延遲：約 {latencyMs} ms</p>}
+      {transcript && <div style={{ marginTop: '1rem', padding: '0.75rem', border: '1px solid #ddd', borderRadius: 8 }}>
+        <div style={{ fontWeight: 600, marginBottom: 6 }}>轉寫結果</div><div>{transcript}</div></div>}
+      {error && <div style={{ marginTop: '1rem', padding: '0.75rem', border: '1px solid #f99', background: '#fff7f7', borderRadius: 8, color: '#900' }}>
+        <div style={{ fontWeight: 600 }}>錯誤</div><div style={{ whiteSpace: 'pre-wrap' }}>{error}</div></div>}
+          </div>
+        </div>
+
 
       </div>
     </div>
