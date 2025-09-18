@@ -1,4 +1,12 @@
-requests
-flask
-flask-cors>=2.25.1
-asyncio
+# 基礎依賴
+requests>=2.31.0
+flask>=2.3.0
+flask-cors>=4.0.0
+
+# 非同步支援 (Python 內建，不需要安裝)
+# asyncio
+
+# 開發工具 (可選)
+# pytest>=7.0.0  # 用於測試
+# black>=23.0.0   # 程式碼格式化
+# flake8>=6.0.0   # 程式碼檢查
