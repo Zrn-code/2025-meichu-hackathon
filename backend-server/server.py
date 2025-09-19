@@ -19,6 +19,7 @@ from core.mcp_client import MCPClient
 from core.registry import ToolRegistry
 from handlers.chat import ChatHandler
 from handlers.tools import ToolsHandler
+from handlers.youtube import YouTubeHandler
 from config.settings import Settings
 from tools.calculator import (
     CalculatorTool, AddTool, SubtractTool, 
@@ -52,6 +53,7 @@ class UnifiedServer:
         
         # 初始化處理器
         self.tools_handler = ToolsHandler(self.mcp_client, self.tool_registry)
+        self.youtube_handler = YouTubeHandler()
         self.chat_handler = ChatHandler(
             self.settings.get_llm_config(),
             self.tools_handler
@@ -267,6 +269,159 @@ class UnifiedServer:
                     "success": False,
                     "error": str(e)
                 }), 500
+        
+        # YouTube 監控相關路由
+        @self.app.route('/api/youtube', methods=['POST'])
+        def receive_youtube_data():
+            """接收來自 Chrome 擴展的 YouTube 數據"""
+            try:
+                data = request.get_json()
+                
+                if not data:
+                    return jsonify({
+                        "success": False,
+                        "error": "No data provided"
+                    }), 400
+                
+                # 處理數據
+                result = self.youtube_handler.update_youtube_data(data)
+                
+                return jsonify(result)
+                
+            except Exception as e:
+                self.logger.error(f"YouTube data error: {e}")
+                return jsonify({
+                    "success": False,
+                    "error": str(e)
+                }), 500
+        
+        @self.app.route('/api/youtube/current', methods=['GET'])
+        def get_current_youtube_data():
+            """獲取當前 YouTube 數據"""
+            try:
+                current_data = self.youtube_handler.get_current_data()
+                
+                return jsonify({
+                    "success": True,
+                    "data": current_data,
+                    "summary": self.youtube_handler.get_video_summary(),
+                    "timestamp": datetime.now().isoformat()
+                })
+                
+            except Exception as e:
+                self.logger.error(f"Get YouTube data error: {e}")
+                return jsonify({
+                    "success": False,
+                    "error": str(e)
+                }), 500
+        
+        @self.app.route('/api/youtube/history', methods=['GET'])
+        def get_youtube_history():
+            """獲取 YouTube 數據歷史"""
+            try:
+                limit = request.args.get('limit', 50, type=int)
+                history = self.youtube_handler.get_data_history(limit)
+                
+                return jsonify({
+                    "success": True,
+                    "history": history,
+                    "count": len(history),
+                    "timestamp": datetime.now().isoformat()
+                })
+                
+            except Exception as e:
+                self.logger.error(f"Get YouTube history error: {e}")
+                return jsonify({
+                    "success": False,
+                    "error": str(e)
+                }), 500
+        
+        @self.app.route('/api/youtube/statistics', methods=['GET'])
+        def get_youtube_statistics():
+            """獲取 YouTube 觀看統計"""
+            try:
+                stats = self.youtube_handler.get_watching_statistics()
+                
+                return jsonify({
+                    "success": True,
+                    "statistics": stats,
+                    "timestamp": datetime.now().isoformat()
+                })
+                
+            except Exception as e:
+                self.logger.error(f"Get YouTube statistics error: {e}")
+                return jsonify({
+                    "success": False,
+                    "error": str(e)
+                }), 500
+        
+        @self.app.route('/api/youtube/stop', methods=['POST'])
+        def stop_youtube_monitoring():
+            """停止 YouTube 監控"""
+            try:
+                result = self.youtube_handler.stop_monitoring()
+                
+                return jsonify(result)
+                
+            except Exception as e:
+                self.logger.error(f"Stop YouTube monitoring error: {e}")
+                return jsonify({
+                    "success": False,
+                    "error": str(e)
+                }), 500
+        
+        @self.app.route('/api/tabs', methods=['GET', 'POST'])
+        def handle_tab_info():
+            """處理標籤頁信息 - GET: 獲取信息, POST: 接收更新"""
+            if request.method == 'GET':
+                # 返回當前標籤頁統計信息
+                try:
+                    tab_stats = {
+                        "active_tabs": len(self.youtube_handler.active_tabs),
+                        "youtube_tabs": len(self.youtube_handler.youtube_tabs),
+                        "tab_details": list(self.youtube_handler.active_tabs.values()),
+                        "timestamp": datetime.now().isoformat()
+                    }
+                    
+                    return jsonify({
+                        "success": True,
+                        "data": tab_stats
+                    })
+                    
+                except Exception as e:
+                    self.logger.error(f"Get tab info error: {e}")
+                    return jsonify({
+                        "success": False,
+                        "error": str(e)
+                    }), 500
+            
+            elif request.method == 'POST':
+                # 接收標籤頁統計信息
+                try:
+                    data = request.get_json()
+                    
+                    if not data:
+                        return jsonify({
+                            "success": False,
+                            "error": "No data provided"
+                        }), 400
+                    
+                    # 更新標籤頁統計
+                    if hasattr(self.youtube_handler, 'update_tab_stats'):
+                        self.youtube_handler.update_tab_stats(data)
+                    
+                    return jsonify({
+                        "success": True,
+                        "message": "Tab info received",
+                        "timestamp": datetime.now().isoformat()
+                    })
+                    
+                except Exception as e:
+                    self.logger.error(f"Tab info error: {e}")
+                    return jsonify({
+                        "success": False,
+                        "error": str(e)
+                    }), 500
     
     async def _start_mcp_server(self):
         """啟動 MCP 服務器"""
@@ -323,8 +478,14 @@ class UnifiedServer:
     async def close(self):
         """關閉服務器"""
         self.logger.info("Shutting down server...")
+        
+        # 關閉 YouTube 處理器
+        if self.youtube_handler:
+            self.youtube_handler.shutdown()
+        
         if self.mcp_client:
             await self.mcp_client.close()
+            
         self.logger.info("Server shutdown complete")
 
 

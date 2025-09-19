@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            width: 300px;
+            padding: 16px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 14px;
+        }
+        
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .logo {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+            background: #ff0000;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-dot.active {
+            background: #22c55e;
+        }
+        
+        .status-dot.inactive {
+            background: #ef4444;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 4px 0;
+        }
+        
+        .info-label {
+            color: #6b7280;
+            font-size: 12px;
+        }
+        
+        .info-value {
+            font-weight: 500;
+            font-size: 12px;
+        }
+        
+        .video-info {
+            background: #f9fafb;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+        
+        .video-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 13px;
+            line-height: 1.3;
+        }
+        
+        .video-channel {
+            color: #6b7280;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 4px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #ef4444;
+            transition: width 0.3s ease;
+        }
+        
+        .time-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #6b7280;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            background: white;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            background: #f9fafb;
+        }
+        
+        .btn.primary {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        
+        .btn.primary:hover {
+            background: #2563eb;
+        }
+        
+        .error {
+            color: #ef4444;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">YT</div>
+        <div class="title">YouTube 監控器</div>
+    </div>
+    
+    <div class="status-indicator">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">檢查中...</span>
+    </div>
+    
+    <div class="info-row">
+        <span class="info-label">服務器連接</span>
+        <span class="info-value" id="serverStatus">檢查中...</span>
+    </div>
+    
+    <div class="info-row">
+        <span class="info-label">當前標籤頁</span>
+        <span class="info-value" id="tabInfo">-</span>
+    </div>
+    
+    <div id="videoInfo" class="video-info" style="display: none;">
+        <div class="video-title" id="videoTitle">-</div>
+        <div class="video-channel" id="videoChannel">-</div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+        
+        <div class="time-info">
+            <span id="currentTime">0:00</span>
+            <span id="duration">0:00</span>
+        </div>
+        
+        <div class="info-row">
+            <span class="info-label">播放狀態</span>
+            <span class="info-value" id="playStatus">-</span>
+        </div>
+        
+        <div class="info-row">
+            <span class="info-label">觀看次數</span>
+            <span class="info-value" id="viewCount">-</span>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <button class="btn" id="refreshBtn">刷新</button>
+        <button class="btn primary" id="toggleBtn">開始監控</button>
+    </div>
+    
+    <div id="errorMsg" class="error" style="display: none;"></div>
+    
+    <script src="popup.js"></script>
+</body>
+</html>
