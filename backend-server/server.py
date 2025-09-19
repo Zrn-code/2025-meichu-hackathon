@@ -487,6 +487,29 @@ class UnifiedServer:
                     "error": str(e)
                 }), 500
         
+        @self.app.route('/api/youtube/subtitles/count', methods=['GET'])
+        def get_current_video_subtitle_count():
+            """獲取當前視頻的字幕數量統計"""
+            try:
+                result = self.youtube_handler.get_current_video_subtitle_count()
+                
+                if result.get('success'):
+                    return jsonify(result)
+                else:
+                    return jsonify(result), 404 if 'No current video' in result.get('error', '') else 500
+                
+            except Exception as e:
+                self.logger.error(f"Get current video subtitle count error: {e}")
+                return jsonify({
+                    "success": False,
+                    "error": str(e),
+                    "video_id": None,
+                    "counts": {
+                        "history_entries": 0,
+                        "total_count": 0
+                    }
+                }), 500
+        
         @self.app.route('/api/youtube/subtitles/clear', methods=['POST'])
         def clear_subtitle_history():
             """清除字幕歷史記錄"""
@@ -509,115 +532,9 @@ class UnifiedServer:
                     "error": str(e)
                 }), 500
         
-        # ===== 完整字幕相關 API =====
+
         
-        @self.app.route('/api/youtube/subtitles/full/current', methods=['GET'])
-        def get_current_full_subtitles():
-            """獲取當前視頻的完整字幕數據"""
-            try:
-                current_video_id = self.youtube_handler.get_current_video_id()
-                
-                if not current_video_id:
-                    return jsonify({
-                        "success": False,
-                        "error": "No current video found. Please make sure you are watching a YouTube video."
-                    }), 404
-                
-                full_subtitles = self.youtube_handler.get_full_subtitles(current_video_id)
-                
-                if not full_subtitles:
-                    return jsonify({
-                        "success": False,
-                        "error": "No full subtitle data found for current video",
-                        "current_video_id": current_video_id
-                    }), 404
-                
-                return jsonify({
-                    "success": True,
-                    "data": full_subtitles,
-                    "timestamp": datetime.now().isoformat()
-                })
-                
-            except Exception as e:
-                self.logger.error(f"Get full subtitles error: {e}")
-                return jsonify({
-                    "success": False,
-                    "error": str(e)
-                }), 500
-        
-        @self.app.route('/api/youtube/subtitles/full', methods=['GET'])
-        def get_all_full_subtitles():
-            """獲取所有緩存的完整字幕"""
-            try:
-                all_subtitles = self.youtube_handler.get_all_cached_subtitles()
-                
-                return jsonify({
-                    "success": True,
-                    "data": all_subtitles,
-                    "count": len(all_subtitles),
-                    "timestamp": datetime.now().isoformat()
-                })
-                
-            except Exception as e:
-                self.logger.error(f"Get all full subtitles error: {e}")
-                return jsonify({
-                    "success": False,
-                    "error": str(e)
-                }), 500
-        
-        @self.app.route('/api/youtube/subtitles/export', methods=['GET'])
-        def export_current_subtitles():
-            """導出當前視頻的字幕文件"""
-            try:
-                format_type = request.args.get('format', 'srt').lower()
-                
-                if format_type not in ['srt', 'vtt', 'txt']:
-                    return jsonify({
-                        "success": False,
-                        "error": "Unsupported format. Supported formats: srt, vtt, txt"
-                    }), 400
-                
-                current_video_id = self.youtube_handler.get_current_video_id()
-                
-                if not current_video_id:
-                    return jsonify({
-                        "success": False,
-                        "error": "No current video found. Please make sure you are watching a YouTube video."
-                    }), 404
-                
-                subtitle_content = self.youtube_handler.export_full_subtitles(None, format_type)
-                
-                if not subtitle_content:
-                    return jsonify({
-                        "success": False,
-                        "error": "No subtitle data available for export",
-                        "current_video_id": current_video_id
-                    }), 404
-                
-                # 獲取視頻信息以生成文件名
-                subtitle_data = self.youtube_handler.get_full_subtitles(current_video_id)
-                video_title = subtitle_data.get('title', 'unknown') if subtitle_data else 'unknown'
-                safe_title = "".join(c for c in video_title if c.isalnum() or c in (' ', '-', '_')).rstrip()[:50]
-                filename = f"{safe_title}_{current_video_id}.{format_type}"
-                
-                # 返回文件內容
-                response = self.app.response_class(
-                    subtitle_content,
-                    mimetype='text/plain',
-                    headers={
-                        'Content-Disposition': f'attachment; filename="{filename}"',
-                        'Content-Type': f'text/plain; charset=utf-8'
-                    }
-                )
-                
-                return response
-                
-            except Exception as e:
-                self.logger.error(f"Export subtitles error: {e}")
-                return jsonify({
-                    "success": False,
-                    "error": str(e)
-                }), 500
+
         
         @self.app.route('/api/tabs', methods=['GET', 'POST'])
         def handle_tab_info():

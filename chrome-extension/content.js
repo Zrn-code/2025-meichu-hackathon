@@ -80,6 +80,13 @@ class YouTubeMonitor {
                 track.addEventListener('cuechange', () => {
                     this.sendVideoData();
                 });
+                
+                // 監聽軌道模式變化
+                track.addEventListener('modechange', () => {
+                    console.log(`🔄 Track ${i} mode changed to: ${track.mode}`);
+                    // 當軌道模式改變時，重新檢查完整字幕
+                    setTimeout(() => this.sendVideoData(), 500);
+                });
             }
         }
         
@@ -88,6 +95,13 @@ class YouTubeMonitor {
         
         // 初始數據發送
         setTimeout(() => this.sendVideoData(), 1000);
+        
+        // 延遲執行更積極的字幕檢查
+        setTimeout(() => {
+            console.log('🚀 Performing delayed subtitle check...');
+            this.ensureSubtitleTracksLoaded();
+            setTimeout(() => this.sendVideoData(), 2000);
+        }, 3000);
     }
     
     setupSubtitleButtonListeners() {
@@ -483,14 +497,41 @@ class YouTubeMonitor {
                 cues: [],
                 totalDuration: 0,
                 language: null,
-                trackInfo: null
+                trackInfo: null,
+                debug: {
+                    totalTracks: 0,
+                    showingTracks: 0,
+                    tracksWithCues: 0,
+                    disabledTracks: 0,
+                    hiddenTracks: 0,
+                    methods: []
+                }
             };
             
             if (this.video && this.video.textTracks) {
+                fullSubtitles.debug.totalTracks = this.video.textTracks.length;
+                
+                // 先嘗試啟用所有字幕軌道來加載cues
+                this.ensureSubtitleTracksLoaded();
+                
                 // 尋找當前啟用的字幕軌道
                 for (let i = 0; i < this.video.textTracks.length; i++) {
                     const track = this.video.textTracks[i];
                     
+                    // 統計調試信息
+                    if (track.mode === 'showing') {
+                        fullSubtitles.debug.showingTracks++;
+                    } else if (track.mode === 'disabled') {
+                        fullSubtitles.debug.disabledTracks++;
+                    } else if (track.mode === 'hidden') {
+                        fullSubtitles.debug.hiddenTracks++;
+                    }
+                    
+                    if (track.cues && track.cues.length > 0) {
+                        fullSubtitles.debug.tracksWithCues++;
+                    }
+                    
+                    // 優先選擇showing模式的軌道
                     if (track.mode === 'showing' && track.cues && track.cues.length > 0) {
                         fullSubtitles.available = true;
                         fullSubtitles.language = track.language;
@@ -516,10 +557,67 @@ class YouTubeMonitor {
                         fullSubtitles.cues = cues;
                         fullSubtitles.totalDuration = this.video.duration || 0;
                         
-                        console.log(`Found ${cues.length} subtitle cues in ${track.language || 'unknown'} language`);
+                        // 添加詳細的調試信息
+                        fullSubtitles.debug.methods.push('showing-mode');
+                        console.log(`🎬 Found ${cues.length} subtitle cues in ${track.language || 'unknown'} language`);
+                        console.log(`📊 Track info: Kind=${track.kind}, Label=${track.label}, Mode=${track.mode}`);
+                        console.log(`⏱️ Video duration: ${this.video.duration}s, Total subtitle duration: ${cues.length > 0 ? cues[cues.length-1].endTime : 0}s`);
                         break;
                     }
                 }
+                
+                // 如果沒有找到showing模式的軌道，嘗試找任何有cues的軌道
+                if (!fullSubtitles.available) {
+                    for (let i = 0; i < this.video.textTracks.length; i++) {
+                        const track = this.video.textTracks[i];
+                        
+                        if (track.cues && track.cues.length > 0) {
+                            fullSubtitles.available = true;
+                            fullSubtitles.language = track.language;
+                            fullSubtitles.trackInfo = {
+                                kind: track.kind,
+                                label: track.label,
+                                language: track.language,
+                                mode: track.mode,
+                                fallback: true  // 標記為備用軌道
+                            };
+                            
+                            // 提取所有 cues
+                            const cues = [];
+                            for (let j = 0; j < track.cues.length; j++) {
+                                const cue = track.cues[j];
+                                cues.push({
+                                    startTime: cue.startTime,
+                                    endTime: cue.endTime,
+                                    text: cue.text,
+                                    id: cue.id || j.toString(),
+                                    duration: cue.endTime - cue.startTime
+                                });
+                            }
+                            
+                            fullSubtitles.cues = cues;
+                            fullSubtitles.totalDuration = this.video.duration || 0;
+                            
+                            fullSubtitles.debug.methods.push('fallback-mode');
+                            console.log(`🔄 Using fallback track with ${cues.length} subtitle cues in ${track.language || 'unknown'} language (Mode: ${track.mode})`);
+                            break;
+                        }
+                    }
+                }
+                
+                // 如果還是沒有找到，嘗試更激進的方法
+                if (!fullSubtitles.available) {
+                    fullSubtitles.debug.methods.push('aggressive-search');
+                    const aggressiveResult = this.getSubtitlesAggressively();
+                    if (aggressiveResult && aggressiveResult.cues && aggressiveResult.cues.length > 0) {
+                        Object.assign(fullSubtitles, aggressiveResult);
+                        console.log(`🚀 Aggressively found ${aggressiveResult.cues.length} subtitle cues`);
+                    }
+                }
+                
+                // 輸出調試信息
+                console.log(`🔍 Subtitle debug: Total=${fullSubtitles.debug.totalTracks}, Showing=${fullSubtitles.debug.showingTracks}, WithCues=${fullSubtitles.debug.tracksWithCues}, Disabled=${fullSubtitles.debug.disabledTracks}, Hidden=${fullSubtitles.debug.hiddenTracks}`);
+                console.log(`🔍 Methods used: ${fullSubtitles.debug.methods.join(', ')}`);
             }
             
             return fullSubtitles;
@@ -579,6 +677,17 @@ class YouTubeMonitor {
                 });
                 break;
                 
+            case 'REFRESH_SUBTITLE_DATA':
+                console.log('🔄 Refreshing subtitle data requested from popup');
+                // 重新檢查字幕軌道
+                this.ensureSubtitleTracksLoaded();
+                // 延遲發送更新的數據
+                setTimeout(() => {
+                    this.sendVideoData();
+                }, 1000);
+                sendResponse({ success: true });
+                break;
+                
             case 'FORCE_UPDATE':
                 this.sendVideoData();
                 sendResponse({ success: true });
@@ -597,6 +706,223 @@ class YouTubeMonitor {
         this.removeVideoListeners();
         this.observers.forEach(observer => observer.disconnect());
         this.observers = [];
+    }
+    
+    ensureSubtitleTracksLoaded() {
+        // 確保字幕軌道被載入，嘗試各種方法激活字幕軌道
+        try {
+            if (!this.video || !this.video.textTracks) return;
+            
+            for (let i = 0; i < this.video.textTracks.length; i++) {
+                const track = this.video.textTracks[i];
+                
+                // 如果軌道是disabled狀態且沒有cues，嘗試暫時啟用它來加載cues
+                if (track.mode === 'disabled' && (!track.cues || track.cues.length === 0)) {
+                    const originalMode = track.mode;
+                    
+                    // 暫時設置為hidden來觸發cues加載
+                    track.mode = 'hidden';
+                    
+                    // 等待一小段時間讓cues加載
+                    setTimeout(() => {
+                        // 如果還是沒有cues，嘗試showing模式
+                        if (!track.cues || track.cues.length === 0) {
+                            track.mode = 'showing';
+                            setTimeout(() => {
+                                // 如果現在有cues了，可以恢復原始模式
+                                if (track.cues && track.cues.length > 0) {
+                                    console.log(`✅ Successfully loaded ${track.cues.length} cues for track ${i} (${track.language})`);
+                                    // 可以選擇是否恢復原始模式，或保持showing來讓後續獲取
+                                    // track.mode = originalMode;
+                                }
+                            }, 100);
+                        } else {
+                            console.log(`✅ Track ${i} (${track.language}) loaded ${track.cues.length} cues in hidden mode`);
+                            // track.mode = originalMode;
+                        }
+                    }, 50);
+                }
+            }
+        } catch (error) {
+            console.error('Error ensuring subtitle tracks loaded:', error);
+        }
+    }
+    
+    getSubtitlesAggressively() {
+        // 更激進的字幕獲取方法
+        try {
+            console.log('🚀 Attempting aggressive subtitle extraction...');
+            
+            // 方法1：嘗試從YouTube Player API獲取
+            const aggressiveResult = this.tryYouTubePlayerAPI();
+            if (aggressiveResult && aggressiveResult.cues && aggressiveResult.cues.length > 0) {
+                return aggressiveResult;
+            }
+            
+            // 方法2：嘗試從DOM中尋找字幕相關數據
+            const domResult = this.tryExtractFromDOM();
+            if (domResult && domResult.cues && domResult.cues.length > 0) {
+                return domResult;
+            }
+            
+            // 方法3：嘗試強制啟用所有字幕軌道
+            const forceResult = this.tryForceEnableAllTracks();
+            if (forceResult && forceResult.cues && forceResult.cues.length > 0) {
+                return forceResult;
+            }
+            
+            return null;
+            
+        } catch (error) {
+            console.error('Error in aggressive subtitle extraction:', error);
+            return null;
+        }
+    }
+    
+    tryYouTubePlayerAPI() {
+        try {
+            // 嘗試通過YouTube的內部API獲取字幕
+            const player = document.querySelector('#movie_player') || document.querySelector('.html5-video-player');
+            if (player && player.getSubtitlesUserSettings) {
+                console.log('🔍 Found YouTube player with subtitle API');
+                // 這裡可以嘗試調用YouTube的內部API
+                // 注意：這些是非公開API，可能隨時改變
+            }
+            
+            // 嘗試從window對象中尋找YouTube相關的數據
+            if (window.ytInitialPlayerResponse) {
+                console.log('🔍 Found ytInitialPlayerResponse');
+                const playerResponse = window.ytInitialPlayerResponse;
+                if (playerResponse.captions && playerResponse.captions.playerCaptionsTracklistRenderer) {
+                    const tracks = playerResponse.captions.playerCaptionsTracklistRenderer.captionTracks;
+                    if (tracks && tracks.length > 0) {
+                        console.log(`🎯 Found ${tracks.length} caption tracks in playerResponse`);
+                        // 這裡可以嘗試解析字幕軌道URL
+                        return this.parsePlayerResponseCaptions(tracks);
+                    }
+                }
+            }
+            
+        } catch (error) {
+            console.error('Error trying YouTube Player API:', error);
+        }
+        
+        return null;
+    }
+    
+    tryExtractFromDOM() {
+        try {
+            // 嘗試從DOM中提取字幕相關信息
+            console.log('🔍 Trying to extract from DOM...');
+            
+            // 查找字幕相關的script標籤
+            const scripts = document.querySelectorAll('script');
+            for (const script of scripts) {
+                const content = script.textContent;
+                if (content && (content.includes('captionTracks') || content.includes('subtitle'))) {
+                    console.log('🎯 Found script with caption data');
+                    // 這裡可以嘗試解析script中的字幕數據
+                }
+            }
+            
+        } catch (error) {
+            console.error('Error extracting from DOM:', error);
+        }
+        
+        return null;
+    }
+    
+    tryForceEnableAllTracks() {
+        try {
+            // 強制啟用所有字幕軌道並等待載入
+            console.log('🔍 Force enabling all subtitle tracks...');
+            
+            if (!this.video || !this.video.textTracks) return null;
+            
+            const results = [];
+            
+            for (let i = 0; i < this.video.textTracks.length; i++) {
+                const track = this.video.textTracks[i];
+                
+                // 強制設置為showing模式
+                track.mode = 'showing';
+                
+                // 立即檢查是否有cues
+                if (track.cues && track.cues.length > 0) {
+                    console.log(`✅ Force enabled track ${i} has ${track.cues.length} cues`);
+                    
+                    const cues = [];
+                    for (let j = 0; j < track.cues.length; j++) {
+                        const cue = track.cues[j];
+                        cues.push({
+                            startTime: cue.startTime,
+                            endTime: cue.endTime,
+                            text: cue.text,
+                            id: cue.id || j.toString(),
+                            duration: cue.endTime - cue.startTime
+                        });
+                    }
+                    
+                    return {
+                        available: true,
+                        cues: cues,
+                        totalDuration: this.video.duration || 0,
+                        language: track.language,
+                        trackInfo: {
+                            kind: track.kind,
+                            label: track.label,
+                            language: track.language,
+                            mode: track.mode,
+                            forced: true
+                        }
+                    };
+                }
+            }
+            
+        } catch (error) {
+            console.error('Error force enabling tracks:', error);
+        }
+        
+        return null;
+    }
+    
+    parsePlayerResponseCaptions(tracks) {
+        try {
+            // 解析YouTube playerResponse中的字幕軌道
+            console.log('🔍 Parsing player response captions...');
+            
+            // 這是一個複雜的過程，需要發送請求到字幕URL
+            // 由於安全限制，我們可能無法直接獲取字幕內容
+            // 但至少可以記錄找到的軌道信息
+            
+            for (const track of tracks) {
+                console.log(`📝 Caption track found: ${track.name?.simpleText || 'Unknown'} (${track.languageCode})`);
+                if (track.baseUrl) {
+                    console.log(`🔗 Caption URL: ${track.baseUrl}`);
+                }
+            }
+            
+            // 返回基本信息，即使沒有實際的cues
+            return {
+                available: true,
+                cues: [],
+                totalDuration: this.video ? this.video.duration : 0,
+                language: tracks[0]?.languageCode,
+                trackInfo: {
+                    kind: 'subtitles',
+                    label: tracks[0]?.name?.simpleText,
+                    language: tracks[0]?.languageCode,
+                    mode: 'metadata',
+                    foundInPlayerResponse: true,
+                    tracksCount: tracks.length
+                }
+            };
+            
+        } catch (error) {
+            console.error('Error parsing player response captions:', error);
+        }
+        
+        return null;
     }
 }
 

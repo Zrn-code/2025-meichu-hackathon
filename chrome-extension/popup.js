@@ -21,6 +21,9 @@ class PopupManager {
         setInterval(() => {
             this.updateStatus();
         }, 2000);
+        
+        // 初始化字幕區塊為隱藏
+        document.getElementById('subtitleInfo').style.display = 'none';
     }
     
     bindEvents() {
@@ -31,6 +34,15 @@ class PopupManager {
         
         document.getElementById('toggleBtn').addEventListener('click', () => {
             this.toggleMonitoring();
+        });
+        
+        // 添加字幕相關事件監聽器
+        document.getElementById('refreshSubtitleBtn').addEventListener('click', () => {
+            this.refreshSubtitleData();
+        });
+        
+        document.getElementById('exportSubtitleBtn').addEventListener('click', () => {
+            this.exportSubtitles();
         });
     }
     
@@ -47,7 +59,7 @@ class PopupManager {
                 
                 this.updateStatusDisplay();
                 
-                // 如果正在監控，獲取視頻數據
+                // 如果正在監控，獲取視頻數據和字幕數據
                 if (this.isMonitoring && this.currentTabId) {
                     this.requestVideoData();
                 }
@@ -117,6 +129,7 @@ class PopupManager {
     updateVideoDisplay(data) {
         if (!data || !data.hasVideo) {
             document.getElementById('videoInfo').style.display = 'none';
+            document.getElementById('subtitleInfo').style.display = 'none';
             return;
         }
         
@@ -145,6 +158,9 @@ class PopupManager {
         // 更新觀看次數
         const viewCount = data.viewCount || '未知';
         document.getElementById('viewCount').textContent = viewCount;
+        
+        // 更新字幕信息
+        this.updateSubtitleDisplay(data);
         
         this.videoData = data;
     }
@@ -222,6 +238,167 @@ class PopupManager {
         
         setTimeout(() => {
             errorMsg.style.display = 'none';
+        }, 3000);
+    }
+    
+    updateSubtitleDisplay(data) {
+        const subtitleInfo = document.getElementById('subtitleInfo');
+        
+        // 檢查是否有字幕數據
+        const hasSubtitleData = data.subtitles || data.fullSubtitles;
+        
+        if (hasSubtitleData) {
+            subtitleInfo.style.display = 'block';
+            
+            // 獲取字幕數據並從後端API獲取詳細統計
+            this.fetchSubtitleStats();
+            
+            // 顯示當前字幕
+            this.displayCurrentSubtitle(data.subtitles);
+        } else {
+            subtitleInfo.style.display = 'none';
+        }
+    }
+    
+    async fetchSubtitleStats() {
+        try {
+            const response = await fetch('http://localhost:3000/api/youtube/subtitles/count');
+            
+            if (response.ok) {
+                const data = await response.json();
+                
+                if (data.success) {
+                    // 更新字幕計數
+                    document.getElementById('totalSubtitleCount').textContent = data.counts.total_count || 0;
+                    document.getElementById('historyCount').textContent = data.counts.history_entries || 0;
+                    document.getElementById('fullSubtitleCount').textContent = data.counts.full_subtitles_cues || 0;
+                    
+                    // 更新狀態指示器
+                    const statusIndicator = document.querySelector('.status-indicator');
+                    if (data.counts.total_count > 0) {
+                        statusIndicator.classList.add('subtitle-enabled');
+                    } else {
+                        statusIndicator.classList.remove('subtitle-enabled');
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching subtitle stats:', error);
+            // 顯示默認值
+            document.getElementById('totalSubtitleCount').textContent = '?';
+            document.getElementById('historyCount').textContent = '?';
+            document.getElementById('fullSubtitleCount').textContent = '?';
+        }
+    }
+    
+    displayCurrentSubtitle(subtitleData) {
+        const subtitleText = document.getElementById('currentSubtitleText');
+        const subtitleLanguage = document.getElementById('subtitleLanguage');
+        const subtitleTime = document.getElementById('subtitleTime');
+        
+        if (subtitleData && subtitleData.currentText && subtitleData.currentText.text) {
+            const currentText = subtitleData.currentText;
+            
+            // 顯示字幕文本
+            subtitleText.textContent = currentText.text;
+            subtitleText.style.fontStyle = 'normal';
+            
+            // 顯示語言信息
+            const language = subtitleData.currentTrack?.language || 'unknown';
+            subtitleLanguage.textContent = this.formatLanguage(language);
+            
+            // 顯示時間戳
+            if (this.videoData && this.videoData.currentTime) {
+                subtitleTime.textContent = this.formatTime(this.videoData.currentTime);
+            } else {
+                subtitleTime.textContent = '--:--';
+            }
+            
+        } else {
+            // 沒有當前字幕
+            subtitleText.textContent = '目前沒有字幕顯示';
+            subtitleText.style.fontStyle = 'italic';
+            subtitleLanguage.textContent = '-';
+            subtitleTime.textContent = '--:--';
+        }
+    }
+    
+    formatLanguage(langCode) {
+        const languageNames = {
+            'en': '英文',
+            'zh': '中文',
+            'zh-TW': '繁體中文',
+            'zh-CN': '簡體中文',
+            'ja': '日文',
+            'ko': '韓文',
+            'es': '西班牙文',
+            'fr': '法文',
+            'de': '德文',
+            'unknown': '未知'
+        };
+        
+        return languageNames[langCode] || langCode;
+    }
+    
+    async refreshSubtitleData() {
+        if (this.currentTabId) {
+            try {
+                // 請求content script重新發送數據
+                await chrome.tabs.sendMessage(this.currentTabId, { 
+                    type: 'REFRESH_SUBTITLE_DATA' 
+                });
+                
+                // 延遲更新顯示
+                setTimeout(() => {
+                    this.fetchSubtitleStats();
+                    this.requestVideoData();
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Error refreshing subtitle data:', error);
+                this.showError('刷新字幕數據失敗');
+            }
+        }
+    }
+    
+    async exportSubtitles() {
+        try {
+            const response = await fetch('http://localhost:3000/api/youtube/subtitles/export?format=srt');
+            
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                
+                // 創建下載鏈接
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `subtitles_${Date.now()}.srt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
+                URL.revokeObjectURL(url);
+                
+                this.showSuccess('字幕已成功匯出！');
+            } else {
+                throw new Error('Export failed');
+            }
+        } catch (error) {
+            console.error('Error exporting subtitles:', error);
+            this.showError('匯出字幕失敗');
+        }
+    }
+    
+    showSuccess(message) {
+        // 創建成功提示（重用error元素但改變樣式）
+        const errorMsg = document.getElementById('errorMsg');
+        errorMsg.textContent = message;
+        errorMsg.style.display = 'block';
+        errorMsg.style.color = '#16a34a';
+        
+        setTimeout(() => {
+            errorMsg.style.display = 'none';
+            errorMsg.style.color = '#ef4444'; // 恢復錯誤顏色
         }, 3000);
     }
 }

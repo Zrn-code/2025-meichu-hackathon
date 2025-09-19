@@ -150,6 +150,122 @@
             text-align: center;
             margin-top: 8px;
         }
+        
+        /* 字幕相關樣式 */
+        .subtitle-info {
+            background: #f0f9ff;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            border: 1px solid #e0f2fe;
+        }
+        
+        .section-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 12px;
+            color: #1e40af;
+        }
+        
+        .subtitle-summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        
+        .subtitle-count-box {
+            text-align: center;
+        }
+        
+        .count-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1e40af;
+            line-height: 1;
+        }
+        
+        .count-label {
+            font-size: 10px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+        
+        .subtitle-sources {
+            font-size: 11px;
+        }
+        
+        .source-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2px;
+        }
+        
+        .source-label {
+            color: #6b7280;
+        }
+        
+        .source-value {
+            font-weight: 600;
+            color: #1e40af;
+        }
+        
+        .current-subtitle {
+            background: white;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle-label {
+            font-size: 11px;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+        
+        .subtitle-text {
+            font-size: 12px;
+            line-height: 1.4;
+            min-height: 16px;
+            margin-bottom: 4px;
+            color: #111827;
+        }
+        
+        .subtitle-meta {
+            font-size: 10px;
+            color: #9ca3af;
+        }
+        
+        .subtitle-actions {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .btn-small {
+            flex: 1;
+            padding: 4px 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 3px;
+            background: white;
+            font-size: 10px;
+            cursor: pointer;
+        }
+        
+        .btn-small:hover {
+            background: #f9fafb;
+        }
+        
+        .status-indicator.subtitle-enabled {
+            background: #dcfce7;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+        
+        .status-indicator.subtitle-enabled .status-dot {
+            background: #16a34a;
+        }
     </style>
 </head>
 <body>
@@ -194,6 +310,43 @@
         <div class="info-row">
             <span class="info-label">觀看次數</span>
             <span class="info-value" id="viewCount">-</span>
+        </div>
+    </div>
+    
+    <!-- 新增字幕信息區塊 -->
+    <div id="subtitleInfo" class="subtitle-info" style="display: none;">
+        <div class="section-title">📝 字幕資訊</div>
+        
+        <div class="subtitle-summary">
+            <div class="subtitle-count-box">
+                <div class="count-number" id="totalSubtitleCount">0</div>
+                <div class="count-label">總字幕數量</div>
+            </div>
+            
+            <div class="subtitle-sources">
+                <div class="source-item">
+                    <span class="source-label">實時收集:</span>
+                    <span class="source-value" id="historyCount">0</span>
+                </div>
+                <div class="source-item">
+                    <span class="source-label">完整軌道:</span>
+                    <span class="source-value" id="fullSubtitleCount">0</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="current-subtitle">
+            <div class="subtitle-label">當前字幕:</div>
+            <div class="subtitle-text" id="currentSubtitleText">無字幕數據</div>
+            <div class="subtitle-meta">
+                <span id="subtitleLanguage">-</span> • 
+                <span id="subtitleTime">--:--</span>
+            </div>
+        </div>
+        
+        <div class="subtitle-actions">
+            <button class="btn-small" id="refreshSubtitleBtn">🔄 刷新字幕</button>
+            <button class="btn-small" id="exportSubtitleBtn">📄 匯出</button>
         </div>
     </div>
     
