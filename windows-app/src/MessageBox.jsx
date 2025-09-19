@@ -44,11 +44,12 @@ const MessageBox = () => {
     <div className="w-full h-full flex items-center justify-center overflow-hidden">
       <div className="h-full w-full avatar-no-drag">
         <div 
-          className="bg-white/95 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-white/20"
+          className="message-box p-4 rounded-lg shadow-md"
+          style={{ background: 'rgba(51, 51, 51, 0.75)', color: '#ffffff' }}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          <div className="text-lg text-gray-700 leading-relaxed overflow-hidden max-h-64 overflow-y-auto">
+          <div className="text-base text-white leading-relaxed overflow-hidden max-h-64 overflow-y-auto">
             {message.split('\n').map((line, index) => (
               <React.Fragment key={index}>
                 {line}
@@ -58,10 +59,10 @@ const MessageBox = () => {
           </div>
           <div className="flex gap-2 justify-end">
             <button 
-              className="btn btn-error px-2 py-1 min-h-0 h-auto"
+              className="btn btn-sm btn-outline btn-ghost text-white px-2 py-1 min-h-0 h-auto"
               onClick={handleCloseClick}
             >
-              關閉
+              Close
             </button>
           </div>
         </div>

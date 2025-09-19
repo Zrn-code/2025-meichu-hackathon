@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@plugin "daisyui"{themes: dark --default;};
+@plugin "daisyui"{themes: coffee --default;};
 
 
 html, body, #root {
@@ -27,7 +27,6 @@ body.message-window {
   background: transparent !important;
   overflow: hidden;
 }
-
 body.message-window html,
 body.message-window body,
 body.message-window #root {
