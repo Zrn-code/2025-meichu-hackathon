@@ -47,28 +47,36 @@ const MessageBox = ({ onStart, onSend }) => {
     setMessage(prev => prev + "\n\n已啟動。");
   };
 
-  const handleSend = () => {
-    const text = inputText.trim();
-    if (!text) return;
+const handleSend = () => {
+  // 先取得 trim 後文字
+  const text = inputText.trim();
 
-    if (window.electronAPI && window.electronAPI.sendMessage) {
-      window.electronAPI.sendMessage('chat-to-avatar', text);
-    }
-
-    if (typeof onSend === 'function') {
-      try { onSend(text); } catch (e) { console.warn(e); }
-    }
-
-    // 把訊息加入顯示區（若不想 append 可移除這行）
-    setMessage(prev => prev + `\n\n你: ${text}`);
+  // 若為空（或只有空白），就清空輸入並結束（不發訊息）
+  if (!text) {
     setInputText('');
     inputRef.current && inputRef.current.focus();
+    return;
+  }
 
-    // 自動滾到底
-    setTimeout(() => {
-      if (messagesRef.current) messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
-    }, 0);
-  };
+  // 發送給主程序
+  if (window.electronAPI && window.electronAPI.sendMessage) {
+    window.electronAPI.sendMessage('chat-to-avatar', text);
+  }
+
+  // 呼叫外部回調（如果有）
+  if (typeof onSend === 'function') {
+    try { onSend(text); } catch (e) { console.warn(e); }
+  }
+
+  // 清空輸入欄並把焦點放回去
+  setInputText('');
+  inputRef.current && inputRef.current.focus();
+
+  // 自動滾到底（若你有訊息顯示區）
+  setTimeout(() => {
+    if (messagesRef.current) messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+  }, 0);
+};
 
   const handleKeyDown = (e) => {
     // Enter 發送，Shift+Enter 換行
