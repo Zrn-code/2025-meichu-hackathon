@@ -42,6 +42,25 @@ const createWindow = () => {
   mainWindow.webContents.openDevTools();
 };
 
+let lastAvatarImagePath = null;
+const loadAvatarImage = (imagePath) => {
+  // 如果沒給 imagePath，則用上次的，若第一次則用預設值
+  let finalPath = imagePath;
+  if (!finalPath) {
+    finalPath = lastAvatarImagePath || '/avatar.jpg';
+  }
+  lastAvatarImagePath = finalPath;
+  const urlParam = finalPath ? `?src=${encodeURIComponent(finalPath)}` : '';
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+    avatarWindow.loadURL(`${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/avatar.html${urlParam}`);
+  } else {
+    // loadFile 不支援 query string，需用 loadURL 並組合 file:// 路徑
+    const filePath = path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/avatar.html`);
+    const fileUrl = `file://${filePath.replace(/\\/g, '/')}${urlParam}`;
+    avatarWindow.loadURL(fileUrl);
+  }
+}
+
 const createAvatarWindow = () => {
   if (avatarWindow) {
     avatarWindow.show();
@@ -64,12 +83,13 @@ const createAvatarWindow = () => {
     },
   });
 
-  // 加載avatar窗口 - 使用主窗口的開發服務器
-  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    avatarWindow.loadURL(`${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/avatar.html`);
-  } else {
-    avatarWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/avatar.html`));
-  }
+  // // 加載avatar窗口 - 使用主窗口的開發服務器
+  // if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+  //   avatarWindow.loadURL(`${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/avatar.html`);
+  // } else {
+  //   avatarWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/avatar.html`));
+  // }
+  loadAvatarImage(); // 使用預設圖片
 
   avatarWindow.on('closed', () => {
     avatarWindow = null;
@@ -310,6 +330,14 @@ app.on('before-quit', async () => {
 });
 
 // IPC handlers for avatar window
+ipcMain.handle('load-avatar', (event, imagePath) => {
+  if (avatarWindow) {
+    loadAvatarImage(imagePath);
+    return { success: true };
+  }
+  return { success: false, error: 'Avatar 窗口不存在' };
+}); 
+
 ipcMain.handle('toggle-avatar', (event, show) => {
   if (show) {
     createAvatarWindow();

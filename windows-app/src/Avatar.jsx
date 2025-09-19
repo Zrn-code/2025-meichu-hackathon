@@ -9,6 +9,7 @@ const Avatar = ({ onClick }) => {
     else alert('Avatar clicked');
   };
 
+const Avatar = ({ src }) => {
   return (
     <div className="flex items-center justify-center w-full h-full overflow-hidden">
       {/* 外層：透明正方形，可拖曳 (Electron: -webkit-app-region: drag) */}
@@ -35,5 +36,5 @@ const Avatar = ({ onClick }) => {
     </div>
   );
 };
-
+}
 export default Avatar;

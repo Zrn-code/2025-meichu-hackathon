@@ -151,6 +151,21 @@ function App() {
     }
   };
 
+  // Avatar 圖片列表（可自動生成）
+  const avatarImages = [
+    '/avatar.jpg',
+    '/avatar2.jpg',
+    '/avatar3.jpg',
+    '/avatar4.jpg',
+  ];
+
+  // 切換Avatar圖片
+  const loadAvatar = async (img) => {
+    if (window.electronAPI && avatarVisible) {
+      await window.electronAPI.loadAvatar(img);
+    }
+  };
+
   // 發送訊息到 MessageBox
   const sendMessage = async (message) => {
     if (window.electronAPI) {
@@ -560,6 +575,31 @@ function App() {
 
 
       </div>
+
+      {/* 自定義 avatar */}
+      <div className="card shadow-lg border border-info">
+        <div className="card-body">
+          <h2 className="card-title text-info mb-2">
+            自定義 Avatar 區塊
+          </h2>
+          <p className="text-base-content opacity-70 text-sm mb-4">
+            可以調整Agent的個性
+          </p>
+          <div className="flex gap-2 flex-wrap">
+            {avatarImages.map((img, idx) => (
+              <button
+                key={img}
+                className="btn btn-primary"
+                onClick={() => loadAvatar(img)}
+              >
+                Avatar {idx + 1}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+
     </div>
   );
 }
