@@ -11,6 +11,11 @@ class TabMonitor {
         this.updateInterval = null;
         this.lastVideoData = null;
         
+        // 字幕預載相關
+        this.subtitlePreloader = new SubtitlePreloader(this.serverUrl);
+        this.processedVideos = new Set(); // 記錄已處理的視頻ID
+        this.pendingSubtitleRequests = new Map(); // 待處理的字幕請求
+        
         this.init();
     }
     
@@ -177,6 +182,12 @@ class TabMonitor {
         switch (message.type) {
             case 'VIDEO_DATA_UPDATE':
                 this.handleVideoData(message.data);
+                
+                // 觸發字幕預載
+                if (message.data && message.data.videoId) {
+                    this.triggerSubtitlePreload(message.data);
+                }
+                
                 sendResponse({ success: true });
                 break;
                 
@@ -289,6 +300,308 @@ class TabMonitor {
             
         } catch (error) {
             // 靜默處理錯誤，避免過多日誌
+        }
+    }
+    
+    // 觸發字幕預載
+    triggerSubtitlePreload(videoData) {
+        const videoId = videoData.videoId;
+        
+        // 避免重複處理同一個視頻
+        if (this.processedVideos.has(videoId)) {
+            return;
+        }
+        
+        console.log(`🚀 Triggering subtitle preload for video: ${videoId}`);
+        
+        // 標記為已處理
+        this.processedVideos.add(videoId);
+        
+        // 啟動字幕預載
+        this.subtitlePreloader.preloadSubtitles(videoId, videoData)
+            .then(result => {
+                console.log(`✅ Subtitle preload completed for ${videoId}:`, result);
+            })
+            .catch(error => {
+                console.error(`❌ Subtitle preload failed for ${videoId}:`, error);
+                // 失敗時從已處理列表中移除，允許重試
+                this.processedVideos.delete(videoId);
+            });
+    }
+}
+
+// 字幕預載器類
+class SubtitlePreloader {
+    constructor(serverUrl) {
+        this.serverUrl = serverUrl;
+        this.preloadingTabs = new Set(); // 正在預載的標籤頁
+        this.maxConcurrentPreloads = 3; // 最大並發預載數量
+        this.preloadQueue = []; // 預載隊列
+    }
+    
+    async preloadSubtitles(videoId, videoData) {
+        try {
+            // 檢查是否已經在預載隊列中
+            if (this.preloadQueue.some(item => item.videoId === videoId)) {
+                console.log(`Video ${videoId} already in preload queue`);
+                return { success: false, reason: 'already_queued' };
+            }
+            
+            // 添加到預載隊列
+            const preloadItem = {
+                videoId,
+                videoData,
+                timestamp: Date.now(),
+                attempts: 0
+            };
+            
+            this.preloadQueue.push(preloadItem);
+            
+            // 處理預載隊列
+            this.processPreloadQueue();
+            
+            return { success: true, queued: true };
+            
+        } catch (error) {
+            console.error('Error in preloadSubtitles:', error);
+            return { success: false, error: error.message };
+        }
+    }
+    
+    async processPreloadQueue() {
+        // 如果已經達到最大並發數量，等待
+        if (this.preloadingTabs.size >= this.maxConcurrentPreloads) {
+            return;
+        }
+        
+        // 獲取下一個待處理項目
+        const item = this.preloadQueue.shift();
+        if (!item) {
+            return;
+        }
+        
+        try {
+            await this.executePreload(item);
+        } catch (error) {
+            console.error('Error executing preload:', error);
+        }
+        
+        // 繼續處理隊列中的其他項目
+        if (this.preloadQueue.length > 0) {
+            setTimeout(() => this.processPreloadQueue(), 500);
+        }
+    }
+    
+    async executePreload(item) {
+        const { videoId, videoData } = item;
+        
+        try {
+            console.log(`🔄 Executing preload for video: ${videoId}`);
+            
+            // 方法1: 嘗試從API直接獲取字幕信息
+            const apiResult = await this.tryAPIPreload(videoId, videoData);
+            if (apiResult.success) {
+                console.log(`✅ API preload successful for ${videoId}`);
+                return apiResult;
+            }
+            
+            // 方法2: 創建隱藏iframe進行快速加載
+            const iframeResult = await this.tryIframePreload(videoId, videoData);
+            if (iframeResult.success) {
+                console.log(`✅ Iframe preload successful for ${videoId}`);
+                return iframeResult;
+            }
+            
+            // 方法3: 使用背景標籤頁
+            const tabResult = await this.tryBackgroundTabPreload(videoId, videoData);
+            if (tabResult.success) {
+                console.log(`✅ Background tab preload successful for ${videoId}`);
+                return tabResult;
+            }
+            
+            throw new Error('All preload methods failed');
+            
+        } catch (error) {
+            console.error(`❌ Preload failed for ${videoId}:`, error);
+            
+            // 重試機制
+            item.attempts++;
+            if (item.attempts < 2) {
+                console.log(`🔄 Retrying preload for ${videoId} (attempt ${item.attempts + 1})`);
+                setTimeout(() => {
+                    this.preloadQueue.unshift(item); // 重新加入隊列開頭
+                    this.processPreloadQueue();
+                }, 2000);
+            }
+            
+            throw error;
+        }
+    }
+    
+    async tryAPIPreload(videoId, videoData) {
+        try {
+            // 嘗試通過現有API觸發字幕收集
+            const response = await fetch(`${this.serverUrl}/api/youtube/subtitles/count`);
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.counts.total_count > 0) {
+                    return { 
+                        success: true, 
+                        method: 'api',
+                        subtitleCount: data.counts.total_count 
+                    };
+                }
+            }
+            
+            return { success: false, method: 'api' };
+            
+        } catch (error) {
+            console.error('API preload failed:', error);
+            return { success: false, method: 'api', error: error.message };
+        }
+    }
+    
+    async tryIframePreload(videoId, videoData) {
+        try {
+            console.log(`🖼️ Trying iframe preload for ${videoId}`);
+            
+            // 創建隱藏的iframe來加載YouTube視頻
+            return new Promise((resolve, reject) => {
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.style.position = 'absolute';
+                iframe.style.left = '-9999px';
+                iframe.style.width = '1px';
+                iframe.style.height = '1px';
+                
+                // YouTube嵌入URL
+                const embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=0&controls=0&cc_load_policy=1`;
+                
+                const timeout = setTimeout(() => {
+                    document.body.removeChild(iframe);
+                    resolve({ success: false, method: 'iframe', reason: 'timeout' });
+                }, 10000);
+                
+                iframe.onload = () => {
+                    console.log(`📺 Iframe loaded for ${videoId}`);
+                    
+                    // 等待一段時間讓字幕數據加載
+                    setTimeout(() => {
+                        clearTimeout(timeout);
+                        document.body.removeChild(iframe);
+                        
+                        // 嘗試獲取字幕數據
+                        this.checkSubtitleData(videoId).then(result => {
+                            resolve({
+                                success: result.hasSubtitles,
+                                method: 'iframe',
+                                subtitleCount: result.count
+                            });
+                        });
+                    }, 5000);
+                };
+                
+                iframe.onerror = () => {
+                    clearTimeout(timeout);
+                    document.body.removeChild(iframe);
+                    resolve({ success: false, method: 'iframe', reason: 'load_error' });
+                };
+                
+                iframe.src = embedUrl;
+                document.body.appendChild(iframe);
+            });
+            
+        } catch (error) {
+            console.error('Iframe preload failed:', error);
+            return { success: false, method: 'iframe', error: error.message };
+        }
+    }
+    
+    async tryBackgroundTabPreload(videoId, videoData) {
+        try {
+            console.log(`🔖 Trying background tab preload for ${videoId}`);
+            
+            // 檢查當前標籤頁數量，避免創建過多標籤頁
+            const tabs = await chrome.tabs.query({});
+            if (tabs.length > 50) {
+                return { success: false, method: 'background_tab', reason: 'too_many_tabs' };
+            }
+            
+            // 創建背景標籤頁
+            const tab = await chrome.tabs.create({
+                url: `https://www.youtube.com/watch?v=${videoId}`,
+                active: false,
+                pinned: true
+            });
+            
+            this.preloadingTabs.add(tab.id);
+            
+            return new Promise((resolve) => {
+                const timeout = setTimeout(() => {
+                    this.closePreloadTab(tab.id);
+                    resolve({ success: false, method: 'background_tab', reason: 'timeout' });
+                }, 15000);
+                
+                // 監聽標籤頁更新
+                const tabUpdateListener = (tabId, changeInfo, updatedTab) => {
+                    if (tabId === tab.id && changeInfo.status === 'complete') {
+                        console.log(`🎯 Background tab ${tabId} loaded for ${videoId}`);
+                        
+                        // 等待字幕數據收集
+                        setTimeout(async () => {
+                            clearTimeout(timeout);
+                            chrome.tabs.onUpdated.removeListener(tabUpdateListener);
+                            
+                            const result = await this.checkSubtitleData(videoId);
+                            this.closePreloadTab(tab.id);
+                            
+                            resolve({
+                                success: result.hasSubtitles,
+                                method: 'background_tab',
+                                subtitleCount: result.count
+                            });
+                        }, 8000); // 等待8秒收集字幕
+                    }
+                };
+                
+                chrome.tabs.onUpdated.addListener(tabUpdateListener);
+            });
+            
+        } catch (error) {
+            console.error('Background tab preload failed:', error);
+            return { success: false, method: 'background_tab', error: error.message };
+        }
+    }
+    
+    async closePreloadTab(tabId) {
+        try {
+            this.preloadingTabs.delete(tabId);
+            await chrome.tabs.remove(tabId);
+            console.log(`🗑️ Closed preload tab ${tabId}`);
+        } catch (error) {
+            console.error('Error closing preload tab:', error);
+        }
+    }
+    
+    async checkSubtitleData(videoId) {
+        try {
+            const response = await fetch(`${this.serverUrl}/api/youtube/subtitles/count`);
+            
+            if (response.ok) {
+                const data = await response.json();
+                return {
+                    hasSubtitles: data.success && data.counts.total_count > 0,
+                    count: data.counts?.total_count || 0,
+                    videoId: data.video_id
+                };
+            }
+            
+            return { hasSubtitles: false, count: 0 };
+            
+        } catch (error) {
+            console.error('Error checking subtitle data:', error);
+            return { hasSubtitles: false, count: 0 };
         }
     }
 }
