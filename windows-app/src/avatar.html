@@ -7,6 +7,11 @@
 </head>
 <body class="avatar-window">
   <div id="root"></div>
+  <!-- 自動從 query string 設定圖片路徑，預設為 /avatar.jpg -->
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    window.avatarSrc = params.get('src')
+  </script>
   <script type="module" src="/src/avatarEntry.jsx"></script>
 </body>
 </html>
