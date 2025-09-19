@@ -340,6 +340,12 @@ class YouTubeHandler:
         except Exception as e:
             logger.error(f"Error updating tab stats: {e}")
     
+    def get_current_video_id(self) -> Optional[str]:
+        """獲取當前活動視頻的ID"""
+        if self.current_data and self.current_data.get('videoId'):
+            return self.current_data.get('videoId')
+        return None
+    
     def _process_subtitle_data(self, data: Dict[str, Any]):
         """處理字幕數據"""
         try:
@@ -403,9 +409,13 @@ class YouTubeHandler:
     
     def get_subtitle_history(self, video_id: Optional[str] = None, limit: int = 50) -> List[Dict[str, Any]]:
         """獲取字幕歷史記錄"""
+        # 如果沒有指定video_id，使用當前視頻ID
+        if video_id is None:
+            video_id = self.get_current_video_id()
+        
         history = self.subtitle_history
         
-        # 如果指定了視頻ID，則篩選
+        # 如果有視頻ID，則篩選
         if video_id:
             history = [entry for entry in history if entry.get('video_id') == video_id]
         
@@ -413,6 +423,10 @@ class YouTubeHandler:
     
     def get_subtitle_transcript(self, video_id: Optional[str] = None) -> Dict[str, Any]:
         """獲取完整的字幕轉錄文本"""
+        # 如果沒有指定video_id，使用當前視頻ID
+        if video_id is None:
+            video_id = self.get_current_video_id()
+        
         history = self.get_subtitle_history(video_id)
         
         if not history:
@@ -446,6 +460,10 @@ class YouTubeHandler:
     
     def search_subtitles(self, query: str, video_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """在字幕中搜索關鍵字"""
+        # 如果沒有指定video_id，使用當前視頻ID
+        if video_id is None:
+            video_id = self.get_current_video_id()
+            
         results = []
         history = self.get_subtitle_history(video_id, limit=self.max_subtitle_history)
         
@@ -549,8 +567,15 @@ class YouTubeHandler:
         """獲取所有緩存的完整字幕"""
         return dict(self.full_subtitles_cache)
     
-    def export_full_subtitles(self, video_id: str, format_type: str = 'srt') -> Optional[str]:
+    def export_full_subtitles(self, video_id: Optional[str] = None, format_type: str = 'srt') -> Optional[str]:
         """導出完整字幕為指定格式"""
+        # 如果沒有指定video_id，使用當前視頻ID
+        if video_id is None:
+            video_id = self.get_current_video_id()
+            
+        if not video_id:
+            return None
+            
         subtitle_data = self.get_full_subtitles(video_id)
         
         if not subtitle_data or not subtitle_data.get('cues'):
