@@ -25,6 +25,7 @@ from tools.calculator import (
     CalculatorTool, AddTool, SubtractTool, 
     MultiplyTool, DivideTool, CalculateTool
 )
+from tools.conversation_log import ConversationLogTool
 
 # 設置 UTF-8 編碼（簡化版）
 import os
@@ -82,14 +83,15 @@ class UnifiedServer:
     
     def _register_tools(self):
         """註冊工具"""
-        # 註冊計算器工具（向後兼容）
+        # 註冊所有工具
         tools = [
             CalculatorTool(),
             AddTool(),
             SubtractTool(),
             MultiplyTool(),
             DivideTool(),
-            CalculateTool()
+            CalculateTool(),
+            ConversationLogTool()  # 新增對話記錄工具
         ]
         
         for tool in tools:

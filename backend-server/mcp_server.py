@@ -21,6 +21,7 @@ from tools.calculator import (
     CalculatorTool, AddTool, SubtractTool, 
     MultiplyTool, DivideTool, CalculateTool
 )
+from tools.conversation_log import ConversationLogTool
 
 # 註冊所有工具
 def register_all_tools():
@@ -34,7 +35,8 @@ def register_all_tools():
         SubtractTool(),
         MultiplyTool(),
         DivideTool(),
-        CalculateTool()
+        CalculateTool(),
+        ConversationLogTool()  # 新增對話記錄工具
     ]
     
     for tool in tools:

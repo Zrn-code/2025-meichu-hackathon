@@ -1,0 +1,14 @@
+{
+  "logs": [
+    {
+      "timestamp": "30",
+      "emotion": "友善的",
+      "message": "歡迎大家！"
+    },
+    {
+      "timestamp": "120",
+      "emotion": "專業的",
+      "message": "現在開始我們的主題"
+    }
+  ]
+}
