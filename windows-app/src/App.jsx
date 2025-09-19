@@ -291,8 +291,8 @@ function App() {
         {/* 懸浮 Avatar 控制卡片 */}
         <div className="card shadow-lg border border-primary">
           <div className="card-body">
-            <h2 className="card-title text-primary mb-2">懸浮 Avatar 控制</h2>
-          <p className="text-base-content opacity-70 text-sm mb-6">你可以啟用一個可拖動的懸浮 Avatar，它會置頂顯示並支持拖動功能。</p>
+            <h2 className="card-title text-primary mb-2">😻 影片小助手 Avatar</h2>
+          <p className="text-base-content opacity-70 text-base mb-6">無論是追劇、看電影或是讀書，Avatar 都能成為你的最佳夥伴！</p>
           
           <div className="flex items-center gap-4 mb-6">
             <button 
@@ -364,10 +364,10 @@ function App() {
                 </button>
                 <button 
                   className="btn btn-sm btn-outline btn-info"
-                  onClick={() => setUserInput("今天天氣怎麼樣？")}
+                  onClick={() => setUserInput("我搞不清楚現在的劇情")}
                   disabled={isLoading}
                 >
-                  ☀️ 聊天氣
+                  ☀️ 懶人包
                 </button>
                 <button 
                   className="btn btn-sm btn-outline btn-warning"
