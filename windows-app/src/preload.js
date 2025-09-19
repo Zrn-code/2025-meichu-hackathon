@@ -12,6 +12,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.on('avatar-closed', callback);
     return () => ipcRenderer.removeListener('avatar-closed', callback);
   },
+  loadAvatar:(imagePath) => ipcRenderer.invoke('load-avatar', imagePath),
   
   // MessageBox 相關
   showMessageBox: (message) => ipcRenderer.invoke('show-message-box', message),

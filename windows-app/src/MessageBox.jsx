@@ -1,10 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './index.css';
-const MessageBox = () => {
+
+const MessageBox = ({ onStart, onSend }) => {
   const [message, setMessage] = useState("你好！我是你的桌面小助手 🐱\n拖動我到任何地方吧～");
+  const [running, setRunning] = useState(false);
+  const [inputText, setInputText] = useState('');
+  const inputRef = useRef(null);
+  const messagesRef = useRef(null);
 
   const handleCloseClick = () => {
-    if (window.electronAPI) {
+    if (window.electronAPI && window.electronAPI.closeMessageBox) {
       window.electronAPI.closeMessageBox();
     } else {
       window.close();
@@ -23,50 +28,149 @@ const MessageBox = () => {
     }
   };
 
-  // 監聽來自主程序的訊息
+  const handleStartClick = () => {
+    if (running) return;
+    setRunning(true);
+
+    if (typeof onStart === 'function') {
+      try { onStart(); } catch (e) { console.warn(e); }
+    }
+
+    if (window.electronAPI) {
+      if (window.electronAPI.startMessageBox) {
+        window.electronAPI.startMessageBox();
+      } else if (window.electronAPI.sendMessage) {
+        window.electronAPI.sendMessage('start-message');
+      }
+    }
+
+    setMessage(prev => prev + "\n\n已啟動。");
+  };
+
+  const handleSend = () => {
+    const text = inputText.trim();
+    if (!text) return;
+
+    if (window.electronAPI && window.electronAPI.sendMessage) {
+      window.electronAPI.sendMessage('chat-to-avatar', text);
+    }
+
+    if (typeof onSend === 'function') {
+      try { onSend(text); } catch (e) { console.warn(e); }
+    }
+
+    // 把訊息加入顯示區（若不想 append 可移除這行）
+    setMessage(prev => prev + `\n\n你: ${text}`);
+    setInputText('');
+    inputRef.current && inputRef.current.focus();
+
+    // 自動滾到底
+    setTimeout(() => {
+      if (messagesRef.current) messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+    }, 0);
+  };
+
+  const handleKeyDown = (e) => {
+    // Enter 發送，Shift+Enter 換行
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
   useEffect(() => {
     let cleanup = null;
     if (window.electronAPI && window.electronAPI.onMessageReceived) {
       cleanup = window.electronAPI.onMessageReceived((newMessage) => {
         setMessage(newMessage);
+        setTimeout(() => {
+          if (messagesRef.current) messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+        }, 0);
       });
     }
-
-    // 清理監聽器
     return () => {
-      if (cleanup) {
-        cleanup();
-      }
+      if (cleanup) cleanup();
     };
   }, []);
+
+  const lines = message.split('\n');
 
   return (
     <div className="w-full h-full flex items-center justify-center overflow-hidden">
       <div className="h-full w-full avatar-no-drag">
-        <div 
-          className="message-box p-4 rounded-lg shadow-md"
+        <div
+          className="message-box p-4 rounded-lg shadow-md relative flex flex-col"
           style={{ background: 'rgba(51, 51, 51, 0.75)', color: '#ffffff' }}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          <div className="text-base text-white leading-relaxed overflow-hidden max-h-64 overflow-y-auto">
-            {message.split('\n').map((line, index) => (
+          {/* Close：右上角 */}
+          <button
+            onClick={handleCloseClick}
+            className="btn btn-xs btn-ghost text-white absolute right-3 top-3"
+            style={{ WebkitAppRegion: 'no-drag' }}
+            title="Close"
+          >
+            ❌
+          </button>
+
+          {/* 訊息顯示區（可滾動，撐滿上方空間） */}
+          <div
+            ref={messagesRef}
+            className="text-base text-white leading-relaxed overflow-auto mb-3 flex-1"
+            style={{ maxHeight: '100%', whiteSpace: 'pre-wrap' }}
+          >
+            {lines.map((line, index) => (
               <React.Fragment key={index}>
                 {line}
-                {index < message.split('\n').length - 1 && <br />}
+                {index < lines.length - 1 && <br />}
               </React.Fragment>
             ))}
           </div>
-          <div className="flex gap-2 justify-end">
-            <button 
-              className="btn btn-sm btn-outline btn-ghost text-white px-2 py-1 min-h-0 h-auto"
-              onClick={handleCloseClick}
+
+          {/* 最下面：🎙️、輸入框、✈️ 並排 */}
+          <div className="mt-2 flex items-center gap-2">
+            {/* 🎙️ Start 按鈕（左） */}
+            <button
+              onClick={handleStartClick}
+              disabled={running}
+              aria-pressed={running}
+              title={running ? '已啟動' : '開始'}
+              className={`btn btn-sm ${running ? 'btn-disabled' : 'btn-primary'} text-white px-2 py-1 min-h-0 h-auto`}
+              style={{ WebkitAppRegion: 'no-drag' }}
             >
-              Close
+              {running ? 'Running…' : '🎙️'}
+            </button>
+
+            {/* 輸入框（中，伸縮） */}
+            <textarea
+              ref={inputRef}
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="對Avatar說..."
+              className="flex-1 resize-none rounded-md p-3 text-sm text-gray-100 placeholder:text-gray-500"
+              style={{
+                background: 'rgba(20,20,20,0.5)',
+                border: '1px solid rgba(255,255,255,0.06)',
+                height: '32px',       // 固定高度，接近按鈕
+                lineHeight: '18px',
+                padding: '6px 12px',  // 小一點的內距，避免太高
+                outline: 'none',
+              }}
+            />
+
+            {/* ✈️ Send 按鈕（右） */}
+            <button
+              onClick={handleSend}
+              className="btn btn-sm btn-primary text-white px-2 py-1 min-h-0 h-auto"
+              style={{ WebkitAppRegion: 'no-drag' }}
+              title="發送"
+            >
+              ✈️
             </button>
           </div>
         </div>
-    
       </div>
     </div>
   );

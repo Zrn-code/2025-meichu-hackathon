@@ -3,4 +3,6 @@ import Avatar from './Avatar.jsx';
 
 const container = document.getElementById('root');
 const root = createRoot(container);
-root.render(<Avatar />);
+// 從 window.avatarSrc 取得圖片路徑
+const avatarSrc = window.avatarSrc
+root.render(<Avatar src={avatarSrc} />);
