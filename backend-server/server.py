@@ -395,16 +395,17 @@ class UnifiedServer:
         def get_subtitle_history():
             """獲取字幕歷史記錄"""
             try:
-                video_id = request.args.get('video_id')
                 limit = request.args.get('limit', 50, type=int)
                 
-                history = self.youtube_handler.get_subtitle_history(video_id, limit)
+                # 自動使用當前視頻的字幕歷史
+                history = self.youtube_handler.get_subtitle_history(None, limit)
+                current_video_id = self.youtube_handler.get_current_video_id()
                 
                 return jsonify({
                     "success": True,
                     "data": history,
                     "count": len(history),
-                    "video_id": video_id,
+                    "current_video_id": current_video_id,
                     "timestamp": datetime.now().isoformat()
                 })
                 
@@ -419,9 +420,8 @@ class UnifiedServer:
         def get_subtitle_transcript():
             """獲取完整字幕轉錄"""
             try:
-                video_id = request.args.get('video_id')
-                
-                transcript = self.youtube_handler.get_subtitle_transcript(video_id)
+                # 自動使用當前視頻的字幕轉錄
+                transcript = self.youtube_handler.get_subtitle_transcript(None)
                 
                 return jsonify({
                     "success": True,
@@ -441,7 +441,6 @@ class UnifiedServer:
             """搜索字幕內容"""
             try:
                 query = request.args.get('q', '').strip()
-                video_id = request.args.get('video_id')
                 
                 if not query:
                     return jsonify({
@@ -449,12 +448,14 @@ class UnifiedServer:
                         "error": "Query parameter 'q' is required"
                     }), 400
                 
-                results = self.youtube_handler.search_subtitles(query, video_id)
+                # 自動使用當前視頻的字幕搜索
+                results = self.youtube_handler.search_subtitles(query, None)
+                current_video_id = self.youtube_handler.get_current_video_id()
                 
                 return jsonify({
                     "success": True,
                     "query": query,
-                    "video_id": video_id,
+                    "current_video_id": current_video_id,
                     "results": results,
                     "count": len(results),
                     "timestamp": datetime.now().isoformat()
@@ -510,17 +511,25 @@ class UnifiedServer:
         
         # ===== 完整字幕相關 API =====
         
-        @self.app.route('/api/youtube/subtitles/full/<video_id>', methods=['GET'])
-        def get_full_subtitles(video_id):
-            """獲取完整字幕數據"""
+        @self.app.route('/api/youtube/subtitles/full/current', methods=['GET'])
+        def get_current_full_subtitles():
+            """獲取當前視頻的完整字幕數據"""
             try:
-                full_subtitles = self.youtube_handler.get_full_subtitles(video_id)
+                current_video_id = self.youtube_handler.get_current_video_id()
+                
+                if not current_video_id:
+                    return jsonify({
+                        "success": False,
+                        "error": "No current video found. Please make sure you are watching a YouTube video."
+                    }), 404
+                
+                full_subtitles = self.youtube_handler.get_full_subtitles(current_video_id)
                 
                 if not full_subtitles:
                     return jsonify({
                         "success": False,
-                        "error": "No full subtitle data found for this video",
-                        "video_id": video_id
+                        "error": "No full subtitle data found for current video",
+                        "current_video_id": current_video_id
                     }), 404
                 
                 return jsonify({
@@ -556,9 +565,9 @@ class UnifiedServer:
                     "error": str(e)
                 }), 500
         
-        @self.app.route('/api/youtube/subtitles/export/<video_id>', methods=['GET'])
-        def export_subtitles(video_id):
-            """導出字幕文件"""
+        @self.app.route('/api/youtube/subtitles/export', methods=['GET'])
+        def export_current_subtitles():
+            """導出當前視頻的字幕文件"""
             try:
                 format_type = request.args.get('format', 'srt').lower()
                 
@@ -568,20 +577,28 @@ class UnifiedServer:
                         "error": "Unsupported format. Supported formats: srt, vtt, txt"
                     }), 400
                 
-                subtitle_content = self.youtube_handler.export_full_subtitles(video_id, format_type)
+                current_video_id = self.youtube_handler.get_current_video_id()
+                
+                if not current_video_id:
+                    return jsonify({
+                        "success": False,
+                        "error": "No current video found. Please make sure you are watching a YouTube video."
+                    }), 404
+                
+                subtitle_content = self.youtube_handler.export_full_subtitles(None, format_type)
                 
                 if not subtitle_content:
                     return jsonify({
                         "success": False,
                         "error": "No subtitle data available for export",
-                        "video_id": video_id
+                        "current_video_id": current_video_id
                     }), 404
                 
                 # 獲取視頻信息以生成文件名
-                subtitle_data = self.youtube_handler.get_full_subtitles(video_id)
+                subtitle_data = self.youtube_handler.get_full_subtitles(current_video_id)
                 video_title = subtitle_data.get('title', 'unknown') if subtitle_data else 'unknown'
                 safe_title = "".join(c for c in video_title if c.isalnum() or c in (' ', '-', '_')).rstrip()[:50]
-                filename = f"{safe_title}_{video_id}.{format_type}"
+                filename = f"{safe_title}_{current_video_id}.{format_type}"
                 
                 # 返回文件內容
                 response = self.app.response_class(

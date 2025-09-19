@@ -77,18 +77,19 @@ GET /api/youtube/subtitles/current
 
 ### 2. 獲取字幕歷史記錄
 ```
-GET /api/youtube/subtitles/history?video_id=<ID>&limit=50
+GET /api/youtube/subtitles/history?limit=50
 ```
 
 **參數:**
-- `video_id` (可選): 指定視頻ID，不提供則返回所有視頻的字幕
 - `limit` (可選): 返回記錄數量，默認 50
+
+**說明:** 自動獲取當前正在觀看的YouTube視頻的字幕歷史記錄
 
 ### 3. 獲取完整字幕轉錄
 ```
-GET /api/youtube/subtitles/transcript?video_id=<ID>
+GET /api/youtube/subtitles/transcript
 ```
-返回格式化的完整字幕文本，包含時間軸信息。
+返回當前觀看視頻的格式化完整字幕文本，包含時間軸信息。
 
 **響應示例:**
 ```json
@@ -107,12 +108,13 @@ GET /api/youtube/subtitles/transcript?video_id=<ID>
 
 ### 4. 搜索字幕內容
 ```
-GET /api/youtube/subtitles/search?q=<關鍵字>&video_id=<ID>
+GET /api/youtube/subtitles/search?q=<關鍵字>
 ```
 
 **參數:**
 - `q` (必須): 搜索關鍵字
-- `video_id` (可選): 限制在特定視頻中搜索
+
+**說明:** 在當前觀看視頻的字幕中搜索指定關鍵字
 
 ### 5. 獲取字幕統計信息
 ```
@@ -132,11 +134,11 @@ Content-Type: application/json
 
 ### 完整字幕 API
 
-### 7. 獲取指定視頻的完整字幕
+### 7. 獲取當前視頻的完整字幕
 ```
-GET /api/youtube/subtitles/full/<video_id>
+GET /api/youtube/subtitles/full/current
 ```
-返回指定視頻的完整字幕軌道數據，包含所有字幕條目和時間戳。
+返回當前觀看視頻的完整字幕軌道數據，包含所有字幕條目和時間戳。
 
 **響應示例:**
 ```json
@@ -182,11 +184,13 @@ GET /api/youtube/subtitles/full
 
 ### 9. 導出字幕文件
 ```
-GET /api/youtube/subtitles/export/<video_id>?format=<格式>
+GET /api/youtube/subtitles/export?format=<格式>
 ```
 
 **參數:**
 - `format` (可選): 導出格式，支持 `srt`、`vtt`、`txt`，默認為 `srt`
+
+**說明:** 導出當前觀看視頻的字幕文件
 
 **支持的導出格式:**
 
@@ -323,9 +327,44 @@ python test_subtitles.py
 - 檢查端口 5000 是否被占用
 - 查看服務器日志獲取錯誤信息
 
+## 📋 簡化的API使用說明 (更新版)
+
+經過最新的更新，所有字幕API都已簡化，不再需要手動提供`video_id`參數。API會自動使用當前正在觀看的YouTube視頻：
+
+### 🔥 主要API端點 (無需video_id)
+
+1. **獲取當前字幕**: `GET /api/youtube/subtitles/current`
+2. **獲取字幕歷史**: `GET /api/youtube/subtitles/history?limit=50`
+3. **獲取完整轉錄**: `GET /api/youtube/subtitles/transcript`
+4. **搜索字幕內容**: `GET /api/youtube/subtitles/search?q=關鍵字`
+5. **獲取完整字幕**: `GET /api/youtube/subtitles/full/current`
+6. **導出字幕文件**: `GET /api/youtube/subtitles/export?format=srt`
+7. **獲取字幕統計**: `GET /api/youtube/subtitles/statistics`
+
+### 💡 使用方式
+
+只需要在瀏覽器中打開YouTube視頻，然後直接調用API，無需指定video_id：
+
+```bash
+# 獲取當前視頻的完整字幕轉錄
+curl http://localhost:3000/api/youtube/subtitles/transcript
+
+# 搜索當前視頻的字幕內容
+curl "http://localhost:3000/api/youtube/subtitles/search?q=hello"
+
+# 導出當前視頻的SRT字幕文件
+curl "http://localhost:3000/api/youtube/subtitles/export?format=srt" -o subtitles.srt
+```
+
+### ⚠️ 重要提醒
+
+- 確保Chrome擴展正在運行並已連接到後端
+- 必須先在YouTube頁面播放視頻，API才能找到當前視頻
+- 如果沒有當前視頻，API會返回404錯誤並提示用戶
+
 ## 未來擴展
 
 - 支持字幕翻譯功能
-- 添加字幕導出格式（SRT、VTT等）
+- 添加更多字幕導出格式
 - 集成 AI 分析字幕內容
 - 支持離線字幕存儲
