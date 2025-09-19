@@ -49,7 +49,7 @@ cd backend-server
 python server.py
 ```
 
-服務器默認運行在 `http://localhost:5000`
+服務器默認運行在 `http://localhost:3000`
 
 ## 使用方法
 
@@ -140,7 +140,7 @@ POST /api/youtube/stop
 
 ### 無法連接服務器
 - 確認 Python 服務器正在運行
-- 檢查服務器地址是否為 localhost:5000
+- 檢查服務器地址是否為 localhost:3000
 - 查看瀏覽器控制台是否有 CORS 錯誤
 
 ### 監控不工作

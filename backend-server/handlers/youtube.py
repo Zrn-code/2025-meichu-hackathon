@@ -29,6 +29,7 @@ class YouTubeHandler:
         self.subtitle_history = []  # 字幕歷史記錄
         self.max_subtitle_history = 200  # 最大字幕歷史記錄數量
         self.current_subtitles = None  # 當前字幕信息
+        self.full_subtitles_cache = {}  # 完整字幕緩存 {video_id: subtitle_data}
         
         # 啟動監控線程
         self.monitoring = True
@@ -67,6 +68,9 @@ class YouTubeHandler:
             
             # 處理字幕數據
             self._process_subtitle_data(data)
+            
+            # 處理完整字幕數據
+            self._process_full_subtitle_data(data)
             
             # 添加到歷史記錄
             self.data_history.append(data)
@@ -508,3 +512,146 @@ class YouTubeHandler:
             "total_characters": total_chars,
             "current_subtitle_available": self.current_subtitles is not None
         }
+    
+    def _process_full_subtitle_data(self, data: Dict[str, Any]):
+        """處理完整字幕數據"""
+        try:
+            full_subtitles = data.get('fullSubtitles')
+            video_id = data.get('videoId')
+            
+            if not full_subtitles or not video_id:
+                return
+            
+            # 如果有完整字幕數據且可用，緩存它
+            if full_subtitles.get('available') and full_subtitles.get('cues'):
+                self.full_subtitles_cache[video_id] = {
+                    'video_id': video_id,
+                    'title': data.get('title'),
+                    'duration': data.get('duration', 0),
+                    'language': full_subtitles.get('language'),
+                    'track_info': full_subtitles.get('trackInfo'),
+                    'cues': full_subtitles.get('cues'),
+                    'total_cues': len(full_subtitles.get('cues', [])),
+                    'cached_at': datetime.now().isoformat(),
+                    'video_url': data.get('url')
+                }
+                
+                logger.info(f"Cached full subtitles for video {video_id}: {len(full_subtitles.get('cues', []))} cues")
+            
+        except Exception as e:
+            logger.error(f"Error processing full subtitle data: {e}")
+    
+    def get_full_subtitles(self, video_id: str) -> Optional[Dict[str, Any]]:
+        """獲取完整字幕數據"""
+        return self.full_subtitles_cache.get(video_id)
+    
+    def get_all_cached_subtitles(self) -> Dict[str, Any]:
+        """獲取所有緩存的完整字幕"""
+        return dict(self.full_subtitles_cache)
+    
+    def export_full_subtitles(self, video_id: str, format_type: str = 'srt') -> Optional[str]:
+        """導出完整字幕為指定格式"""
+        subtitle_data = self.get_full_subtitles(video_id)
+        
+        if not subtitle_data or not subtitle_data.get('cues'):
+            return None
+        
+        cues = subtitle_data['cues']
+        
+        if format_type.lower() == 'srt':
+            return self._export_as_srt(cues)
+        elif format_type.lower() == 'vtt':
+            return self._export_as_vtt(cues, subtitle_data)
+        elif format_type.lower() == 'txt':
+            return self._export_as_txt(cues)
+        else:
+            return None
+    
+    def _export_as_srt(self, cues: List[Dict[str, Any]]) -> str:
+        """導出為 SRT 格式"""
+        srt_content = []
+        
+        for i, cue in enumerate(cues, 1):
+            start_time = self._seconds_to_srt_time(cue.get('startTime', 0))
+            end_time = self._seconds_to_srt_time(cue.get('endTime', 0))
+            text = cue.get('text', '').strip()
+            
+            if text:
+                srt_content.append(f"{i}")
+                srt_content.append(f"{start_time} --> {end_time}")
+                srt_content.append(text)
+                srt_content.append("")  # 空行分隔
+        
+        return '\n'.join(srt_content)
+    
+    def _export_as_vtt(self, cues: List[Dict[str, Any]], subtitle_data: Dict[str, Any]) -> str:
+        """導出為 VTT 格式"""
+        vtt_content = ["WEBVTT"]
+        vtt_content.append("")
+        
+        # 添加元數據
+        title = subtitle_data.get('title', 'Unknown')
+        language = subtitle_data.get('language', 'unknown')
+        vtt_content.append(f"NOTE Title: {title}")
+        vtt_content.append(f"NOTE Language: {language}")
+        vtt_content.append("")
+        
+        for cue in cues:
+            start_time = self._seconds_to_vtt_time(cue.get('startTime', 0))
+            end_time = self._seconds_to_vtt_time(cue.get('endTime', 0))
+            text = cue.get('text', '').strip()
+            
+            if text:
+                vtt_content.append(f"{start_time} --> {end_time}")
+                vtt_content.append(text)
+                vtt_content.append("")
+        
+        return '\n'.join(vtt_content)
+    
+    def _export_as_txt(self, cues: List[Dict[str, Any]]) -> str:
+        """導出為純文本格式"""
+        txt_content = []
+        
+        for cue in cues:
+            start_time = self._seconds_to_readable_time(cue.get('startTime', 0))
+            text = cue.get('text', '').strip()
+            
+            if text:
+                txt_content.append(f"[{start_time}] {text}")
+        
+        return '\n'.join(txt_content)
+    
+    def _seconds_to_srt_time(self, seconds: float) -> str:
+        """將秒數轉換為 SRT 時間格式 (HH:MM:SS,mmm)"""
+        hours = int(seconds // 3600)
+        minutes = int((seconds % 3600) // 60)
+        secs = int(seconds % 60)
+        millis = int((seconds % 1) * 1000)
+        
+        return f"{hours:02d}:{minutes:02d}:{secs:02d},{millis:03d}"
+    
+    def _seconds_to_vtt_time(self, seconds: float) -> str:
+        """將秒數轉換為 VTT 時間格式 (HH:MM:SS.mmm)"""
+        hours = int(seconds // 3600)
+        minutes = int((seconds % 3600) // 60)
+        secs = int(seconds % 60)
+        millis = int((seconds % 1) * 1000)
+        
+        return f"{hours:02d}:{minutes:02d}:{secs:02d}.{millis:03d}"
+    
+    def _seconds_to_readable_time(self, seconds: float) -> str:
+        """將秒數轉換為可讀時間格式 (MM:SS)"""
+        minutes = int(seconds // 60)
+        secs = int(seconds % 60)
+        
+        return f"{minutes:02d}:{secs:02d}"
+    
+    def clear_subtitle_cache(self, video_id: Optional[str] = None):
+        """清除字幕緩存"""
+        if video_id:
+            if video_id in self.full_subtitles_cache:
+                del self.full_subtitles_cache[video_id]
+                logger.info(f"Cleared subtitle cache for video: {video_id}")
+        else:
+            self.full_subtitles_cache.clear()
+            logger.info("Cleared all subtitle cache")

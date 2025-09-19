@@ -212,6 +212,7 @@ class YouTubeMonitor {
                 
                 // 字幕信息
                 subtitles: this.getSubtitleData(),
+                fullSubtitles: this.getFullSubtitleTrack(),
                 
                 // 額外狀態
                 isFullscreen: document.fullscreenElement !== null,
@@ -474,6 +475,68 @@ class YouTubeMonitor {
         return null;
     }
     
+    getFullSubtitleTrack() {
+        // 獲取完整的字幕軌道數據
+        try {
+            const fullSubtitles = {
+                available: false,
+                cues: [],
+                totalDuration: 0,
+                language: null,
+                trackInfo: null
+            };
+            
+            if (this.video && this.video.textTracks) {
+                // 尋找當前啟用的字幕軌道
+                for (let i = 0; i < this.video.textTracks.length; i++) {
+                    const track = this.video.textTracks[i];
+                    
+                    if (track.mode === 'showing' && track.cues && track.cues.length > 0) {
+                        fullSubtitles.available = true;
+                        fullSubtitles.language = track.language;
+                        fullSubtitles.trackInfo = {
+                            kind: track.kind,
+                            label: track.label,
+                            language: track.language
+                        };
+                        
+                        // 提取所有 cues
+                        const cues = [];
+                        for (let j = 0; j < track.cues.length; j++) {
+                            const cue = track.cues[j];
+                            cues.push({
+                                startTime: cue.startTime,
+                                endTime: cue.endTime,
+                                text: cue.text,
+                                id: cue.id || j.toString(),
+                                duration: cue.endTime - cue.startTime
+                            });
+                        }
+                        
+                        fullSubtitles.cues = cues;
+                        fullSubtitles.totalDuration = this.video.duration || 0;
+                        
+                        console.log(`Found ${cues.length} subtitle cues in ${track.language || 'unknown'} language`);
+                        break;
+                    }
+                }
+            }
+            
+            return fullSubtitles;
+            
+        } catch (error) {
+            console.error('Error getting full subtitle track:', error);
+            return {
+                available: false,
+                cues: [],
+                totalDuration: 0,
+                language: null,
+                trackInfo: null,
+                error: error.message
+            };
+        }
+    }
+    
     sendVideoData() {
         const data = this.getVideoData();
         if (!data) return;
@@ -502,6 +565,17 @@ class YouTubeMonitor {
                 sendResponse({
                     success: true,
                     data: data
+                });
+                break;
+                
+            case 'GET_FULL_SUBTITLES':
+                const fullSubtitles = this.getFullSubtitleTrack();
+                sendResponse({
+                    success: true,
+                    data: fullSubtitles,
+                    videoId: this.getVideoId(),
+                    title: this.getVideoTitle(),
+                    duration: this.video ? this.video.duration : 0
                 });
                 break;
                 
