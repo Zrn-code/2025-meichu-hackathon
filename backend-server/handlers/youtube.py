@@ -25,12 +25,17 @@ class YouTubeHandler:
         self.active_tabs = {}  # 存儲活動標籤頁信息 {tab_id: tab_info}
         self.youtube_tabs = set()  # 存儲 YouTube 標籤頁 ID
         
+        # 字幕相關數據存儲
+        self.subtitle_history = []  # 字幕歷史記錄
+        self.max_subtitle_history = 200  # 最大字幕歷史記錄數量
+        self.current_subtitles = None  # 當前字幕信息
+        
         # 啟動監控線程
         self.monitoring = True
         self.monitor_thread = threading.Thread(target=self._monitor_tabs, daemon=True)
         self.monitor_thread.start()
         
-        logger.info("YouTube Handler initialized with tab monitoring")
+        logger.info("YouTube Handler initialized with tab monitoring and subtitle support")
     
     def update_youtube_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """更新 YouTube 數據"""
@@ -59,6 +64,9 @@ class YouTubeHandler:
             
             # 更新當前數據
             self.current_data = data
+            
+            # 處理字幕數據
+            self._process_subtitle_data(data)
             
             # 添加到歷史記錄
             self.data_history.append(data)
@@ -327,3 +335,176 @@ class YouTubeHandler:
             
         except Exception as e:
             logger.error(f"Error updating tab stats: {e}")
+    
+    def _process_subtitle_data(self, data: Dict[str, Any]):
+        """處理字幕數據"""
+        try:
+            subtitles = data.get('subtitles')
+            if not subtitles:
+                return
+            
+            # 更新當前字幕信息
+            self.current_subtitles = {
+                'video_id': data.get('videoId'),
+                'timestamp': data.get('timestamp'),
+                'subtitle_info': subtitles,
+                'video_time': data.get('currentTime', 0)
+            }
+            
+            # 如果有字幕文本，添加到歷史記錄
+            current_text = subtitles.get('currentText')
+            if current_text and isinstance(current_text, dict):
+                subtitle_entry = {
+                    'video_id': data.get('videoId'),
+                    'video_title': data.get('title'),
+                    'timestamp': data.get('timestamp'),
+                    'video_time': data.get('currentTime', 0),
+                    'text': current_text.get('text'),
+                    'lines': current_text.get('lines', []),
+                    'track': subtitles.get('currentTrack'),
+                    'start_time': current_text.get('startTime'),
+                    'end_time': current_text.get('endTime')
+                }
+                
+                # 避免重複添加相同的字幕
+                if not self._is_duplicate_subtitle(subtitle_entry):
+                    self.subtitle_history.append(subtitle_entry)
+                    
+                    # 限制歷史記錄數量
+                    if len(self.subtitle_history) > self.max_subtitle_history:
+                        self.subtitle_history.pop(0)
+                    
+                    logger.debug(f"New subtitle: {current_text.get('text', '')[:50]}...")
+            
+        except Exception as e:
+            logger.error(f"Error processing subtitle data: {e}")
+    
+    def _is_duplicate_subtitle(self, new_entry: Dict[str, Any]) -> bool:
+        """檢查是否為重複的字幕條目"""
+        if not self.subtitle_history:
+            return False
+        
+        last_entry = self.subtitle_history[-1]
+        
+        # 如果是同一個視頻且文本相同，則認為是重複
+        return (
+            last_entry.get('video_id') == new_entry.get('video_id') and
+            last_entry.get('text') == new_entry.get('text') and
+            abs(last_entry.get('video_time', 0) - new_entry.get('video_time', 0)) < 2
+        )
+    
+    def get_current_subtitles(self) -> Optional[Dict[str, Any]]:
+        """獲取當前字幕信息"""
+        return self.current_subtitles
+    
+    def get_subtitle_history(self, video_id: Optional[str] = None, limit: int = 50) -> List[Dict[str, Any]]:
+        """獲取字幕歷史記錄"""
+        history = self.subtitle_history
+        
+        # 如果指定了視頻ID，則篩選
+        if video_id:
+            history = [entry for entry in history if entry.get('video_id') == video_id]
+        
+        return history[-limit:]
+    
+    def get_subtitle_transcript(self, video_id: Optional[str] = None) -> Dict[str, Any]:
+        """獲取完整的字幕轉錄文本"""
+        history = self.get_subtitle_history(video_id)
+        
+        if not history:
+            return {
+                "video_id": video_id,
+                "transcript": "",
+                "entries": 0,
+                "error": "No subtitle data available"
+            }
+        
+        # 組合字幕文本
+        transcript_lines = []
+        for entry in history:
+            text = entry.get('text', '').strip()
+            video_time = entry.get('video_time', 0)
+            if text:
+                # 格式化時間戳
+                minutes = int(video_time // 60)
+                seconds = int(video_time % 60)
+                time_str = f"[{minutes:02d}:{seconds:02d}]"
+                transcript_lines.append(f"{time_str} {text}")
+        
+        return {
+            "video_id": video_id or (history[0].get('video_id') if history else None),
+            "video_title": history[0].get('video_title') if history else None,
+            "transcript": "\n".join(transcript_lines),
+            "full_text": " ".join([entry.get('text', '') for entry in history if entry.get('text')]),
+            "entries": len(history),
+            "duration_covered": f"{int(history[0].get('video_time', 0))}s - {int(history[-1].get('video_time', 0))}s" if history else "0s"
+        }
+    
+    def search_subtitles(self, query: str, video_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        """在字幕中搜索關鍵字"""
+        results = []
+        history = self.get_subtitle_history(video_id, limit=self.max_subtitle_history)
+        
+        query_lower = query.lower()
+        
+        for entry in history:
+            text = entry.get('text', '')
+            if query_lower in text.lower():
+                results.append({
+                    'video_id': entry.get('video_id'),
+                    'video_title': entry.get('video_title'),
+                    'text': text,
+                    'video_time': entry.get('video_time'),
+                    'timestamp': entry.get('timestamp'),
+                    'track': entry.get('track')
+                })
+        
+        return results
+    
+    def clear_subtitle_history(self, video_id: Optional[str] = None):
+        """清除字幕歷史記錄"""
+        if video_id:
+            # 清除指定視頻的字幕記錄
+            self.subtitle_history = [
+                entry for entry in self.subtitle_history 
+                if entry.get('video_id') != video_id
+            ]
+            logger.info(f"Cleared subtitle history for video: {video_id}")
+        else:
+            # 清除所有字幕記錄
+            self.subtitle_history.clear()
+            self.current_subtitles = None
+            logger.info("Cleared all subtitle history")
+    
+    def get_subtitle_statistics(self) -> Dict[str, Any]:
+        """獲取字幕統計信息"""
+        if not self.subtitle_history:
+            return {
+                "total_entries": 0,
+                "unique_videos": 0,
+                "languages": [],
+                "total_characters": 0
+            }
+        
+        unique_videos = set()
+        languages = set()
+        total_chars = 0
+        
+        for entry in self.subtitle_history:
+            if entry.get('video_id'):
+                unique_videos.add(entry.get('video_id'))
+            
+            track = entry.get('track')
+            if track and track.get('language'):
+                languages.add(track.get('language'))
+            
+            text = entry.get('text', '')
+            total_chars += len(text)
+        
+        return {
+            "total_entries": len(self.subtitle_history),
+            "unique_videos": len(unique_videos),
+            "languages": list(languages),
+            "total_characters": total_chars,
+            "current_subtitle_available": self.current_subtitles is not None
+        }

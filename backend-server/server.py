@@ -370,6 +370,144 @@ class UnifiedServer:
                     "error": str(e)
                 }), 500
         
+        # ===== 字幕相關 API =====
+        
+        @self.app.route('/api/youtube/subtitles/current', methods=['GET'])
+        def get_current_subtitles():
+            """獲取當前字幕信息"""
+            try:
+                subtitles = self.youtube_handler.get_current_subtitles()
+                
+                return jsonify({
+                    "success": True,
+                    "data": subtitles,
+                    "timestamp": datetime.now().isoformat()
+                })
+                
+            except Exception as e:
+                self.logger.error(f"Get current subtitles error: {e}")
+                return jsonify({
+                    "success": False,
+                    "error": str(e)
+                }), 500
+        
+        @self.app.route('/api/youtube/subtitles/history', methods=['GET'])
+        def get_subtitle_history():
+            """獲取字幕歷史記錄"""
+            try:
+                video_id = request.args.get('video_id')
+                limit = request.args.get('limit', 50, type=int)
+                
+                history = self.youtube_handler.get_subtitle_history(video_id, limit)
+                
+                return jsonify({
+                    "success": True,
+                    "data": history,
+                    "count": len(history),
+                    "video_id": video_id,
+                    "timestamp": datetime.now().isoformat()
+                })
+                
+            except Exception as e:
+                self.logger.error(f"Get subtitle history error: {e}")
+                return jsonify({
+                    "success": False,
+                    "error": str(e)
+                }), 500
+        
+        @self.app.route('/api/youtube/subtitles/transcript', methods=['GET'])
+        def get_subtitle_transcript():
+            """獲取完整字幕轉錄"""
+            try:
+                video_id = request.args.get('video_id')
+                
+                transcript = self.youtube_handler.get_subtitle_transcript(video_id)
+                
+                return jsonify({
+                    "success": True,
+                    "data": transcript,
+                    "timestamp": datetime.now().isoformat()
+                })
+                
+            except Exception as e:
+                self.logger.error(f"Get subtitle transcript error: {e}")
+                return jsonify({
+                    "success": False,
+                    "error": str(e)
+                }), 500
+        
+        @self.app.route('/api/youtube/subtitles/search', methods=['GET'])
+        def search_subtitles():
+            """搜索字幕內容"""
+            try:
+                query = request.args.get('q', '').strip()
+                video_id = request.args.get('video_id')
+                
+                if not query:
+                    return jsonify({
+                        "success": False,
+                        "error": "Query parameter 'q' is required"
+                    }), 400
+                
+                results = self.youtube_handler.search_subtitles(query, video_id)
+                
+                return jsonify({
+                    "success": True,
+                    "query": query,
+                    "video_id": video_id,
+                    "results": results,
+                    "count": len(results),
+                    "timestamp": datetime.now().isoformat()
+                })
+                
+            except Exception as e:
+                self.logger.error(f"Search subtitles error: {e}")
+                return jsonify({
+                    "success": False,
+                    "error": str(e)
+                }), 500
+        
+        @self.app.route('/api/youtube/subtitles/statistics', methods=['GET'])
+        def get_subtitle_statistics():
+            """獲取字幕統計信息"""
+            try:
+                stats = self.youtube_handler.get_subtitle_statistics()
+                
+                return jsonify({
+                    "success": True,
+                    "data": stats,
+                    "timestamp": datetime.now().isoformat()
+                })
+                
+            except Exception as e:
+                self.logger.error(f"Get subtitle statistics error: {e}")
+                return jsonify({
+                    "success": False,
+                    "error": str(e)
+                }), 500
+        
+        @self.app.route('/api/youtube/subtitles/clear', methods=['POST'])
+        def clear_subtitle_history():
+            """清除字幕歷史記錄"""
+            try:
+                data = request.get_json() or {}
+                video_id = data.get('video_id')
+                
+                self.youtube_handler.clear_subtitle_history(video_id)
+                
+                return jsonify({
+                    "success": True,
+                    "message": f"Subtitle history cleared" + (f" for video {video_id}" if video_id else ""),
+                    "timestamp": datetime.now().isoformat()
+                })
+                
+            except Exception as e:
+                self.logger.error(f"Clear subtitle history error: {e}")
+                return jsonify({
+                    "success": False,
+                    "error": str(e)
+                }), 500
+        
         @self.app.route('/api/tabs', methods=['GET', 'POST'])
         def handle_tab_info():
             """處理標籤頁信息 - GET: 獲取信息, POST: 接收更新"""

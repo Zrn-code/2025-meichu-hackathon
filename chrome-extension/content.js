@@ -73,8 +73,52 @@ class YouTubeMonitor {
             });
         });
         
+        // 監聽字幕軌道變化
+        if (this.video.textTracks) {
+            for (let i = 0; i < this.video.textTracks.length; i++) {
+                const track = this.video.textTracks[i];
+                track.addEventListener('cuechange', () => {
+                    this.sendVideoData();
+                });
+            }
+        }
+        
+        // 監聽字幕按鈕點擊
+        this.setupSubtitleButtonListeners();
+        
         // 初始數據發送
         setTimeout(() => this.sendVideoData(), 1000);
+    }
+    
+    setupSubtitleButtonListeners() {
+        // 監聽字幕按鈕的點擊
+        const subtitleButton = document.querySelector('.ytp-subtitles-button') || 
+                             document.querySelector('.ytp-cc-button');
+        
+        if (subtitleButton) {
+            subtitleButton.addEventListener('click', () => {
+                // 延遲發送數據，等待字幕狀態更新
+                setTimeout(() => this.sendVideoData(), 100);
+            });
+        }
+        
+        // 使用 MutationObserver 監聽字幕容器的變化
+        const subtitleContainer = document.querySelector('.ytp-caption-window-container') ||
+                                document.querySelector('.caption-window');
+        
+        if (subtitleContainer) {
+            const observer = new MutationObserver(() => {
+                this.sendVideoData();
+            });
+            
+            observer.observe(subtitleContainer, {
+                childList: true,
+                subtree: true,
+                characterData: true
+            });
+            
+            this.observers.push(observer);
+        }
     }
     
     removeVideoListeners() {
@@ -166,6 +210,9 @@ class YouTubeMonitor {
                 isPlaylist: this.isInPlaylist(),
                 playlistId: this.getPlaylistId(),
                 
+                // 字幕信息
+                subtitles: this.getSubtitleData(),
+                
                 // 額外狀態
                 isFullscreen: document.fullscreenElement !== null,
                 quality: this.getVideoQuality(),
@@ -244,6 +291,186 @@ class YouTubeMonitor {
         } catch (error) {
             console.log('Could not get video quality');
         }
+        return null;
+    }
+    
+    getSubtitleData() {
+        try {
+            const subtitleData = {
+                available: false,
+                tracks: [],
+                currentTrack: null,
+                currentText: null,
+                isEnabled: false
+            };
+            
+            // 檢查字幕按鈕是否存在
+            const subtitleButton = document.querySelector('.ytp-subtitles-button') || 
+                                 document.querySelector('.ytp-cc-button');
+            
+            if (subtitleButton) {
+                // 檢查字幕是否開啟
+                subtitleData.isEnabled = subtitleButton.classList.contains('ytp-button-pressed') ||
+                                       subtitleButton.getAttribute('aria-pressed') === 'true';
+                
+                // 獲取可用的字幕軌道
+                subtitleData.tracks = this.getAvailableSubtitleTracks();
+                subtitleData.available = subtitleData.tracks.length > 0;
+                
+                // 獲取當前選中的字幕軌道
+                subtitleData.currentTrack = this.getCurrentSubtitleTrack();
+                
+                // 獲取當前顯示的字幕文本
+                if (subtitleData.isEnabled) {
+                    subtitleData.currentText = this.getCurrentSubtitleText();
+                }
+            }
+            
+            return subtitleData;
+            
+        } catch (error) {
+            console.error('Error getting subtitle data:', error);
+            return {
+                available: false,
+                tracks: [],
+                currentTrack: null,
+                currentText: null,
+                isEnabled: false,
+                error: error.message
+            };
+        }
+    }
+    
+    getAvailableSubtitleTracks() {
+        const tracks = [];
+        
+        try {
+            // 方法1: 嘗試從字幕菜單獲取
+            const subtitleMenu = document.querySelector('.ytp-panel-menu');
+            if (subtitleMenu) {
+                const trackItems = subtitleMenu.querySelectorAll('.ytp-menuitem');
+                trackItems.forEach(item => {
+                    const label = item.querySelector('.ytp-menuitem-label');
+                    if (label && label.textContent.trim()) {
+                        tracks.push({
+                            language: label.textContent.trim(),
+                            label: label.textContent.trim()
+                        });
+                    }
+                });
+            }
+            
+            // 方法2: 嘗試從 video element 的 textTracks 獲取
+            if (this.video && this.video.textTracks) {
+                for (let i = 0; i < this.video.textTracks.length; i++) {
+                    const track = this.video.textTracks[i];
+                    if (track.kind === 'subtitles' || track.kind === 'captions') {
+                        tracks.push({
+                            language: track.language || 'unknown',
+                            label: track.label || track.language || `Track ${i + 1}`,
+                            kind: track.kind,
+                            mode: track.mode
+                        });
+                    }
+                }
+            }
+            
+        } catch (error) {
+            console.error('Error getting subtitle tracks:', error);
+        }
+        
+        return tracks;
+    }
+    
+    getCurrentSubtitleTrack() {
+        try {
+            // 嘗試從 video element 的 textTracks 獲取當前啟用的軌道
+            if (this.video && this.video.textTracks) {
+                for (let i = 0; i < this.video.textTracks.length; i++) {
+                    const track = this.video.textTracks[i];
+                    if (track.mode === 'showing') {
+                        return {
+                            language: track.language || 'unknown',
+                            label: track.label || track.language || `Track ${i + 1}`,
+                            kind: track.kind,
+                            mode: track.mode
+                        };
+                    }
+                }
+            }
+            
+            // 嘗試從字幕容器獲取語言信息
+            const subtitleContainer = document.querySelector('.ytp-caption-segment') ||
+                                    document.querySelector('.captions-text');
+            
+            if (subtitleContainer && subtitleContainer.closest('[lang]')) {
+                const lang = subtitleContainer.closest('[lang]').getAttribute('lang');
+                return {
+                    language: lang,
+                    label: lang,
+                    detected: true
+                };
+            }
+            
+        } catch (error) {
+            console.error('Error getting current subtitle track:', error);
+        }
+        
+        return null;
+    }
+    
+    getCurrentSubtitleText() {
+        try {
+            // 方法1: YouTube 字幕容器
+            const subtitleSelectors = [
+                '.ytp-caption-segment',
+                '.captions-text .caption-line',
+                '.ytp-caption-window-container .ytp-caption-segment',
+                '.caption-window .caption-line-container'
+            ];
+            
+            for (const selector of subtitleSelectors) {
+                const elements = document.querySelectorAll(selector);
+                if (elements.length > 0) {
+                    const texts = Array.from(elements)
+                        .map(el => el.textContent.trim())
+                        .filter(text => text.length > 0);
+                    
+                    if (texts.length > 0) {
+                        return {
+                            text: texts.join('\n'),
+                            lines: texts,
+                            timestamp: this.video ? this.video.currentTime : 0
+                        };
+                    }
+                }
+            }
+            
+            // 方法2: 嘗試從 WebVTT cues 獲取
+            if (this.video && this.video.textTracks) {
+                for (let i = 0; i < this.video.textTracks.length; i++) {
+                    const track = this.video.textTracks[i];
+                    if (track.mode === 'showing' && track.cues) {
+                        const currentTime = this.video.currentTime;
+                        for (let j = 0; j < track.cues.length; j++) {
+                            const cue = track.cues[j];
+                            if (cue.startTime <= currentTime && cue.endTime >= currentTime) {
+                                return {
+                                    text: cue.text,
+                                    startTime: cue.startTime,
+                                    endTime: cue.endTime,
+                                    timestamp: currentTime
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+            
+        } catch (error) {
+            console.error('Error getting current subtitle text:', error);
+        }
+        
         return null;
     }
     
