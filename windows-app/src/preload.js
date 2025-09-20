@@ -38,4 +38,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   
   // 發送訊息到主程序
   sendMessage: (channel, data) => ipcRenderer.send(channel, data),
+
+  // 開啟外部網址
+  openExternalUrl: (url) => ipcRenderer.invoke('open-external-url', url),
 });
