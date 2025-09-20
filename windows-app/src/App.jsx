@@ -3,7 +3,9 @@ import './index.css';
 import llmService from './services/llmService';
 import { getAuthHeader } from './services/apikey';
 import audioPlaybackService from './services/audioPlaybackService';
+
 import VideoStats from './VideoStats.jsx';
+import Note from "./Note.jsx";
 
 const MODEL = import.meta.env.VITE_STT_MODEL || 'whisper-1'
 const LANGUAGE = import.meta.env.VITE_LANGUAGE || 'zh'
@@ -158,6 +160,12 @@ function App() {
     checkServerStatus();
     loadTabsData();
 
+    // 自動啟用語音播放檢查服務
+    console.log('[App] 自動啟用語音播放監聽服務');
+    setAudioPlaybackEnabled(true);
+    setAudioPlaybackStatus('監聽中');
+    setLastPlaybackMessage('自動開始監聽 YouTube 播放狀態...');
+
     // 監聽 avatar 關閉事件
     let cleanupAvatar = null;
     if (window.electronAPI && window.electronAPI.onAvatarClosed) {
@@ -175,6 +183,8 @@ function App() {
       });
     }
 
+    // 監聽 notebook 更新事件
+
     // enter 輸入音訊
     const onKeyDown = e => { if (e.key === 'Enter' && !recording) startRecording().catch(err => setError(err.message)) }
     const onKeyUp = e => { if (e.key === 'Enter' && recording) stopRecording().catch(err => setError(err.message)) }
@@ -185,7 +195,7 @@ function App() {
     const handleAudioPlayback = (event) => {
       const { content } = event.detail;
       setCurrentAudioContent(content);
-      setLastPlaybackMessage(`播放: ${content.message} (${content.emotion})`);
+      setLastPlaybackMessage(`播放: ${content.message}`);
       setAudioPlaybackStatus('播放中');
     };
 
@@ -197,6 +207,15 @@ function App() {
 
     window.addEventListener('audioPlayback', handleAudioPlayback);
     window.addEventListener('autoplayBlocked', handleAutoplayBlocked);
+
+    // 監聽 MessageBox 顯示事件
+    const handleShowMessageBox = (event) => {
+      const { message } = event.detail;
+      console.log(`[App] 收到 MessageBox 顯示請求: "${message}"`);
+      sendMessage(`${message}`);
+    };
+
+    window.addEventListener('showMessageBox', handleShowMessageBox);
 
     // 清理監聽器
     return () => {
@@ -210,6 +229,7 @@ function App() {
       window.removeEventListener('keyup', onKeyUp);
       window.removeEventListener('audioPlayback', handleAudioPlayback);
       window.removeEventListener('autoplayBlocked', handleAutoplayBlocked);
+      window.removeEventListener('showMessageBox', handleShowMessageBox);
       
       // 停止音檔播放服務
       audioPlaybackService.stopPeriodicCheck();
@@ -413,28 +433,28 @@ function App() {
         <div className="card shadow-lg border border-primary">
           <div className="card-body">
             <h2 className="card-title text-primary mb-2">😻 影片小助手 Avatar</h2>
-          <p className="text-base-content opacity-70 text-base mb-6">無論是追劇、看電影或是讀書，Avatar 都能成為你的最佳夥伴！</p>
+            <p className="text-base-content opacity-70 text-base mb-6">無論是追劇、看電影或是讀書，Avatar 都能成為你的最佳夥伴！</p>
           
-          <div className="flex items-center gap-4 mb-6">
-            <button 
-              className={`btn gap-2 ${avatarVisible ? 'btn-error' : 'btn-primary'}`}
-              onClick={toggleAvatar}
-            >
-              <span>🐱</span>
-              {avatarVisible ? '隱藏 Avatar' : '顯示 Avatar'}
-            </button>
-            
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-base-content opacity-70">狀態:</span>
-              <div className={`badge ${avatarVisible ? 'badge-success' : 'badge-neutral'} gap-1`}>
-                <div className={`w-2 h-2 rounded-full ${avatarVisible ? 'bg-base-100' : 'bg-base-content opacity-60'}`}></div>
-                {avatarVisible ? '已啟用' : '已停用'}
+            <div className="flex items-center gap-4 mb-6">
+              <button 
+                className={`btn gap-2 ${avatarVisible ? 'btn-error' : 'btn-primary'}`}
+                onClick={toggleAvatar}
+              >
+                <span>🐱</span>
+                {avatarVisible ? '隱藏 Avatar' : '顯示 Avatar'}
+              </button>
+              
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-base-content opacity-70">狀態:</span>
+                <div className={`badge ${avatarVisible ? 'badge-success' : 'badge-neutral'} gap-1`}>
+                  <div className={`w-2 h-2 rounded-full ${avatarVisible ? 'bg-base-100' : 'bg-base-content opacity-60'}`}></div>
+                  {avatarVisible ? '已啟用' : '已停用'}
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* LLM 連線狀態顯示 */}
-          <div className="bg-base-100 rounded-lg p-4 border border-base-300 mb-4">
+            {/* LLM 連線狀態顯示 */}
+            <div className="bg-base-100 rounded-lg p-4 border border-base-300 mb-4">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-sm font-semibold">LLM 服務狀態:</span>
               <div className={`badge ${llmConnected ? 'badge-success' : 'badge-error'} gap-1`}>
@@ -447,10 +467,10 @@ function App() {
                 ⚠️ 請確認本地 LLM server 運行於 localhost:8000
               </div>
             )}
-          </div>
+            </div>
 
-          {/* 對話輸入區域 */}
-          {avatarVisible && (
+            {/* 對話輸入區域 */}
+            {avatarVisible && (
             <div className="bg-base-100 rounded-lg p-4 border border-base-300 mb-4">
               <h3 className="font-semibold text-primary mb-3">💬 與 Avatar 對話:</h3>
               
@@ -517,7 +537,7 @@ function App() {
                 </button>
               </div>
             </div>
-          )}
+            )}
           
             <div className="card-body">
               <h2 className="card-title text-secondary mb-2">
@@ -594,6 +614,8 @@ function App() {
                 </div>
               </div>
             </div>
+            
+            <Note />
 
           </div>
         </div>
@@ -720,7 +742,8 @@ function App() {
                 </div>
 
 
-              </div>  
+              </div> 
+                
             </div>
             
             <div className="bg-base-100 rounded-lg ml-5 mr-5 mt-5">
