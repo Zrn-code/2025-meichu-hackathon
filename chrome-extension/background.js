@@ -45,7 +45,7 @@ class TabMonitor {
         // 定期發送標籤頁統計信息
         setInterval(() => {
             this.sendTabInfo();
-        }, 2000);
+        }, 1000);
         
         // 監聽來自 content script 的消息
         chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -252,6 +252,20 @@ class TabMonitor {
                 body: JSON.stringify(data)
             });
             
+            const sendStatus = response.ok ? 'success' : 'failed';
+            const statusText = response.ok ? 'OK' : `${response.status} ${response.statusText}`;
+            
+            const logEntry = {
+                timestamp: Date.now(),
+                data: data,
+                status: sendStatus,
+                statusText: statusText,
+                url: `${this.serverUrl}/api/youtube`
+            };
+            
+            // 儲存到 Chrome Storage
+            await this.saveDataLog(logEntry);
+            
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
@@ -261,7 +275,41 @@ class TabMonitor {
             
         } catch (error) {
             console.error('Error sending data to server:', error);
-            // 可以選擇將數據暫存，等服務器恢復時重新發送
+            
+            // 記錄錯誤到存儲
+            const errorLog = {
+                timestamp: Date.now(),
+                data: data,
+                status: 'error',
+                statusText: error.message,
+                url: `${this.serverUrl}/api/youtube`
+            };
+            
+            await this.saveDataLog(errorLog);
+        }
+    }
+    
+    async saveDataLog(logEntry) {
+        try {
+            // 獲取現有的日誌數據
+            const result = await chrome.storage.local.get(['dataLogs']);
+            let logs = result.dataLogs || [];
+            
+            // 添加新的日誌條目
+            logs.unshift(logEntry); // 新的在前面
+            
+            // 只保留最近的200條記錄
+            if (logs.length > 200) {
+                logs = logs.slice(0, 200);
+            }
+            
+            // 儲存回Chrome Storage
+            await chrome.storage.local.set({ dataLogs: logs });
+            
+            console.log('Data log saved:', logEntry.status);
+            
+        } catch (error) {
+            console.error('Error saving data log:', error);
         }
     }
     

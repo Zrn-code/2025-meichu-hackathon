@@ -5,9 +5,7 @@ flask-cors>=4.0.0
 beautifulsoup4>=4.12.0,<5
 lxml>=5.2.0,<6
 python-dotenv>=1.0.0,<2
-  
-# 非同步支援 (Python 內建，不需要安裝)
-# asyncio
+openai
 
 # 開發工具 (可選)
 # pytest>=7.0.0  # 用於測試

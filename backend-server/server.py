@@ -16,14 +16,9 @@ from flask import Flask, request, jsonify, Response, send_file, abort
 from flask_cors import CORS
 
 # 導入自定義模組
-from core.mcp_client import MCPClient
-from core.registry import ToolRegistry
 from handlers.chat import ChatHandler
-from handlers.tools import ToolsHandler
 from handlers.youtube import YouTubeHandler
 from config.settings import Settings
-from tools.conversation_log import ConversationLogTool
-from tools.google_search_tool import GoogleSearchTool
 
 # 設置 UTF-8 編碼（簡化版）
 import os
@@ -46,20 +41,8 @@ class UnifiedServer:
         self.app = Flask(__name__)
         CORS(self.app, origins="*")
         
-        # 初始化核心組件
-        self.mcp_client = MCPClient()
-        self.tool_registry = ToolRegistry()
-        
         # 初始化處理器
-        self.tools_handler = ToolsHandler(self.mcp_client, self.tool_registry)
-        self.youtube_handler = YouTubeHandler()
-        self.chat_handler = ChatHandler(
-            self.settings.get_llm_config(),
-            self.tools_handler
-        )
-        
-        # 註冊工具
-        self._register_tools()
+        self._setup_handlers()
         
         # 設置路由
         self._setup_routes()
@@ -79,35 +62,22 @@ class UnifiedServer:
             ]
         )
     
-    def _register_tools(self):
-        """註冊工具"""
-        # 註冊所有工具
-        tools = [
-            ConversationLogTool(self.youtube_handler),  # 傳遞 YouTubeHandler 實例
-            GoogleSearchTool(self.youtube_handler)  # 傳遞 YouTubeHandler 實例
-        ]
+    def _setup_handlers(self):
+        """初始化各種處理器"""
+        # 初始化 YouTube 處理器 (不需要參數)
+        self.youtube_handler = YouTubeHandler()
         
-        for tool in tools:
-            self.tool_registry.register_tool_instance(tool)
+        # 初始化聊天處理器 (需要 LLM 配置)
+        llm_config = self.settings.get_llm_config()
+        self.chat_handler = ChatHandler(llm_config, tools_handler=None)
         
-        self.logger.info(f"Registered {len(tools)} local tools")
+        # 暫時設置一個空的 tools_handler 以避免錯誤
+        self.tools_handler = None
+        
+        self.logger.info("Handlers initialized successfully")
     
     def _setup_routes(self):
         """設置 API 路由"""
-        
-        @self.app.route('/health', methods=['GET'])
-        def health_check():
-            """健康檢查"""
-            return jsonify({
-                "status": "ok",
-                "timestamp": datetime.now().isoformat(),
-                "services": {
-                    "mcp": self.mcp_client.is_initialized,
-                    "llm": bool(self.settings.get("endpointUrl")),
-                    "tools": self.tools_handler.get_tool_count()
-                },
-                "version": "2.0.0"
-            })
         
 
         @self.app.route('/api/chat', methods=['POST'])
@@ -185,6 +155,14 @@ class UnifiedServer:
         @self.app.route('/api/tools', methods=['GET'])
         def get_available_tools():
             """獲取可用工具列表"""
+            if self.tools_handler is None:
+                return jsonify({
+                    "success": True,
+                    "tools": [],
+                    "summary": "Tools handler not initialized",
+                    "timestamp": datetime.now().isoformat()
+                })
+            
             return jsonify({
                 "success": True,
                 "tools": self.tools_handler.get_available_tools(),
@@ -196,6 +174,12 @@ class UnifiedServer:
         def call_tool(tool_name):
             """調用特定工具"""
             try:
+                if self.tools_handler is None:
+                    return jsonify({
+                        "success": False,
+                        "error": "Tools handler not initialized"
+                    }), 503
+                
                 data = request.get_json()
                 arguments = data.get('arguments', {})
                 
@@ -568,8 +552,152 @@ class UnifiedServer:
                     "error": str(e)
                 }), 500
         
-
+        # ===== 轉錄相關 API (Supadata) =====
         
+        @self.app.route('/api/youtube/transcript/<video_id>', methods=['GET'])
+        def get_video_transcript(video_id):
+            """獲取指定視頻的轉錄數據"""
+            try:
+                transcripts = self.youtube_handler.get_video_transcripts(video_id)
+                
+                return jsonify({
+                    "success": True,
+                    "video_id": video_id,
+                    "transcripts": transcripts,
+                    "count": len(transcripts),
+                    "timestamp": datetime.now().isoformat()
+                })
+                
+            except Exception as e:
+                self.logger.error(f"Get video transcript error: {e}")
+                return jsonify({
+                    "success": False,
+                    "error": str(e)
+                }), 500
+        
+        @self.app.route('/api/youtube/transcript/latest', methods=['GET'])
+        def get_latest_transcript():
+            """獲取最新的轉錄數據"""
+            try:
+                video_id = request.args.get('video_id')
+                transcript = self.youtube_handler.get_latest_transcript(video_id)
+                
+                if transcript:
+                    return jsonify({
+                        "success": True,
+                        "transcript": transcript,
+                        "timestamp": datetime.now().isoformat()
+                    })
+                else:
+                    return jsonify({
+                        "success": False,
+                        "message": "No transcript available",
+                        "video_id": video_id
+                    }), 404
+                    
+            except Exception as e:
+                self.logger.error(f"Get latest transcript error: {e}")
+                return jsonify({
+                    "success": False,
+                    "error": str(e)
+                }), 500
+        
+        @self.app.route('/api/youtube/transcript/trigger', methods=['POST'])
+        def trigger_manual_transcript():
+            """手動觸發轉錄處理"""
+            try:
+                data = request.get_json()
+                video_url = data.get('video_url')
+                video_id = data.get('video_id')
+                
+                if not video_url:
+                    return jsonify({
+                        "success": False,
+                        "error": "video_url is required"
+                    }), 400
+                
+                if not video_id:
+                    # 嘗試從URL提取video_id
+                    import re
+                    match = re.search(r'[?&]v=([^&]+)', video_url)
+                    if match:
+                        video_id = match.group(1)
+                    else:
+                        return jsonify({
+                            "success": False,
+                            "error": "Could not extract video_id from URL"
+                        }), 400
+                
+                # 在後台線程中處理轉錄
+                import threading
+                thread = threading.Thread(
+                    target=self.youtube_handler._process_video_transcript,
+                    args=(video_url, video_id),
+                    daemon=True
+                )
+                thread.start()
+                
+                return jsonify({
+                    "success": True,
+                    "message": "Transcript processing started",
+                    "video_id": video_id,
+                    "video_url": video_url,
+                    "timestamp": datetime.now().isoformat()
+                })
+                
+            except Exception as e:
+                self.logger.error(f"Trigger manual transcript error: {e}")
+                return jsonify({
+                    "success": False,
+                    "error": str(e)
+                }), 500
+        
+        @self.app.route('/api/youtube/transcript/files', methods=['GET'])
+        def list_transcript_files():
+            """列出所有可用的轉錄檔案"""
+            try:
+                transcript_files = self.youtube_handler.list_available_transcripts()
+                
+                return jsonify({
+                    "success": True,
+                    "transcript_files": transcript_files,
+                    "count": len(transcript_files),
+                    "timestamp": datetime.now().isoformat()
+                })
+                
+            except Exception as e:
+                self.logger.error(f"List transcript files error: {e}")
+                return jsonify({
+                    "success": False,
+                    "error": str(e)
+                }), 500
+        
+        @self.app.route('/api/youtube/transcript/file/<video_id>', methods=['GET'])
+        def get_transcript_from_file(video_id):
+            """從檔案或記憶體獲取轉錄數據"""
+            try:
+                transcript = self.youtube_handler.get_transcript_from_file_or_memory(video_id)
+                
+                if transcript:
+                    return jsonify({
+                        "success": True,
+                        "video_id": video_id,
+                        "transcript": transcript,
+                        "timestamp": datetime.now().isoformat()
+                    })
+                else:
+                    return jsonify({
+                        "success": False,
+                        "message": f"No transcript found for video {video_id}",
+                        "video_id": video_id
+                    }), 404
+                    
+            except Exception as e:
+                self.logger.error(f"Get transcript from file error: {e}")
+                return jsonify({
+                    "success": False,
+                    "error": str(e)
+                }), 500
 
         
         @self.app.route('/api/tabs', methods=['GET', 'POST'])
@@ -843,35 +971,6 @@ class UnifiedServer:
                 self.logger.error(f"Error serving audio file {filename}: {e}")
                 return abort(500, "Internal server error")
     
-    async def _start_mcp_server(self):
-        """啟動 MCP 服務器"""
-        try:
-            mcp_config = self.settings.get_mcp_config()
-            success = await self.mcp_client.start_server(
-                mcp_config["command"], 
-                mcp_config["args"]
-            )
-            
-            if success:
-                self.logger.info("MCP server started successfully")
-            else:
-                self.logger.warning("MCP server failed to start")
-                
-        except Exception as e:
-            self.logger.error(f"Failed to start MCP server: {e}")
-    
-    def _start_mcp_in_thread(self):
-        """在背景執行緒中啟動 MCP 服務器"""
-        def start_mcp():
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            loop.run_until_complete(self._start_mcp_server())
-        
-        mcp_thread = threading.Thread(target=start_mcp, daemon=True)
-        mcp_thread.start()
-        
-        # 等待 MCP 服務器啟動
-        time.sleep(2)
     
     def run(self, host: str = None, port: int = None, debug: bool = None):
         """運行服務器"""
@@ -883,9 +982,6 @@ class UnifiedServer:
         
         self.logger.info(f"Starting Unified Server v2.0.0 on {host}:{port}")
         self.logger.info(f"Debug mode: {debug}")
-        
-        # 在後台啟動 MCP 服務器
-        self._start_mcp_in_thread()
         
         try:
             # 啟動 Flask 服務器
@@ -903,9 +999,6 @@ class UnifiedServer:
         if self.youtube_handler:
             self.youtube_handler.shutdown()
         
-        if self.mcp_client:
-            await self.mcp_client.close()
-            
         self.logger.info("Server shutdown complete")
 
 

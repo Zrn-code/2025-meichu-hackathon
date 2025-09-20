@@ -1,0 +1,1487 @@
+{
+  "video_id": "RkIf3b3fUdY",
+  "video_url": "https://www.youtube.com/watch?v=RkIf3b3fUdY&t=334s",
+  "video_title": "一年過去了，《Hades II》的Early Access到底交出了什麼成績？ feat. #節奏魔女舞動的骷髏",
+  "transcript_type": "supadata_api",
+  "transcript_data": {
+    "lang": "zh-Hant",
+    "availableLangs": [
+      "zh-Hant"
+    ],
+    "content": [
+      {
+        "lang": "zh-Hant",
+        "text": "欸我是毛怪，歡迎回到我的頻道",
+        "offset": 100,
+        "duration": 2269
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "今天想跟大家聊聊《黑帝斯2》的現況",
+        "offset": 2369,
+        "duration": 2469
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "也就是目前這款遊戲的開發進度、未來計畫",
+        "offset": 4938,
+        "duration": 2903
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "什麼時候會出正式版、會不會出在其他主機上",
+        "offset": 7841,
+        "duration": 3036
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "還有很多很多玩家最近常常在問的問題",
+        "offset": 10877,
+        "duration": 2703
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "這部影片主要就是想幫大家整理所有",
+        "offset": 13747,
+        "duration": 2702
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "跟《黑帝斯2》有關的重要資訊",
+        "offset": 16449,
+        "duration": 1835
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "無論你是已經在玩搶先體驗版的玩家",
+        "offset": 18284,
+        "duration": 2036
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "還是還在觀望、想等正式版才跳進來的朋友",
+        "offset": 20320,
+        "duration": 3136
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "我相信這支影片都能幫你釐清不少疑問",
+        "offset": 23456,
+        "duration": 2503
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "那老話一句",
+        "offset": 25959,
+        "duration": 901
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "影片開始之前麻煩大家動動手指",
+        "offset": 26860,
+        "duration": 2068
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "幫小小頻道按讚訂閱一下",
+        "offset": 28928,
+        "duration": 2001.9999999999998
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "你的一小步，是毛怪的一大步哦!",
+        "offset": 30930,
+        "duration": 2236
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "那我想先從一個大前提開始講",
+        "offset": 33266,
+        "duration": 1935
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "就是《黑帝斯2》目前還沒有正式推出",
+        "offset": 35201,
+        "duration": 2736
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "它現在的狀態是 Early Access",
+        "offset": 37937,
+        "duration": 1769
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "也就是搶先體驗版",
+        "offset": 39706,
+        "duration": 1435
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "這個版本從 2024 年 5 月在 Steam 和 Epic Games 上開放之後",
+        "offset": 41141,
+        "duration": 4838
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "其實已經經歷了不少的更新內容",
+        "offset": 45979,
+        "duration": 2069
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "而且遊戲本身的完成度也已經相當的高了",
+        "offset": 48048,
+        "duration": 2635
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "老實說",
+        "offset": 50683,
+        "duration": 768
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "Supergiant Games 一直都不是那種會把",
+        "offset": 51451,
+        "duration": 2469
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "一個破破爛爛的東西丟出來讓大家當白老鼠的公司",
+        "offset": 53920,
+        "duration": 3437
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "他們的搶先體驗版通常品質都超出預期的高",
+        "offset": 57357,
+        "duration": 3703
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "就拿黑帝斯1代來說",
+        "offset": 61060,
+        "duration": 1635
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "那時候 EA 階段就已經非常好玩了",
+        "offset": 62695,
+        "duration": 2236
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "等到 1.0 推出時",
+        "offset": 64931,
+        "duration": 2069
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "只是補上最後那塊拼圖",
+        "offset": 67000,
+        "duration": 1768
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "也就是完整的劇情收尾而已",
+        "offset": 68768,
+        "duration": 2169
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "那《黑帝斯2》也是差不多的狀況",
+        "offset": 70937,
+        "duration": 1668
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "很多人會誤會",
+        "offset": 72639,
+        "duration": 1067
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "以為搶先體驗就只是個遊戲測試",
+        "offset": 73706,
+        "duration": 2336
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "內容會很空、Bug會很多",
+        "offset": 76209,
+        "duration": 1835
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "但其實不是這樣",
+        "offset": 78044,
+        "duration": 1301
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "《黑帝斯2》目前已經有六種武器",
+        "offset": 79412,
+        "duration": 2069
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "每個武器都已經有三種型態",
+        "offset": 81481,
+        "duration": 2001.9999999999998
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "所以等於十八個不同的武器",
+        "offset": 83483,
+        "duration": 1935
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "而且還有更多的隱藏型態預計在下一次重大更新裡登場",
+        "offset": 85418,
+        "duration": 4538
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "遊戲中的神明系統也已經非常豐富了",
+        "offset": 89989,
+        "duration": 3137
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "九位主要的神加上幾個次要的神",
+        "offset": 93126,
+        "duration": 2202
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "還有各種事件、對話、分支劇情等等等",
+        "offset": 95328,
+        "duration": 2569
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "真的已經非常多可以體驗了",
+        "offset": 97897,
+        "duration": 2336
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "而且最讓我驚訝的是阿",
+        "offset": 100300,
+        "duration": 1802
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "《黑帝斯1》原本只有一個大關卡",
+        "offset": 102102,
+        "duration": 1901
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "就是冥界麻",
+        "offset": 104003,
+        "duration": 1135
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "這次２代除了全新的冥界設計之外",
+        "offset": 105138,
+        "duration": 2703
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "還加上了一整條新的地表路線",
+        "offset": 107841,
+        "duration": 2569
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "這不是換個背景而已喔",
+        "offset": 110410,
+        "duration": 1868
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "是完全不同的地圖、敵人、生態等等",
+        "offset": 112278,
+        "duration": 2403
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "Boss設計當然也都很不一樣",
+        "offset": 114681,
+        "duration": 1535
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "也就是說",
+        "offset": 116216,
+        "duration": 767
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "《黑帝斯2》目前EA的遊戲量體",
+        "offset": 116983,
+        "duration": 2736
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "已經遠遠超過1.0版本的《黑帝斯》了",
+        "offset": 119719,
+        "duration": 3103
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "你可以選擇從地底走",
+        "offset": 122822,
+        "duration": 1168
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "也可以選擇從地表走",
+        "offset": 123990,
+        "duration": 1134
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "不同路線會遇到不同挑戰和劇情",
+        "offset": 125124,
+        "duration": 2303
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "這部分算是我覺得最大的驚喜",
+        "offset": 127427,
+        "duration": 2135
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "當時剛得知的時候是真的覺得超級猛",
+        "offset": 129562.00000000001,
+        "duration": 2603
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "比起很多續作的複製貼上",
+        "offset": 132165,
+        "duration": 1702
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "黑帝斯2給的份量真的是很足",
+        "offset": 133867,
+        "duration": 2102
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "好的，講到這邊先來做個小插播",
+        "offset": 136069,
+        "duration": 1902
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "先來感謝今天的乾爹",
+        "offset": 137971,
+        "duration": 2001.9999999999998
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "超可愛的一款新遊戲拉",
+        "offset": 139973,
+        "duration": 1635
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "是台灣獨立遊戲團隊製作的",
+        "offset": 141608,
+        "duration": 1968
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "這款遊戲滿特別的，是一款動作肉鴿",
+        "offset": 145211,
+        "duration": 2336
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "而且是音樂節奏結合了倖存者類型的組合！",
+        "offset": 147547,
+        "duration": 2836
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "簡單來說，你要一邊隨著音樂打怪",
+        "offset": 150383,
+        "duration": 2001.9999999999998
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "一邊閃避這些",
+        "offset": 152385,
+        "duration": 1101
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "隨著節奏跳動、攻擊你的怪物們",
+        "offset": 153486,
+        "duration": 2336
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "非常講究節奏感的遊戲啊",
+        "offset": 155822,
+        "duration": 2235
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "遊戲的美術風格是黑色幽默帶點邪惡可愛",
+        "offset": 158057,
+        "duration": 2636
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "角色的選項有獸魂戰士、死靈法師、吟遊詩人",
+        "offset": 160693,
+        "duration": 3270
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "甚至還有狙擊手",
+        "offset": 163963,
+        "duration": 1202
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "每個角色特長都不同",
+        "offset": 165165,
+        "duration": 1768
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "至於玩法上也有分幾種不同模式哦",
+        "offset": 166933,
+        "duration": 2035.0000000000002
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "如果你喜歡挑戰",
+        "offset": 168968,
+        "duration": 868
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "可以開啟使用節奏打擊模式",
+        "offset": 169836,
+        "duration": 1902
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "跟著節奏敲擊才能攻擊",
+        "offset": 171738,
+        "duration": 1501
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "甚至更進階一點",
+        "offset": 173239,
+        "duration": 1135
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "可以開啟進階節奏或是狂熱節奏",
+        "offset": 174374,
+        "duration": 2302
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "越後面越難就對了",
+        "offset": 176709,
+        "duration": 1469
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "但就會更偏向真正的音樂打擊遊戲",
+        "offset": 178178,
+        "duration": 2602
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "但相反的，如果不想這麼有壓力",
+        "offset": 180813,
+        "duration": 1469
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "想輕鬆一點，也可以用自動射擊模式",
+        "offset": 182282,
+        "duration": 2402
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "這樣你的角色就會自己攻擊",
+        "offset": 184684,
+        "duration": 1702
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "就跟很多倖存者遊戲類似",
+        "offset": 186386,
+        "duration": 1668
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "這就很適合想要邊聽音樂邊爽刷的玩家",
+        "offset": 188054,
+        "duration": 2636
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "而且遊戲音樂真的都很不錯聽！",
+        "offset": 190690,
+        "duration": 2069
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "非常日系的feel",
+        "offset": 192759,
+        "duration": 967
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "整體來說",
+        "offset": 193726,
+        "duration": 734
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "這款遊戲節奏感強、爽感十足",
+        "offset": 194460,
+        "duration": 2269
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "超適合喜歡音樂節奏、又愛屠怪升級快感的玩家！",
+        "offset": 196729,
+        "duration": 3471
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "遊戲已經在Steam上架囉～如果有興趣趕緊過去看看吧!",
+        "offset": 200200,
+        "duration": 4003.9999999999995
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "那回到正題，大家一定會想問",
+        "offset": 207040,
+        "duration": 2001.9999999999998
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "那《黑帝斯2》的正式版 v1.0 到底什麼時候才會出呢？",
+        "offset": 209042,
+        "duration": 3370
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "很抱歉",
+        "offset": 212412,
+        "duration": 567
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "目前官方是沒有給出明確的日期的",
+        "offset": 212979,
+        "duration": 2102
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "依照上次的最新消息",
+        "offset": 215081,
+        "duration": 1602
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "他們的說法是在1.0正式版之前",
+        "offset": 216683,
+        "duration": 2602
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "「至少還有一次重大更新」",
+        "offset": 219285,
+        "duration": 1935
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "而這個更新預定在 2025 年春季推出",
+        "offset": 221220,
+        "duration": 3003
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "也就是說",
+        "offset": 224223,
+        "duration": 534
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "最快最快也要等到這次更新之後",
+        "offset": 224757,
+        "duration": 2336
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "才會進入所謂的1.0正式版",
+        "offset": 227093,
+        "duration": 2236
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "那從目前的進度來看",
+        "offset": 229329,
+        "duration": 1434
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "我們先假設這次春季更新是最後一次重大更新",
+        "offset": 230763,
+        "duration": 3170
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "那我猜正式版大概會在今年秋季或冬季推出",
+        "offset": 233933,
+        "duration": 3871
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "可能會是 9 月、10 月那種時間點",
+        "offset": 237804,
+        "duration": 1902
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "甚至年底也都不意外啦",
+        "offset": 239706,
+        "duration": 1434
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "不過大更新的時間段如果說是春季的話",
+        "offset": 241140,
+        "duration": 2903
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "就是馬上要來的5~6月份了",
+        "offset": 244043,
+        "duration": 1802
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "所以又可以期待一下了各位",
+        "offset": 245845,
+        "duration": 1835
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "但前面說的這些都只是猜測拉",
+        "offset": 247680,
+        "duration": 1769
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "因為他們真的沒有講太多具體的進度",
+        "offset": 249449,
+        "duration": 2001.9999999999998
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "而且他們也沒有要趕時間",
+        "offset": 251451,
+        "duration": 1835
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "這點我其實是滿欣賞的",
+        "offset": 253286,
+        "duration": 1435
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "他們的做法很像那種手工的匠人精神",
+        "offset": 254721,
+        "duration": 2369
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "就是沒做好之前不會交貨",
+        "offset": 257089.99999999997,
+        "duration": 1668
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "這在現在的這種速食遊戲時代",
+        "offset": 258757.99999999997,
+        "duration": 2202
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "其實真的滿少見的",
+        "offset": 260959.99999999997,
+        "duration": 1168
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "大家都在追趕時程、預購壓力",
+        "offset": 262128,
+        "duration": 2135
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "但 Supergiant很顯然更在意的是品質",
+        "offset": 264263,
+        "duration": 2703
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "好，那如果你是主機玩家",
+        "offset": 266966,
+        "duration": 1368
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "像是 Switch、Xbox、PlayStation",
+        "offset": 268334,
+        "duration": 1802
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "那你可能會關心的問題是",
+        "offset": 270136,
+        "duration": 1268
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "這遊戲會不會出現在我玩的主機上？",
+        "offset": 271404,
+        "duration": 1935
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "目前官方已經確認了齁",
+        "offset": 273339,
+        "duration": 1268
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "《黑帝斯2》會在 v1.0 版本完成後",
+        "offset": 274607,
+        "duration": 2603
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "登上任天堂Switch跟Switch 2",
+        "offset": 277210,
+        "duration": 2202
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "而且這次還特別在 Nintendo Direct上",
+        "offset": 279412,
+        "duration": 2169
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "展示了遊戲在 Switch 2 上運行的畫面",
+        "offset": 281581,
+        "duration": 2936
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "畫質拉高到 1080p",
+        "offset": 284584,
+        "duration": 1401
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "流暢度維持在60FPS，看起來非常順啦",
+        "offset": 285985,
+        "duration": 3070
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "這點對於喜歡攜帶遊戲機的玩家來說是一個超棒的消息",
+        "offset": 289055,
+        "duration": 3670
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "尤其是 Switch的忠實玩家",
+        "offset": 292725,
+        "duration": 1769
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "因為《黑帝斯1》當初就是在 Switch上大紅大放的",
+        "offset": 294494,
+        "duration": 3637
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "很多人第一次玩就是從那裡開始的",
+        "offset": 298131,
+        "duration": 2235
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "我本身其實也是",
+        "offset": 300500,
+        "duration": 1701
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "至於 Xbox 和 PlayStation的玩家就要辛苦一點了",
+        "offset": 302201,
+        "duration": 2970
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "目前官方還沒有明確承諾",
+        "offset": 305171,
+        "duration": 1535
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "聽起來就很像當初1代的情況",
+        "offset": 306706,
+        "duration": 1868
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "當初1.0是先登陸PC和Switch",
+        "offset": 308574,
+        "duration": 2603
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "然後過了快一年才推出 PS 和 Xbox 版本",
+        "offset": 311177,
+        "duration": 3103
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "所以可以合理推測",
+        "offset": 314280,
+        "duration": 1201
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "2代的主機移植也可能會延後",
+        "offset": 315481,
+        "duration": 2102
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "所以PS和Xbox玩家很可能要等到2026年才玩得到了",
+        "offset": 317583,
+        "duration": 4739
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "這對 Supergiant 來說",
+        "offset": 322322,
+        "duration": 1368
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "是一種保守但穩健的做法拉",
+        "offset": 323690,
+        "duration": 2335
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "他們先把重心放在把PC 和 Switch 版本做好",
+        "offset": 326025,
+        "duration": 3637
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "再慢慢推移植",
+        "offset": 329662,
+        "duration": 1535
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "這樣更能確保品質穩定",
+        "offset": 331264,
+        "duration": 1735
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "所以玩家們就再等等吧",
+        "offset": 332999,
+        "duration": 2402
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "未來有進一步消息會再更新給大家",
+        "offset": 335401,
+        "duration": 2536
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "那回到一個關鍵的問題",
+        "offset": 337937,
+        "duration": 1201
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "也是很多人在問的",
+        "offset": 339138,
+        "duration": 1235
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "現在到底值不值得買來玩？",
+        "offset": 340373,
+        "duration": 1935
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "我覺得這個問題其實很簡單",
+        "offset": 342308,
+        "duration": 1368
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "取決於你重不重視劇情的完整性",
+        "offset": 343743,
+        "duration": 2235
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "因為目前最大的缺少其實就是主線劇情還沒補完",
+        "offset": 345978,
+        "duration": 3504
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "然後劇情的結局也都還沒出來",
+        "offset": 349482,
+        "duration": 2202
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "其他像是玩法拉、神恩系統、信物",
+        "offset": 351684,
+        "duration": 2936
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "升級系統等等的",
+        "offset": 354620,
+        "duration": 1168
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "這些基本上都已經很完整了",
+        "offset": 355788,
+        "duration": 1502
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "也就是說",
+        "offset": 357290,
+        "duration": 367
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "如果你是那種想要一次體驗完整故事線的人",
+        "offset": 357657,
+        "duration": 2969
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "那的確",
+        "offset": 360626,
+        "duration": 634
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "你可以考慮等1.0正式版再來玩",
+        "offset": 361260,
+        "duration": 2436
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "但如果你是像我一樣",
+        "offset": 363696,
+        "duration": 1301
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "只要遊戲好玩就想馬上開刷的人",
+        "offset": 364997,
+        "duration": 2269
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "那我會說：現在就值得買了，真的",
+        "offset": 367266,
+        "duration": 2036
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "就像我前面說的",
+        "offset": 369302,
+        "duration": 934
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "這遊戲的內容量已經完全對得起它的售價了",
+        "offset": 370269,
+        "duration": 2736
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "甚至可以說",
+        "offset": 373005,
+        "duration": 835
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "它已經是一款完成度很高的獨立作品",
+        "offset": 373840,
+        "duration": 2502
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "但當然啦，我知道有些人會擔心說",
+        "offset": 376342,
+        "duration": 2036
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "怕現在玩太多",
+        "offset": 378378,
+        "duration": 1000.9999999999999
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "到時候正式版就沒興趣了",
+        "offset": 379379,
+        "duration": 1701
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "這點我完全同意也能理解",
+        "offset": 381080,
+        "duration": 1802
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "但我的看法是",
+        "offset": 382882,
+        "duration": 901
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "《黑帝斯2》是一款設計上鼓勵重複遊玩的遊戲",
+        "offset": 383783,
+        "duration": 3437
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "它本身的核心玩法就很耐刷了",
+        "offset": 387220,
+        "duration": 2235
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "而且每次跑圖都有很多變化",
+        "offset": 389455,
+        "duration": 1835
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "角色對話也會根據你玩了多久",
+        "offset": 391290,
+        "duration": 1936
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "達成什麼條件而有非常多的不同",
+        "offset": 393226,
+        "duration": 2035.0000000000002
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "所以即便你現在玩了幾十個小時",
+        "offset": 395261,
+        "duration": 2001.9999999999998
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "等到正式版還是會有新東西可以體驗",
+        "offset": 397263,
+        "duration": 2936
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "甚至有劇情收尾可以期待",
+        "offset": 400266,
+        "duration": 1668
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "偷偷告訴你",
+        "offset": 401934,
+        "duration": 801
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "我自己目前已經玩了快300小時~哈哈哈!",
+        "offset": 402735,
+        "duration": 3637
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "還有很多人問說",
+        "offset": 406606,
+        "duration": 1134
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "《黑帝斯2》有比1代好玩嗎?",
+        "offset": 407740,
+        "duration": 1802
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "這個老實講不好回答",
+        "offset": 409542,
+        "duration": 1735
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "我黑帝斯一代玩了超過一千小時",
+        "offset": 411277,
+        "duration": 2369
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "遊戲初期真的是玩到愛不釋手",
+        "offset": 413646,
+        "duration": 2302
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "每天都想來一把的感覺",
+        "offset": 415982,
+        "duration": 1434
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "玩到後期更像是在挑戰自我極限",
+        "offset": 417416,
+        "duration": 2570
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "無論是Speedrun或是熱度的極限",
+        "offset": 419986,
+        "duration": 1902
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "玩了這麼久，你說不會膩",
+        "offset": 421888,
+        "duration": 1801
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "那肯定是騙人的麻",
+        "offset": 423689,
+        "duration": 1335
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "所以在剛剛聽說2代要推出的時候",
+        "offset": 425024,
+        "duration": 2603
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "我真的是直接高潮",
+        "offset": 427660,
+        "duration": 1468
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "想說終於可以投入下一款遊戲了",
+        "offset": 429128,
+        "duration": 1835
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "所以此時此刻的我",
+        "offset": 430963,
+        "duration": 1735
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "絕對是覺得2代更值得期待",
+        "offset": 432698,
+        "duration": 1702
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "也一定是今年最想玩的遊戲",
+        "offset": 434400,
+        "duration": 1702
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "畫面更精緻",
+        "offset": 436102,
+        "duration": 901
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "畫風更漂亮，遊戲內容也更多",
+        "offset": 437003,
+        "duration": 1968
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "現在真的只想玩2代",
+        "offset": 438971,
+        "duration": 1535
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "畢竟新鮮感也是很關鍵的因素",
+        "offset": 440506,
+        "duration": 2001.9999999999998
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "那《黑帝斯2》有比一代更難嗎？",
+        "offset": 442508,
+        "duration": 2102
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "哈哈~這個問題也是不太好直接回答",
+        "offset": 445077,
+        "duration": 2136
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "因為2代的遊戲難度就像1代的那個熱度模式一樣",
+        "offset": 447213,
+        "duration": 3303
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "你越開越多條件，遊戲當然就越難",
+        "offset": 450550,
+        "duration": 2235
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "所以它的難與不難其實看你怎麼玩",
+        "offset": 452785,
+        "duration": 2136
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "不過以初期來說",
+        "offset": 454921,
+        "duration": 1401
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "很多人反應《黑帝斯2》的學習曲線比1代稍微高一點點",
+        "offset": 456322,
+        "duration": 3303
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "因為它一開始就給你很多新機制",
+        "offset": 459625,
+        "duration": 2203
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "而且我們女主角的操作上的確不如1代來的敏捷",
+        "offset": 461828,
+        "duration": 3103
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "但時至今日阿",
+        "offset": 464931,
+        "duration": 1167
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "開發商已經優化過太多太多遍了",
+        "offset": 466098,
+        "duration": 2236
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "以目前角度來講",
+        "offset": 468334,
+        "duration": 1168
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "我認為前期的體驗已經差不了太多了",
+        "offset": 469502,
+        "duration": 2836
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "而且說實在話",
+        "offset": 472338,
+        "duration": 701
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "玩到後期，慢慢解鎖各種武器之後",
+        "offset": 473039,
+        "duration": 2402
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "我是覺得反而比1代還容易",
+        "offset": 475441,
+        "duration": 2169
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "印象中我自己打2代的40恐懼是有點莫名其妙就通關了",
+        "offset": 477610,
+        "duration": 4070.9999999999995
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "想當初1代可沒這麼容易過",
+        "offset": 481681,
+        "duration": 2135
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "雖然現在是還不到1.0版",
+        "offset": 483816,
+        "duration": 1668
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "但以目前來講就是這樣的感覺",
+        "offset": 485484,
+        "duration": 2403
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "所以，各位，我們先來期待一下",
+        "offset": 488254,
+        "duration": 2102
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "下一次的大更新吧",
+        "offset": 490389,
+        "duration": 1502
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "應該在一個月內就有機會看到",
+        "offset": 491891,
+        "duration": 2169
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "這次有機會看到隱藏的武器型態了",
+        "offset": 494060,
+        "duration": 2302
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "還有Boss的進階型態也有機會看到哦",
+        "offset": 496362,
+        "duration": 2603
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "最後當然就是劇情的更進一步的進展",
+        "offset": 498965,
+        "duration": 2669
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "也是很期待的部分",
+        "offset": 501701,
+        "duration": 1501
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "好啦，今天的分享就到這裡",
+        "offset": 503803,
+        "duration": 2102
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "如果你還有其他跟《黑帝斯2》相關的問題",
+        "offset": 505905,
+        "duration": 2202
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "歡迎在留言區留言",
+        "offset": 508107,
+        "duration": 1268
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "我會盡量幫大家解答",
+        "offset": 509375,
+        "duration": 1401
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "也別忘了幫這支影片按個讚、訂閱一下頻道",
+        "offset": 510776,
+        "duration": 2603
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "這樣我就能繼續為你帶來更多",
+        "offset": 513379,
+        "duration": 1468
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "黑帝斯相關的遊戲內容、開發追蹤與心得啦！",
+        "offset": 514847,
+        "duration": 3337
+      },
+      {
+        "lang": "zh-Hant",
+        "text": "我是毛怪，我們下次見，掰掰!",
+        "offset": 518183.99999999994,
+        "duration": 3003
+      }
+    ]
+  },
+  "timestamp": "2025-09-20T21:04:06.113777",
+  "created_at": "2025-09-20T21:04:06.117816",
+  "mode_trigger": "fullscreen_or_theater"
+}
