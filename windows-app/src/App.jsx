@@ -75,6 +75,9 @@ function App() {
   const [audioPlaybackStatus, setAudioPlaybackStatus] = useState('停止');
   const [lastPlaybackMessage, setLastPlaybackMessage] = useState('');
 
+  // 影片展示相關狀態
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+
   // 音訊 chain refs
   const mediaStreamRef = useRef(null)
   const mediaRecorderRef = useRef(null)
@@ -111,12 +114,37 @@ function App() {
   // Youyube 卡片資料
   const YoutubeInfo = [
     {
+      id: 1,
       img: "youtubeCover/cover1.jpg",
       metadata: "youtubeCover/metadata1.json",
-      view_count: 0,
-      like_count: 0,
-      upload_date: "2023-01-01",
-      tags: []
+      title: "Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)",
+      view_count: 1695253126,
+      like_count: 18551627,
+      upload_date: "2009-10-25T00:00:00Z",
+      tags: ["music", "classic", "80s"],
+      url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    },
+    {
+      id: 2,
+      img: "youtubeCover/cover2.jpg",
+      metadata: "youtubeCover/metadata2.json",
+      title: "Darude - Sandstorm (Official Video)",
+      view_count: 456789012,
+      like_count: 3456789,
+      upload_date: "2009-02-18T00:00:00Z",
+      tags: ["electronic", "dance", "2000s"],
+      url: "https://www.youtube.com/watch?v=y6120QOlsfU"
+    },
+    {
+      id: 3,
+      img: "youtubeCover/cover3.jpg",
+      metadata: "youtubeCover/metadata3.json",
+      title: "Queen - Bohemian Rhapsody (Official Video Remastered)",
+      view_count: 2134567890,
+      like_count: 15234567,
+      upload_date: "2008-08-01T00:00:00Z",
+      tags: ["rock", "classic", "queen"],
+      url: "https://www.youtube.com/watch?v=fJ9rUzIMcZQ"
     }
   ];
 
@@ -357,6 +385,11 @@ function App() {
     setAudioPlaybackStatus('已停止播放');
   };
 
+  // 切換當前影片的函數
+  const switchToVideo = (videoIndex) => {
+    setCurrentVideoIndex(videoIndex);
+  };
+
   // 開始錄音
   async function startRecording() {
     setError(''); setTranscript(''); audioChunksRef.current = []
@@ -425,386 +458,224 @@ function App() {
   }
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
-      <div className="grid grid-cols-3 gap-6">
+    <div className="p-6 max-w-none mx-auto w-full">
+      <div className="grid grid-cols-12 gap-6">
         {/* lg:grid-cols-2  */}
         
         {/* 懸浮 Avatar 控制卡片 */}
-        <div className="card shadow-lg border border-primary">
+        <div className="col-span-4 card shadow-lg border border-primary">
           <div className="card-body">
-            <h2 className="card-title text-primary mb-2">😻 影片小助手 Avatar</h2>
-            <p className="text-base-content opacity-70 text-base mb-6">無論是追劇、看電影或是讀書，Avatar 都能成為你的最佳夥伴！</p>
-          
-            <div className="flex items-center gap-4 mb-6">
-              <button 
-                className={`btn gap-2 ${avatarVisible ? 'btn-error' : 'btn-primary'}`}
-                onClick={toggleAvatar}
-              >
-                <span>🐱</span>
-                {avatarVisible ? '隱藏 Avatar' : '顯示 Avatar'}
-              </button>
-              
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-base-content opacity-70">狀態:</span>
-                <div className={`badge ${avatarVisible ? 'badge-success' : 'badge-neutral'} gap-1`}>
-                  <div className={`w-2 h-2 rounded-full ${avatarVisible ? 'bg-base-100' : 'bg-base-content opacity-60'}`}></div>
-                  {avatarVisible ? '已啟用' : '已停用'}
-                </div>
-              </div>
-            </div>
-
-            {/* LLM 連線狀態顯示 */}
-            <div className="bg-base-100 rounded-lg p-4 border border-base-300 mb-4">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-sm font-semibold">LLM 服務狀態:</span>
-              <div className={`badge ${llmConnected ? 'badge-success' : 'badge-error'} gap-1`}>
-                <div className={`w-2 h-2 rounded-full ${llmConnected ? 'bg-base-100' : 'bg-base-content opacity-60'}`}></div>
-                {llmConnected ? '已連線' : '未連線'}
-              </div>
-            </div>
-            {!llmConnected && (
-              <div className="text-sm text-warning">
-                ⚠️ 請確認本地 LLM server 運行於 localhost:8000
-              </div>
-            )}
-            </div>
-
-            {/* 對話輸入區域 */}
-            {avatarVisible && (
-            <div className="bg-base-100 rounded-lg p-4 border border-base-300 mb-4">
-              <h3 className="font-semibold text-primary mb-3">💬 與 Avatar 對話:</h3>
-              
-              {/* 文字輸入區 */}
-              <div className="flex gap-2 mb-3">
-                <textarea
-                  className="textarea textarea-bordered flex-1 resize-none"
-                  placeholder="輸入你想對 Avatar 說的話..."
-                  value={userInput}
-                  onChange={(e) => setUserInput(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  rows={2}
-                  disabled={isLoading || !llmConnected}
-                />
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="card-title text-primary">😻 影片小助手 Avatar</h2>
+              <div className="flex items-center gap-3">
                 <button 
-                  className={`btn btn-primary ${isLoading ? 'loading' : ''}`}
-                  onClick={handleSendUserMessage}
-                  disabled={!userInput.trim() || isLoading || !llmConnected}
+                  className={`btn btn-sm gap-2 ${avatarVisible ? 'btn-error' : 'btn-primary'}`}
+                  onClick={toggleAvatar}
                 >
-                  {isLoading ? '思考中...' : '發送'}
+                  <span>🐱</span>
+                  {avatarVisible ? '隱藏 Avatar' : '顯示 Avatar'}
                 </button>
-              </div>
-
-              {/* 快捷按鈕 */}
-              <div className="flex gap-2 flex-wrap mb-3">
-                <button 
-                  className="btn btn-sm btn-outline btn-primary"
-                  onClick={() => setUserInput("你好，請介紹一下自己")}
-                  disabled={isLoading}
-                >
-                  👋 打招呼
-                </button>
-                <button 
-                  className="btn btn-sm btn-outline btn-info"
-                  onClick={() => setUserInput("我搞不清楚現在的劇情")}
-                  disabled={isLoading}
-                >
-                  ☀️ 懶人包
-                </button>
-                <button 
-                  className="btn btn-sm btn-outline btn-warning"
-                  onClick={() => setUserInput("給我一些健康小提醒")}
-                  disabled={isLoading}
-                >
-                  💡 健康提醒
-                </button>
-              </div>
-
-              {/* 對話控制按鈕 */}
-              <div className="flex gap-2 justify-end">
-                <button 
-                  className="btn btn-sm btn-outline btn-info"
-                  onClick={showConversationHistory}
-                  disabled={isLoading}
-                >
-                  📚 查看歷史
-                </button>
-                <button 
-                  className="btn btn-sm btn-outline btn-error"
-                  onClick={clearConversation}
-                  disabled={isLoading}
-                >
-                  🗑️ 清除對話
-                </button>
-              </div>
-            </div>
-            )}
-          
-            <div className="card-body">
-              <h2 className="card-title text-secondary mb-2">
-                <span>🎵</span>
-                語音播放控制
-              </h2>
-              <p className="text-base-content opacity-70 text-sm mb-4">
-                自動檢查並播放與 YouTube 時間點對應的語音內容
-              </p>
-              
-              {/* 播放狀態顯示 */}
-              <div className="bg-base-100 rounded-lg p-4 border border-base-300 mb-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-sm font-semibold">播放狀態:</span>
-                  <div className={`badge ${audioPlaybackEnabled ? 'badge-success' : 'badge-neutral'} gap-1`}>
-                    <div className={`w-2 h-2 rounded-full ${audioPlaybackEnabled ? 'bg-base-100' : 'bg-base-content opacity-60'}`}></div>
-                    {audioPlaybackStatus}
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-base-content opacity-70">狀態:</span>
+                  <div className={`badge ${avatarVisible ? 'badge-success' : 'badge-neutral'} gap-1`}>
+                    <div className={`w-2 h-2 rounded-full ${avatarVisible ? 'bg-base-100' : 'bg-base-content opacity-60'}`}></div>
+                    {avatarVisible ? '已啟用' : '已停用'}
                   </div>
                 </div>
-                {lastPlaybackMessage && (
-                  <div className="text-sm text-base-content opacity-70">
-                    💬 {lastPlaybackMessage}
-                  </div>
-                )}
-              </div>
-
-              {/* 當前播放內容 */}
-              {currentAudioContent && (
-                <div className="bg-base-100 rounded-lg p-4 border border-base-300 mb-4">
-                  <h3 className="font-semibold text-secondary mb-2">🎧 當前內容:</h3>
-                  <div className="space-y-1">
-                    <div className="text-sm"><strong>訊息:</strong> {currentAudioContent.message}</div>
-                    <div className="text-sm"><strong>情緒:</strong> {currentAudioContent.emotion}</div>
-                    <div className="text-sm"><strong>時間點:</strong> {currentAudioContent.timestamp} 秒</div>
-                    <div className="text-sm"><strong>影片ID:</strong> {currentAudioContent.video_id}</div>
-                  </div>
-                </div>
-              )}
-
-              {/* 控制按鈕 */}
-              <div className="flex gap-2 flex-wrap">
-                <button 
-                  className={`btn ${audioPlaybackEnabled ? 'btn-error' : 'btn-success'}`}
-                  onClick={toggleAudioPlayback}
-                >
-                  {audioPlaybackEnabled ? '⏸️ 停止監聽' : '▶️ 開始監聽'}
-                </button>
-                
-                <button 
-                  className="btn btn-info"
-                  onClick={manualCheckAudio}
-                  disabled={audioPlaybackStatus === '手動檢查中...'}
-                >
-                  🔍 手動測試
-                </button>
-                
-                <button 
-                  className="btn btn-warning"
-                  onClick={stopCurrentAudio}
-                >
-                  🔇 停止播放
-                </button>
-              </div>
-
-              {/* 說明文字 */}
-              <div className="mt-4 p-3 bg-base-200 rounded-lg">
-                <div className="text-xs text-base-content opacity-70">
-                  <strong>使用說明:</strong>
-                  <ul className="mt-1 space-y-1">
-                    <li>• 點擊「開始監聽」後，系統每秒檢查是否有對應的語音內容</li>
-                    <li>• 「手動測試」會播放測試音檔（時間點 60 秒）</li>
-                    <li>• 確保 backend server 運行在 localhost:3000</li>
-                  </ul>
-                </div>
               </div>
             </div>
-            
-            <Note />
-
+            <p className="text-base-content opacity-70 text-base mb-4">無論是追劇、或讀書，Avatar 都能成為你的最佳夥伴！</p>
+              <Note />
           </div>
         </div>
 
         {/* -------------------------------------------------------------------------------------- */}
         {/* avatar 卡片*/}
-        <div className="card shadow-lg border border-info">
-          <div className="grid grid-cols-1 gap-0" >
-            <div className="bg-base-100 rounded-lg ml-5 mr-5 mt-5">
-              <div className="avatar m-3">
-                <div className="mask mask-squircle w-24">
-                  {/* <div className="ring-primary ring-offset-base-100 w-24 rounded-full ring-2 ring-offset-2"> */}
-                    <img src={AvatarInfo[0].img} alt="Movie" />
-                  {/* </div> */}
-                  
+        <div className="col-span-4 card shadow-lg border border-info">
+          <div className="card-body">
+            <h2 className="card-title text-info mb-4">🎭 Avatar 選擇</h2>
+            <div className="space-y-4">
+              {/* Avatar 1 - 章魚哥 */}
+              <div className="flex items-center gap-4 p-4 bg-base-100 rounded-lg border border-base-300">
+                <div className="avatar">
+                  <div className="mask mask-squircle w-20">
+                    <img src={AvatarInfo[0].img} alt="章魚哥" />
+                  </div>
                 </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="font-semibold text-base">🐙 章魚哥</h3>
+                    <div className="badge badge-success badge-xs">陪伴型</div>
+                  </div>
+                  <p className="text-sm opacity-70">冷靜理性的音樂家</p>
+                  <audio controls className="mt-2 w-full" style={{ height: '30px' }}>
+                    <source src="/voice_wav/avatar1.mp3" type="audio/mpeg" />
+                    您的瀏覽器不支援音頻播放
+                  </audio>
+                </div>
+                <button
+                  className="btn btn-sm btn-primary"
+                  onClick={() => loadAvatar(avatarImages[0])}
+                >
+                  選擇
+                </button>
               </div>
-              <div className="card-body">
-                <h2 className="card-title">New movie is released!</h2>
-                <p>Click the button to watch on Jetflix app.</p>
-                <div className="card-actions justify-end">
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => loadAvatar(avatarImages[0])}
-                  >
-                    Avatar 1
-                  </button>
-                </div>
-              </div>  
-            </div>
-            
-            <div className="bg-base-100 rounded-lg ml-5 mr-5 mt-5">
-              <div className="avatar m-3">
-                <div className="mask mask-squircle w-24">
-                  <img src={AvatarInfo[1].img} alt="Movie" />
-                </div>
-              </div>
-              <div className="card-body">
-                <h2 className="card-title">New movie is released!</h2>
-                <p>Click the button to watch on Jetflix app.</p>
-                <div className="card-actions justify-end">
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => loadAvatar(avatarImages[1])}
-                  >
-                    Avatar 2
-                  </button>
-                </div>
-              </div>  
-            </div>
 
-            <div className="bg-base-100 rounded-lg m-5">
-              <div className="avatar m-3">
-                <div className="mask mask-squircle w-24">
-                  <img src={AvatarInfo[2].img} alt="Movie" />
+              {/* Avatar 2 - 派大星 */}
+              <div className="flex items-center gap-4 p-4 bg-base-100 rounded-lg border border-base-300">
+                <div className="avatar">
+                  <div className="mask mask-squircle w-20">
+                    <img src={AvatarInfo[1].img} alt="派大星" />
+                  </div>
                 </div>
-              </div>
-              <div className="card-body">
-                <h2 className="card-title">New movie is released!</h2>
-                <p>Click the button to watch on Jetflix app.</p>
-                <div className="card-actions justify-end">
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => loadAvatar(avatarImages[2])}
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="font-semibold text-base">⭐ 派大星</h3>
+                    <div className="badge badge-success badge-xs">陪伴型</div>
+                  </div>
+                  <p className="text-sm opacity-70">樂觀開朗的好朋友</p>
+                  <audio 
+                    controls 
+                    className="mt-2 w-full" 
+                    style={{ height: '30px' }}
+                    volume={1.0}
+                    ref={(audioRef) => {
+                      if (audioRef) {
+                        audioRef.volume = 1.0; // 設定為最大音量
+                      }
+                    }}
                   >
-                    Avatar 3
-                  </button>
+                    <source src="/voice_wav/avatar2.mp3" type="audio/mpeg" />
+                    您的瀏覽器不支援音頻播放
+                  </audio>
                 </div>
-              </div>  
-            </div>
-
-
-            <div className="bg-base-100 rounded-lg m-5">
-              <div className="avatar m-3">
-                <div className="mask mask-squircle w-24">
-                  <img src={AvatarInfo[3].img} alt="Movie" />
-                </div>
+                <button
+                  className="btn btn-sm btn-primary"
+                  onClick={() => loadAvatar(avatarImages[1])}
+                >
+                  選擇
+                </button>
               </div>
-              <div className="card-body">
-                <h2 className="card-title">New movie is released!</h2>
-                <p>Click the button to watch on Jetflix app.</p>
-                <div className="card-actions justify-end">
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => loadAvatar(avatarImages[3])}
-                  >
-                    Avatar 4
-                  </button>
+
+              {/* Avatar 3 - 蠟筆小新 */}
+              <div className="flex items-center gap-4 p-4 bg-base-100 rounded-lg border border-base-300">
+                <div className="avatar">
+                  <div className="mask mask-squircle w-20">
+                    <img src={AvatarInfo[2].img} alt="蠟筆小新" />
+                  </div>
                 </div>
-              </div>  
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="font-semibold text-base">🖍️ 蠟筆小新</h3>
+                    <div className="badge badge-success badge-xs">陪伴型</div>
+                  </div>
+                  <p className="text-sm opacity-70">調皮搗蛋的小朋友</p>
+                  <audio controls className="mt-2 w-full" style={{ height: '30px' }}>
+                    <source src="/voice_wav/avatar3.mp3" type="audio/mpeg" />
+                    您的瀏覽器不支援音頻播放
+                  </audio>
+                </div>
+                <button
+                  className="btn btn-sm btn-primary"
+                  onClick={() => loadAvatar(avatarImages[2])}
+                >
+                  選擇
+                </button>
+              </div>
+
+              {/* Avatar 4 - 老師 */}
+              <div className="flex items-center gap-4 p-4 bg-base-100 rounded-lg border border-base-300">
+                <div className="avatar">
+                  <div className="mask mask-squircle w-20">
+                    <img src={AvatarInfo[3].img} alt="老師" />
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="font-semibold text-base">👩‍🏫 老師</h3>
+                    <div className="badge badge-primary badge-xs">學習型</div>
+                  </div>
+                  <p className="text-sm opacity-70">知識淵博的教育者</p>
+                </div>
+                <button
+                  className="btn btn-sm btn-primary"
+                  onClick={() => loadAvatar(avatarImages[3])}
+                >
+                  選擇
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
         {/* -------------------------------------------------------------------------------------- */}
-        {/* youtube 影片預覽 卡片*/}
-        <div className="card shadow-lg border border-info">
-          <div className="grid grid-cols-1 gap-0" >
-            <div className="bg-base-100 rounded-lg ml-5 mr-5 mt-5">
-              <figure>
-                <img
-                  src={YoutubeInfo[0].img}
-                  alt="Shoes" />
-              </figure>
-              {/* <div className="avatar m-3">
-                <div className="w-32 rounded">
-                  <img src={YoutubeInfo[0].img} alt="Movie" />
+        {/* YouTube 影片展示 */}
+        <div className="col-span-4 card shadow-lg border border-info">
+          <div className="card-body">
+            <h2 className="card-title text-info mb-4">🎬 影片展示</h2>
+            <div className="space-y-3">
+              {/* 主要影片 */}
+              <div className="bg-base-100 rounded-lg p-3 border border-base-300">
+                <div className="aspect-video bg-base-200 rounded-lg mb-3 overflow-hidden">
+                  <img
+                    src={YoutubeInfo[currentVideoIndex].img}
+                    alt="YouTube Video"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-              </div> */}
-              <div className="card-body">
-                <h2 className="card-title">Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)</h2>
-                <VideoStats view_count={1695253126} like_count={18551627} upload_date="2009-10-25T00:00:00Z" />
-                <div className="badge badge-soft badge-primary">rick astley</div>
-                <div className="badge badge-soft badge-secondary">Never Gonna Give You Up</div>
-                <div className="badge badge-soft badge-accent">nggyu</div>
-
-                <div className="card-actions justify-end">
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => window.electronAPI?.openExternalUrl?.('https://www.youtube.com/watch?v=dQw4w9WgXcQ')}
-                  >
-                    link
-                  </button>
+                <h3 className="font-semibold text-sm mb-2 line-clamp-2">
+                  {YoutubeInfo[currentVideoIndex].title}
+                </h3>
+                <VideoStats 
+                  view_count={YoutubeInfo[currentVideoIndex].view_count} 
+                  like_count={YoutubeInfo[currentVideoIndex].like_count} 
+                  upload_date={YoutubeInfo[currentVideoIndex].upload_date} 
+                />
+                <div className="flex gap-1 mt-2 flex-wrap">
+                  {YoutubeInfo[currentVideoIndex].tags.map((tag, index) => (
+                    <div key={index} className={`badge badge-${index % 3 === 0 ? 'primary' : index % 3 === 1 ? 'secondary' : 'accent'} badge-sm`}>
+                      {tag}
+                    </div>
+                  ))}
                 </div>
+                <button
+                  className="btn btn-sm btn-primary mt-3 w-full"
+                  onClick={() => window.electronAPI?.openExternalUrl?.(YoutubeInfo[currentVideoIndex].url)}
+                >
+                  🔗 觀看影片
+                </button>
+              </div>
 
-
-              </div> 
+              {/* 推薦影片列表 */}
+              <div className="space-y-2">
+                <h4 className="text-sm font-semibold opacity-70">📺 推薦影片</h4>
                 
-            </div>
-            
-            <div className="bg-base-100 rounded-lg ml-5 mr-5 mt-5">
-              <div className="avatar m-3">
-                <div className="mask mask-squircle w-24">
-                  <img src={AvatarInfo[1].img} alt="Movie" />
-                </div>
-              </div>
-              <div className="card-body">
-                <h2 className="card-title">New movie is released!</h2>
-                
-                <div className="card-actions justify-end">
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => loadAvatar(avatarImages[1])}
-                  >
-                    Avatar 2
-                  </button>
-                </div>
-              </div>  
-            </div>
+                {YoutubeInfo.filter((_, index) => index !== currentVideoIndex).map((video, index) => {
+                  const originalIndex = YoutubeInfo.findIndex(v => v.id === video.id);
+                  return (
+                    <div 
+                      key={video.id}
+                      className="flex gap-3 p-2 bg-base-100 rounded-lg border border-base-300 cursor-pointer hover:bg-base-200 transition-colors"
+                      onClick={() => switchToVideo(originalIndex)}
+                    >
+                      <div className="w-16 h-12 bg-base-200 rounded flex-shrink-0 overflow-hidden">
+                        <img
+                          src={video.img}
+                          alt={video.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-medium line-clamp-2">{video.title}</p>
+                        <p className="text-xs opacity-60">
+                          {(video.view_count / 1000000).toFixed(1)}M 次觀看
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
 
-            <div className="bg-base-100 rounded-lg m-5">
-              <div className="avatar m-3">
-                <div className="mask mask-squircle w-24">
-                  <img src={AvatarInfo[2].img} alt="Movie" />
-                </div>
               </div>
-              <div className="card-body">
-                <h2 className="card-title">New movie is released!</h2>
-                <p>Click the button to watch on Jetflix app.</p>
-                <div className="card-actions justify-end">
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => loadAvatar(avatarImages[2])}
-                  >
-                    Avatar 3
-                  </button>
-                </div>
-              </div>  
-            </div>
-
-
-            <div className="bg-base-100 rounded-lg m-5">
-              <div className="avatar m-3">
-                <div className="mask mask-squircle w-24">
-                  <img src={AvatarInfo[3].img} alt="Movie" />
-                </div>
-              </div>
-              <div className="card-body">
-                <h2 className="card-title">New movie is released!</h2>
-                <p>Click the button to watch on Jetflix app.</p>
-                <div className="card-actions justify-end">
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => loadAvatar(avatarImages[3])}
-                  >
-                    Avatar 4
-                  </button>
-                </div>
-              </div>  
             </div>
           </div>
         </div>

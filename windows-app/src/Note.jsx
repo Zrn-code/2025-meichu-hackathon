@@ -38,9 +38,9 @@ export default function Note() {
   }, [rows, totalPages]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="p-4">
+    <div className="bg-base-100 rounded-lg p-4 border border-base-300">
       <div className="flex items-center gap-2 mb-3">
-        <h2 className="text-xl font-bold">Notebook 列表</h2>
+        <h3 className="text-lg font-semibold text-primary">📚 Notebook</h3>
         <span className="opacity-70">（共 {rows.length} 筆 / 每頁 {PAGE_SIZE} 筆）</span>
         <button className="btn btn-sm btn-outline" onClick={load}>Refresh</button>
       </div>
@@ -55,13 +55,13 @@ export default function Note() {
       ) : (
         <>
           <div className="overflow-x-auto">
-            <table className="table">
+            <table className="table table-compact">
               <thead>
                 <tr>
-                  <th>#</th>
-                  <th>keywords</th>
-                  <th>url</th>
-                  <th className="text-right">filename</th>
+                  <th className="w-8">#</th>
+                  <th className="w-20">keywords</th>
+                  <th className="w-32">url</th>
+                  <th className="w-24 text-right">filename</th>
                 </tr>
               </thead>
               <tbody>
@@ -74,25 +74,36 @@ export default function Note() {
                 ) : (
                   visible.map((r, idx) => (
                     <tr key={r.id ?? `${r.filename}:${start + idx}`}>
-                      <th>{start + idx + 1}</th>
-                      <td>{String(r.keywords ?? "")}</td>
-                      <td>
+                      <th className="w-8 text-xs">{start + idx + 1}</th>
+                      <td className="w-20 text-xs">
+                        <div className="line-clamp-2 text-xs">
+                          {String(r.keywords ?? "")}
+                        </div>
+                      </td>
+                      <td className="w-32">
                         {r.url ? (
                           <a
-                            className="link"
+                            className="link text-xs block"
                             href={r.url}
                             onClick={(e) => {
                               e.preventDefault();
                               window.electronAPI?.openExternalUrl?.(r.url);
                             }}
+                            title={r.url}
                           >
-                            {r.url}
+                            <div className="line-clamp-3 break-all">
+                              {r.url}
+                            </div>
                           </a>
                         ) : (
-                          <span className="opacity-60">—</span>
+                          <span className="opacity-60 text-xs">—</span>
                         )}
                       </td>
-                      <td className="text-right opacity-70">{r.filename}</td>
+                      <td className="w-24 text-right opacity-70 font-medium text-xs">
+                        <div className="line-clamp-2 text-right">
+                          {r.filename}
+                        </div>
+                      </td>
                     </tr>
                   ))
                 )}
