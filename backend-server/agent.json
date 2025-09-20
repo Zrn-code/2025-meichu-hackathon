@@ -1,5 +1,5 @@
 {
-    "model": "Qwen-2.5-1.5B-Instruct-NPU",
+    "model": "DeepSeek-R1-Distill-Llama-8B-CPU",
     "endpointUrl": "http://localhost:8000/api/v1",
     "server": {
         "host": "localhost",

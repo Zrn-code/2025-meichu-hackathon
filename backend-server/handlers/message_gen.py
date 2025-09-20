@@ -1,6 +1,7 @@
 import time
 import json
 import re
+import requests
 from openai import OpenAI
 
 # Initialize lemonade client (referencing lem.py)
@@ -8,6 +9,9 @@ client = OpenAI(
     base_url="http://localhost:8000/api/v1",
     api_key="lemonade"  # 需要帶但不驗證
 )
+
+# 語音生成服務器配置
+VOICE_GENERATION_SERVER_URL = "http://localhost:5001/api/generate_voice_batch"
 
 # Pattern to remove think blocks (from lem.py)
 THINK_BLOCK = re.compile(r"<\s*think\b[^>]*>.*?<\s*/\s*think\s*>",
@@ -118,6 +122,60 @@ def process_video_subtitles(video_data, character_info, video_id=None):
     print(f"📝 完成處理，總共生成了 {reply_count} 個角色回復")
     return llm_summary
 
+def send_voice_generation_request(video_id, llm_summary):
+    """向語音生成服務器發送批次語音生成請求
+    
+    Args:
+        video_id (str): 影片 ID
+        llm_summary (list): 角色回應列表（用於計算數量，不再發送內容）
+    
+    Returns:
+        bool: 是否成功發送請求
+    """
+    try:
+        import logging
+        logger = logging.getLogger(__name__)
+        
+        # 簡化的請求資料 - 只需要 video_id
+        request_data = {
+            "video_id": video_id
+        }
+        
+        print(f"🎵 向語音生成服務器發送請求: 影片 {video_id}")
+        logger.info(f"向語音生成服務器發送請求，影片ID: {video_id}")
+        
+        # 發送 POST 請求
+        response = requests.post(
+            VOICE_GENERATION_SERVER_URL,
+            json=request_data,
+            timeout=30  # 30秒超時
+        )
+        
+        if response.status_code == 202:  # 202 Accepted
+            result = response.json()
+            print(f"✅ 語音生成請求已接受: {result.get('message', '')}")
+            print(f"   回應數量: {result.get('response_count', 'N/A')}")
+            print(f"   預計時間: {result.get('estimated_duration', 'N/A')}")
+            logger.info(f"語音生成請求已接受，預計時間: {result.get('estimated_duration', 'N/A')}")
+            return True
+        else:
+            print(f"❌ 語音生成服務器回應錯誤: {response.status_code}")
+            logger.error(f"語音生成服務器回應錯誤: {response.status_code}, {response.text}")
+            return False
+            
+    except requests.exceptions.Timeout:
+        print(f"❌ 語音生成服務器請求超時")
+        logger.error("語音生成服務器請求超時")
+        return False
+    except requests.exceptions.ConnectionError:
+        print(f"❌ 無法連接到語音生成服務器")
+        logger.error("無法連接到語音生成服務器")
+        return False
+    except Exception as e:
+        print(f"❌ 發送語音生成請求時發生錯誤: {e}")
+        logger.error(f"發送語音生成請求時發生錯誤: {e}")
+        return False
+
 def generate_avatar_response_for_video(video_id, character_index=0):
     """為指定影片 ID 生成角色回應
     
@@ -175,6 +233,14 @@ def generate_avatar_response_for_video(video_id, character_index=0):
             json.dump(llm_summary, f, ensure_ascii=False, indent=2)
         
         print(f"💾 結果已儲存到: avatar_talk/{video_id}.json")
+        
+        # 向語音生成服務器發送請求
+        success = send_voice_generation_request(video_id, llm_summary)
+        if success:
+            print(f"🎵 已向語音生成服務器發送請求")
+        else:
+            print(f"⚠️  語音生成請求發送失敗")
+        
         print("="*50)
         print(f"✅ 影片 {video_id} 處理完成！\n")
         
@@ -239,6 +305,14 @@ def generate_avatar_responses_batch():
             
             print(f"💾 已儲存到: avatar_talk/{video_id}.json")
             logger.info(f"已儲存到: {output_file}")
+            
+            # 向語音生成服務器發送請求
+            voice_success = send_voice_generation_request(video_id, llm_summary)
+            if voice_success:
+                print(f"🎵 已向語音生成服務器發送請求")
+            else:
+                print(f"⚠️  語音生成請求發送失敗")
+            
             success_count += 1
             
         except Exception as e:
