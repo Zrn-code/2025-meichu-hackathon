@@ -38,7 +38,7 @@ const MessageBox = ({ onStart, onSend }) => {
   const inputRef = useRef(null);
   const messagesRef = useRef(null);
   // 直接綁定 API Key
-  const userKey = "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";
+  const userKey = ""; // REMOVED: Do not hardcode secrets. Use environment variables or secure storage.
 
   const handleCloseClick = () => {
     if (window.electronAPI && window.electronAPI.closeMessageBox) {
