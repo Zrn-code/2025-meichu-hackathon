@@ -14,9 +14,168 @@ if (started) {
   app.quit();
 }
 
+
 let mainWindow;
 let avatarWindow = null;
 let messageBoxWindow = null;
+let informWindow = null;
+// informWindow 建立
+const createInformWindow = (message = "") => {
+  if (informWindow) {
+    informWindow.show();
+    informWindow.focus();
+    informWindow.webContents.send('message-received', message);
+    return;
+  }
+
+  const informW = 320;
+  const informH = 180;
+  const spacing = 10;
+
+  // 計算初始位置：優先以 messageBox 的目標位置為基準，否則以 avatar 為基準，否則螢幕右下 fallback
+  let startX, startY;
+  if (messageBoxWindow && !messageBoxWindow.isDestroyed()) {
+    // 如果 messageBox 存在，放在 messageBox 左側
+    const mb = messageBoxWindow.getBounds();
+    startX = mb.x - 10;
+    startY = mb.y - 150;
+  } else if (avatarWindow && !avatarWindow.isDestroyed()) {
+    const av = avatarWindow.getBounds();
+    // 放在 avatar 左側（與 messageBox 類似）
+    startX = av.x - 20;
+    startY = av.y - 150; // 與 avatar 同垂直位置
+  } else {
+    // fallback：螢幕右下
+    const wa = screen.getPrimaryDisplay().workArea;
+    startX = wa.x + wa.width - informW - 12;
+    startY = wa.y + wa.height - informH - 12;
+  }
+
+  informWindow = new BrowserWindow({
+    x: Math.round(startX),
+    y: Math.round(startY),
+    width: 320,
+    height: 180,
+    frame: false,
+    transparent: true,
+    alwaysOnTop: true,
+    skipTaskbar: true,
+    resizable: false,
+    hasShadow: true,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js'),
+    },
+  });
+
+  // 加載 inform.html
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+    informWindow.loadURL(`${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/inform.html`);
+  } else {
+    informWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/inform.html`));
+  }
+
+  informWindow.on('closed', () => {
+    informWindow = null;
+  });
+
+  // 初始穿透
+  informWindow.setIgnoreMouseEvents(true, { forward: true });
+
+  informWindow.webContents.once('dom-ready', () => {
+    informWindow.webContents.send('message-received', message);
+    setTimeout(() => {
+      setupInformClickRegion();
+    }, 100);
+  });
+
+  // 若 messageBox 存在，放在 messageBox 左側
+  // if (messageBoxWindow) {
+  //   updateInformPosition();
+  // }
+};
+
+const closeInformWindow = () => {
+  if (informWindow) {
+    informWindow.close();
+    informWindow = null;
+  }
+};
+
+const updateInformPosition = () => {
+  if (!informWindow || informWindow.isDestroyed() || !avatarWindow || avatarWindow.isDestroyed()) return;
+
+  const informW = 320;
+  const informH = 180;
+  const spacing = 2; // 各視窗之間間距
+
+  // 計算 messageBox 最終目標 (以 avatar 為基準)，即使 messageBox 正在動畫中也用這個目標來定位 inform
+  let mbTargetX, mbTargetY;
+  if (avatarWindow && !avatarWindow.isDestroyed()) {
+    const av = avatarWindow.getBounds();
+    // messageBox 寬度預設 300, offset 與你的邏輯一致 (300 + 10)
+    mbTargetX = av.x; // avatar 左邊: messageBox x
+    mbTargetY = av.y-150;       // 與 avatar 同垂直位置
+  } else if (messageBoxWindow && !messageBoxWindow.isDestroyed()) {
+    // 若 avatar 不可用，但 messageBox 可用，就依 messageBox 當下位置
+    const mb = messageBoxWindow.getBounds();
+    mbTargetX = mb.x;
+    mbTargetY = mb.y;
+  } else {
+    // 都沒有基準，直接 return
+    return;
+  }
+
+  // inform 目標在 messageBox 左側
+  const targetX = mbTargetX - informW - spacing;
+  const targetY = mbTargetY;
+
+  try {
+    const cur = informWindow.getBounds();
+    // 若位置差異非常小就不更新（避免不必要 setBounds）
+    if (Math.abs(cur.x - targetX) <= 1 && Math.abs(cur.y - targetY) <= 1) {
+      return;
+    }
+    // 直接立刻 setBounds（不做動畫）以保持穩定與同步
+    informWindow.setBounds({ x: Math.round(targetX), y: Math.round(targetY), width: informW, height: informH });
+  } catch (e) {
+    // 若有錯誤（例如 window 尚在建立中），僅記 log
+    console.error('[updateInformPosition] error', e);
+  }
+};
+
+// inform page 點擊區域設置
+const setupInformClickRegion = () => {
+  if (informWindow && !informWindow.isDestroyed()) {
+    informWindow.setIgnoreMouseEvents(true, { forward: true });
+    informWindow.webContents.on('ipc-message', (event, channel) => {
+      if (channel === 'mouse-enter-inform') {
+        informWindow.setIgnoreMouseEvents(false);
+      } else if (channel === 'mouse-leave-inform') {
+        informWindow.setIgnoreMouseEvents(true, { forward: true });
+      }
+    });
+  }
+};
+// IPC handlers for inform window
+ipcMain.handle('show-inform', () => {
+  if (informWindow && !informWindow.isDestroyed()) {
+    closeInformWindow();
+  } else {
+    createInformWindow();
+  }
+  return { success: true };
+});
+
+ipcMain.handle('close-inform', () => {
+  closeInformWindow();
+  return { success: true };
+});
+
+ipcMain.handle('is-inform-visible', () => {
+  return { visible: informWindow !== null && !informWindow.isDestroyed() };
+});
 
 const createWindow = () => {
   // Create the browser window.
@@ -102,6 +261,7 @@ const createAvatarWindow = () => {
   // 監聽 Avatar 窗口移動，同步更新 MessageBox 位置
   avatarWindow.on('moved', () => {
     updateMessageBoxPosition();
+    updateInformPosition();
   });
 
   // 設置窗口可拖動
@@ -169,6 +329,7 @@ const createMessageBoxWindow = (message = "你好！我是你的桌面小助手 
   // 如果 avatar 窗口存在，將 MessageBox 放在 avatar 左邊
   if (avatarWindow) {
     updateMessageBoxPosition();
+    updateInformPosition();
   }
 };
 
@@ -176,6 +337,8 @@ const closeMessageBoxWindow = () => {
   if (messageBoxWindow) {
     messageBoxWindow.close();
     messageBoxWindow = null;
+    // 關閉 messageBox 時自動關閉 inform
+    closeInformWindow();
   }
 };
 

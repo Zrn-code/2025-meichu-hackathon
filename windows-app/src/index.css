@@ -34,6 +34,18 @@ body.message-window #root {
   overflow: hidden;
 }
 
+/* Inform 窗口特定樣式 */
+body.inform-window {
+  background: transparent !important;
+  overflow: hidden;
+}
+body.inform-window html,
+body.inform-window body,
+body.inform-window #root {
+  background: transparent !important;
+  overflow: hidden;
+}
+
 /* Electron 拖動功能 */
 .avatar-drag {
   -webkit-app-region: drag;

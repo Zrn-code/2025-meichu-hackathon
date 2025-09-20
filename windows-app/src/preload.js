@@ -22,6 +22,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.on('message-received', (event, message) => callback(message));
     return () => ipcRenderer.removeListener('message-received', callback);
   },
+  // Inform 相關
+  showInform: (message) => ipcRenderer.invoke('show-inform', message),
+  closeInform: () => ipcRenderer.invoke('close-inform'),
+  isInformVisible: () => ipcRenderer.invoke('is-inform-visible'),
+  
   
   // Tab Monitor 相關
   getTabsData: () => ipcRenderer.invoke('get-tabs-data'),
