@@ -7,6 +7,9 @@
 import logging
 import json
 import os
+import uuid
+import requests
+import threading
 from typing import Dict, Any
 from .base import MCPTool
 
@@ -20,6 +23,9 @@ class ConversationLogTool(MCPTool):
         # 設定資料存儲文件路徑
         self.data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
         self.data_file = os.path.join(self.data_dir, "conversation_logs.json")
+        
+        # 語音生成服務器配置
+        self.voice_server_url = "http://localhost:5001/api/generate_voice"
         
         # 確保資料目錄存在
         os.makedirs(self.data_dir, exist_ok=True)
@@ -52,6 +58,10 @@ class ConversationLogTool(MCPTool):
                 "message": {
                     "type": "string",
                     "description": "要說的對話語句內容"
+                },
+                "video_id": {
+                    "type": "string",
+                    "description": "影片ID（可選，如果未提供將自動生成）"
                 }
             },
             "required": ["timestamp", "emotion", "message"]
@@ -86,12 +96,55 @@ class ConversationLogTool(MCPTool):
             logger.error(f"Failed to save data: {e}")
             raise
     
+    def _send_voice_generation_request(self, record: Dict):
+        """向語音生成服務器發送請求"""
+        try:
+            # 準備語音生成所需的數據
+            voice_data = {
+                "timestamp": record["timestamp"],
+                "emotion": record["emotion"],
+                "message": record["message"],
+                "video_id": record["video_id"],
+                "logs_id": record["logs_id"]
+            }
+            
+            logger.info(f"向語音服務器發送請求: {record['logs_id']}")
+            
+            # 發送請求到語音生成服務器
+            response = requests.post(
+                self.voice_server_url,
+                json=voice_data,
+                timeout=10
+            )
+            
+            if response.status_code == 202:  # 202 Accepted
+                logger.info(f"語音生成請求已被接受: {record['logs_id']}")
+            else:
+                logger.warning(f"語音服務器回應異常: {response.status_code} - {response.text}")
+                
+        except requests.exceptions.ConnectionError:
+            logger.error(f"無法連接到語音服務器 (localhost:5001): {record['logs_id']}")
+        except requests.exceptions.Timeout:
+            logger.error(f"語音服務器請求超時: {record['logs_id']}")
+        except Exception as e:
+            logger.error(f"發送語音生成請求時發生錯誤: {e}")
+    
+    def _send_voice_request_async(self, record: Dict):
+        """異步發送語音生成請求"""
+        thread = threading.Thread(
+            target=self._send_voice_generation_request,
+            args=(record,),
+            daemon=True
+        )
+        thread.start()
+    
     async def execute(self, arguments: Dict) -> Dict:
         """執行對話記錄工具"""
         try:
             timestamp = arguments.get("timestamp")
             message = arguments.get("message")
             emotion = arguments.get("emotion")
+            video_id = arguments.get("video_id")
             
             # 驗證必要欄位
             if not timestamp:
@@ -124,11 +177,18 @@ class ConversationLogTool(MCPTool):
                     ]
                 }
             
+            # 生成唯一 ID
+            logs_id = str(uuid.uuid4())
+            if not video_id:
+                video_id = f"video_{str(uuid.uuid4())[:8]}"
+            
             # 載入現有資料
             data = self._load_data()
             
             # 創建新記錄
             record = {
+                "logs_id": logs_id,
+                "video_id": video_id,
                 "timestamp": timestamp,
                 "emotion": emotion,
                 "message": message
@@ -140,11 +200,14 @@ class ConversationLogTool(MCPTool):
             # 儲存資料
             self._save_data(data)
             
+            # 異步發送語音生成請求
+            self._send_voice_request_async(record)
+            
             return {
                 "content": [
                     {
                         "type": "text",
-                        "text": "✅ 對話記錄已成功新增！"
+                        "text": f"✅ 對話記錄已成功新增！\n📋 記錄ID: {logs_id}\n🎬 影片ID: {video_id}\n🎵 語音生成請求已發送到 localhost:5001"
                     }
                 ]
             }
