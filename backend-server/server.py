@@ -568,8 +568,152 @@ class UnifiedServer:
                     "error": str(e)
                 }), 500
         
-
+        # ===== 轉錄相關 API (Supadata) =====
         
+        @self.app.route('/api/youtube/transcript/<video_id>', methods=['GET'])
+        def get_video_transcript(video_id):
+            """獲取指定視頻的轉錄數據"""
+            try:
+                transcripts = self.youtube_handler.get_video_transcripts(video_id)
+                
+                return jsonify({
+                    "success": True,
+                    "video_id": video_id,
+                    "transcripts": transcripts,
+                    "count": len(transcripts),
+                    "timestamp": datetime.now().isoformat()
+                })
+                
+            except Exception as e:
+                self.logger.error(f"Get video transcript error: {e}")
+                return jsonify({
+                    "success": False,
+                    "error": str(e)
+                }), 500
+        
+        @self.app.route('/api/youtube/transcript/latest', methods=['GET'])
+        def get_latest_transcript():
+            """獲取最新的轉錄數據"""
+            try:
+                video_id = request.args.get('video_id')
+                transcript = self.youtube_handler.get_latest_transcript(video_id)
+                
+                if transcript:
+                    return jsonify({
+                        "success": True,
+                        "transcript": transcript,
+                        "timestamp": datetime.now().isoformat()
+                    })
+                else:
+                    return jsonify({
+                        "success": False,
+                        "message": "No transcript available",
+                        "video_id": video_id
+                    }), 404
+                    
+            except Exception as e:
+                self.logger.error(f"Get latest transcript error: {e}")
+                return jsonify({
+                    "success": False,
+                    "error": str(e)
+                }), 500
+        
+        @self.app.route('/api/youtube/transcript/trigger', methods=['POST'])
+        def trigger_manual_transcript():
+            """手動觸發轉錄處理"""
+            try:
+                data = request.get_json()
+                video_url = data.get('video_url')
+                video_id = data.get('video_id')
+                
+                if not video_url:
+                    return jsonify({
+                        "success": False,
+                        "error": "video_url is required"
+                    }), 400
+                
+                if not video_id:
+                    # 嘗試從URL提取video_id
+                    import re
+                    match = re.search(r'[?&]v=([^&]+)', video_url)
+                    if match:
+                        video_id = match.group(1)
+                    else:
+                        return jsonify({
+                            "success": False,
+                            "error": "Could not extract video_id from URL"
+                        }), 400
+                
+                # 在後台線程中處理轉錄
+                import threading
+                thread = threading.Thread(
+                    target=self.youtube_handler._process_video_transcript,
+                    args=(video_url, video_id),
+                    daemon=True
+                )
+                thread.start()
+                
+                return jsonify({
+                    "success": True,
+                    "message": "Transcript processing started",
+                    "video_id": video_id,
+                    "video_url": video_url,
+                    "timestamp": datetime.now().isoformat()
+                })
+                
+            except Exception as e:
+                self.logger.error(f"Trigger manual transcript error: {e}")
+                return jsonify({
+                    "success": False,
+                    "error": str(e)
+                }), 500
+        
+        @self.app.route('/api/youtube/transcript/files', methods=['GET'])
+        def list_transcript_files():
+            """列出所有可用的轉錄檔案"""
+            try:
+                transcript_files = self.youtube_handler.list_available_transcripts()
+                
+                return jsonify({
+                    "success": True,
+                    "transcript_files": transcript_files,
+                    "count": len(transcript_files),
+                    "timestamp": datetime.now().isoformat()
+                })
+                
+            except Exception as e:
+                self.logger.error(f"List transcript files error: {e}")
+                return jsonify({
+                    "success": False,
+                    "error": str(e)
+                }), 500
+        
+        @self.app.route('/api/youtube/transcript/file/<video_id>', methods=['GET'])
+        def get_transcript_from_file(video_id):
+            """從檔案或記憶體獲取轉錄數據"""
+            try:
+                transcript = self.youtube_handler.get_transcript_from_file_or_memory(video_id)
+                
+                if transcript:
+                    return jsonify({
+                        "success": True,
+                        "video_id": video_id,
+                        "transcript": transcript,
+                        "timestamp": datetime.now().isoformat()
+                    })
+                else:
+                    return jsonify({
+                        "success": False,
+                        "message": f"No transcript found for video {video_id}",
+                        "video_id": video_id
+                    }), 404
+                    
+            except Exception as e:
+                self.logger.error(f"Get transcript from file error: {e}")
+                return jsonify({
+                    "success": False,
+                    "error": str(e)
+                }), 500
 
         
         @self.app.route('/api/tabs', methods=['GET', 'POST'])

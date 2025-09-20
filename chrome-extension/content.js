@@ -48,7 +48,13 @@ class YouTubeMonitor {
             if (video && video !== this.video) {
                 this.video = video;
                 this.setupVideoListeners();
-                console.log('Video element found and listeners attached');
+                console.log('✅ Video element found and listeners attached');
+                
+                // 等待頁面完全加載後再嘗試獲取標題等資訊
+                setTimeout(() => {
+                    this.waitForPageContent();
+                }, 1000);
+                
             } else if (!video) {
                 // 如果沒找到視頻，繼續等待
                 setTimeout(checkVideo, 500);
@@ -56,6 +62,23 @@ class YouTubeMonitor {
         };
         
         checkVideo();
+    }
+    
+    waitForPageContent() {
+        const checkContent = () => {
+            const title = this.getVideoTitle();
+            const channel = this.getChannelName();
+            
+            if (title && channel) {
+                console.log('✅ Page content loaded:', { title, channel });
+                return;
+            }
+            
+            // 如果還沒加載完，繼續等待
+            setTimeout(checkContent, 500);
+        };
+        
+        checkContent();
     }
     
     setupVideoListeners() {
@@ -93,8 +116,18 @@ class YouTubeMonitor {
         // 監聽字幕按鈕點擊
         this.setupSubtitleButtonListeners();
         
+        // 監聽劇院模式和全螢幕切換
+        this.setupViewModeListeners();
+        
         // 初始數據發送
         setTimeout(() => this.sendVideoData(), 1000);
+        
+        // 延遲顯示彈出窗口（給用戶一些時間適應）
+        setTimeout(() => {
+            if (this.isVideoPage()) {
+                console.log('🎥 YouTube video detected...');
+            }
+        }, 5000);
         
         // 延遲執行更積極的字幕檢查
         setTimeout(() => {
@@ -133,6 +166,75 @@ class YouTubeMonitor {
             
             this.observers.push(observer);
         }
+    }
+    
+    setupViewModeListeners() {
+        // 監聽劇院模式按鈕
+        const theaterButton = document.querySelector('.ytp-size-button');
+        if (theaterButton) {
+            theaterButton.addEventListener('click', () => {
+                // 延遲發送數據，等待模式切換完成
+                setTimeout(() => {
+                    console.log('Theater mode toggled');
+                    this.sendVideoData();
+                }, 300);
+            });
+        }
+        
+        // 監聽全螢幕變化事件
+        document.addEventListener('fullscreenchange', () => {
+            console.log('Fullscreen state changed');
+            setTimeout(() => this.sendVideoData(), 100);
+        });
+        
+        // 監聽 ESC 鍵（可能退出全螢幕）
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                setTimeout(() => this.sendVideoData(), 100);
+            }
+        });
+        
+        // 使用 MutationObserver 監聽 DOM 變化來檢測劇院模式
+        const watchFlexy = document.querySelector('ytd-watch-flexy');
+        if (watchFlexy) {
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'attributes' && 
+                        (mutation.attributeName === 'theater' || 
+                         mutation.attributeName === 'class')) {
+                        console.log('Theater mode attribute changed');
+                        setTimeout(() => this.sendVideoData(), 100);
+                    }
+                });
+            });
+            
+            observer.observe(watchFlexy, {
+                attributes: true,
+                attributeFilter: ['theater', 'class', 'fullscreen']
+            });
+            
+            this.observers.push(observer);
+        }
+        
+        // 監聽 body 和 html 的 class 變化（YouTube 可能在這些元素上添加劇院模式標記）
+        const bodyObserver = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    const target = mutation.target;
+                    if (target.classList.contains('theater') || 
+                        target.classList.contains('theater-mode') ||
+                        target.classList.contains('fullscreen')) {
+                        console.log('Body/HTML class changed - view mode detected');
+                        setTimeout(() => this.sendVideoData(), 100);
+                    }
+                }
+            });
+        });
+        
+        bodyObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+        bodyObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+        
+        this.observers.push(bodyObserver);
     }
     
     removeVideoListeners() {
@@ -200,6 +302,18 @@ class YouTubeMonitor {
     
     getVideoData() {
         try {
+            console.log('🔍 Getting video data...');
+            
+            // 獲取基本數據
+            const title = this.getVideoTitle();
+            const channelName = this.getChannelName();
+            const videoId = this.getVideoId();
+            
+            console.log('📹 Video ID:', videoId);
+            console.log('📝 Title:', title);
+            console.log('👤 Channel:', channelName);
+            console.log('🎬 Video element:', !!this.video);
+            
             const data = {
                 // 基本信息
                 url: location.href,
@@ -214,9 +328,9 @@ class YouTubeMonitor {
                 playbackRate: this.video ? this.video.playbackRate : 1,
                 
                 // 視頻信息
-                videoId: this.getVideoId(),
-                title: this.getVideoTitle(),
-                channelName: this.getChannelName(),
+                videoId: videoId,
+                title: title,
+                channelName: channelName,
                 viewCount: this.getViewCount(),
                 description: this.getVideoDescription(),
                 
@@ -230,12 +344,14 @@ class YouTubeMonitor {
                 
                 // 額外狀態
                 isFullscreen: document.fullscreenElement !== null,
+                isTheaterMode: this.isTheaterMode(),
                 quality: this.getVideoQuality(),
                 
                 // 時間戳
                 timestamp: Date.now()
             };
             
+            console.log('📊 Final data:', data);
             return data;
             
         } catch (error) {
@@ -254,17 +370,58 @@ class YouTubeMonitor {
     }
     
     getVideoTitle() {
-        const titleElement = document.querySelector('h1.ytd-video-primary-info-renderer') ||
-                           document.querySelector('#title h1') ||
-                           document.querySelector('h1.title');
-        return titleElement ? titleElement.textContent.trim() : null;
+        // 嘗試多種可能的選擇器
+        const titleSelectors = [
+            'h1.ytd-watch-metadata #title',
+            'h1.title.style-scope.ytd-video-primary-info-renderer',
+            'h1.ytd-video-primary-info-renderer',
+            '#above-the-fold #title h1',
+            '#title h1',
+            'h1[class*="title"]',
+            'ytd-watch-metadata h1',
+            '.ytd-video-primary-info-renderer h1'
+        ];
+        
+        for (const selector of titleSelectors) {
+            const titleElement = document.querySelector(selector);
+            if (titleElement && titleElement.textContent.trim()) {
+                return titleElement.textContent.trim();
+            }
+        }
+        
+        // 如果還是找不到，嘗試從 document.title 獲取
+        const pageTitle = document.title;
+        if (pageTitle && pageTitle !== 'YouTube' && !pageTitle.startsWith('(')) {
+            // 移除 " - YouTube" 後綴
+            return pageTitle.replace(' - YouTube', '');
+        }
+        
+        return null;
     }
     
     getChannelName() {
-        const channelElement = document.querySelector('#owner-name a') ||
-                             document.querySelector('.ytd-channel-name a') ||
-                             document.querySelector('#channel-name a');
-        return channelElement ? channelElement.textContent.trim() : null;
+        // 嘗試多種可能的選擇器
+        const channelSelectors = [
+            'ytd-watch-metadata ytd-channel-name a',
+            '#owner #channel-name a',
+            '#upload-info #owner-name a',
+            '.ytd-channel-name a',
+            '#channel-name a',
+            '#owner-name a',
+            'ytd-video-owner-renderer a',
+            '.yt-simple-endpoint.style-scope.yt-formatted-string',
+            'a[href*="/channel/"]',
+            'a[href*="/@"]'
+        ];
+        
+        for (const selector of channelSelectors) {
+            const channelElement = document.querySelector(selector);
+            if (channelElement && channelElement.textContent.trim()) {
+                return channelElement.textContent.trim();
+            }
+        }
+        
+        return null;
     }
     
     getViewCount() {
@@ -307,6 +464,95 @@ class YouTubeMonitor {
             console.log('Could not get video quality');
         }
         return null;
+    }
+    
+    isTheaterMode() {
+        // YouTube 劇院模式檢測
+        try {
+            // 方法 1: 檢查 body 或 html 上的 class
+            const body = document.body;
+            const html = document.documentElement;
+            
+            // YouTube 在劇院模式時會添加 theater 相關的 class
+            if (body.classList.contains('theater') || 
+                body.classList.contains('theater-mode') ||
+                html.classList.contains('theater') ||
+                html.classList.contains('theater-mode')) {
+                return true;
+            }
+            
+            // 方法 2: 檢查頁面容器的 class
+            const pageContainer = document.querySelector('#page') || 
+                                document.querySelector('#content') ||
+                                document.querySelector('ytd-app');
+            
+            if (pageContainer && 
+                (pageContainer.classList.contains('theater') || 
+                 pageContainer.classList.contains('theater-mode') ||
+                 pageContainer.hasAttribute('theater') ||
+                 pageContainer.hasAttribute('theater-mode'))) {
+                return true;
+            }
+            
+            // 方法 3: 檢查播放器容器的狀態
+            const playerContainer = document.querySelector('#movie_player') ||
+                                  document.querySelector('.html5-video-player');
+            
+            if (playerContainer) {
+                // 檢查是否有劇院模式相關的 class 或屬性
+                if (playerContainer.classList.contains('ytp-large-width') ||
+                    playerContainer.classList.contains('theater') ||
+                    playerContainer.classList.contains('theater-mode') ||
+                    playerContainer.hasAttribute('theater')) {
+                    return true;
+                }
+            }
+            
+            // 方法 4: 檢查頁面佈局結構
+            const watchFlexy = document.querySelector('ytd-watch-flexy');
+            if (watchFlexy) {
+                // YouTube 在劇院模式時會修改 ytd-watch-flexy 的屬性
+                if (watchFlexy.hasAttribute('theater') ||
+                    watchFlexy.classList.contains('theater') ||
+                    watchFlexy.hasAttribute('fullscreen') ||
+                    watchFlexy.getAttribute('theater') === '' ||
+                    watchFlexy.getAttribute('theater') === 'true') {
+                    return true;
+                }
+            }
+            
+            // 方法 5: 檢查劇院模式按鈕的狀態
+            const theaterButton = document.querySelector('.ytp-size-button') ||
+                                document.querySelector('[aria-label*="Theater"]') ||
+                                document.querySelector('[aria-label*="劇院"]');
+            
+            if (theaterButton) {
+                // 如果按鈕被按下或有 active 狀態
+                if (theaterButton.classList.contains('ytp-button-active') ||
+                    theaterButton.getAttribute('aria-pressed') === 'true') {
+                    return true;
+                }
+            }
+            
+            // 方法 6: 透過視窗大小和播放器大小比較（不太準確但可作為輔助）
+            const video = document.querySelector('video');
+            if (video) {
+                const videoRect = video.getBoundingClientRect();
+                const windowWidth = window.innerWidth;
+                
+                // 如果影片寬度接近視窗寬度，可能是劇院模式
+                // 這個方法不太準確，因為全螢幕也會如此
+                if (videoRect.width > windowWidth * 0.9 && !document.fullscreenElement) {
+                    return true;
+                }
+            }
+            
+            return false;
+            
+        } catch (error) {
+            console.error('Error detecting theater mode:', error);
+            return false;
+        }
     }
     
     getSubtitleData() {
@@ -924,6 +1170,20 @@ class YouTubeMonitor {
         
         return null;
     }
+    
+    // ===== 彈出窗口相關方法 =====
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
 }
 
 // 初始化 YouTube 監控器
