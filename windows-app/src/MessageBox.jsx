@@ -1,14 +1,44 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './index.css';
 import llmService from './services/llmService';
+import { getAuthHeader } from './services/apikey'
+
+const MODEL = import.meta.env.VITE_STT_MODEL || 'whisper-1'
+const LANGUAGE = import.meta.env.VITE_LANGUAGE || 'zh'
+const TRANSCRIBE_URL = import.meta.env.VITE_TRANSCRIBE_URL
+
+function pickSupportedMime() {
+  const prefer = [
+    'audio/webm;codecs=opus',
+    'audio/webm',
+    'audio/ogg;codecs=opus',
+    'audio/mp4'
+  ]
+  for (const t of prefer) {
+    if (window.MediaRecorder?.isTypeSupported?.(t)) return t
+  }
+  return ''
+}
 
 const MessageBox = ({ onStart, onSend }) => {
   const [message, setMessage] = useState("你好！我是你的桌面小助手🐱");
   const [running, setRunning] = useState(false);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  // 錄音相關狀態
+  const [recording, setRecording] = useState(false)
+  const [transcript, setTranscript] = useState('')
+  const [latencyMs, setLatencyMs] = useState(null)
+  const [error, setError] = useState('')
+  // 音訊 chain refs
+  const mediaStreamRef = useRef(null)
+  const mediaRecorderRef = useRef(null)
+  const audioChunksRef = useRef([])
+
   const inputRef = useRef(null);
   const messagesRef = useRef(null);
+  // 直接綁定 API Key
+  const userKey = "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";
 
   const handleCloseClick = () => {
     if (window.electronAPI && window.electronAPI.closeMessageBox) {
@@ -30,6 +60,60 @@ const MessageBox = ({ onStart, onSend }) => {
     }
   };
 
+
+  async function startRecording() {
+      setMessage("錄音中...");
+      setError(''); setTranscript(''); audioChunksRef.current = []
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } })
+      mediaStreamRef.current = stream
+      const mimeType = pickSupportedMime()
+      setMessage("錄音中2...");
+      const mr = new MediaRecorder(stream, mimeType ? { mimeType } : undefined)
+      mediaRecorderRef.current = mr
+      mr.ondataavailable = ev => { if (ev.data && ev.data.size > 0) audioChunksRef.current.push(ev.data) }
+      mr.start(50)
+      setRecording(true)
+  }
+  async function stopRecording() {
+      setMessage("辨識中...");
+      const start = performance.now()
+      setRecording(false)
+      const mr = mediaRecorderRef.current; if (!mr) return
+      await new Promise(res => { mr.onstop = () => res(); mr.stop() })
+      mediaStreamRef.current?.getTracks().forEach(t => t.stop())
+  
+      // 直接合併 webm/ogg/mp4，避免前端 decode/轉碼
+      const mimeType =  audioChunksRef.current[0]?.type || 'audio/webm'
+      const audioBlob = new Blob(audioChunksRef.current, { type: mimeType })
+      const filename =
+        mimeType.includes('ogg') ? 'audio.ogg' :
+        mimeType.includes('mp4') ? 'audio.mp4' : 'audio.webm'
+  
+      console.log('[debug] filename = ',filename, 'mimeType = ',mimeType,' size=', audioBlob.size)
+
+      try {
+        const fd = new FormData()
+        fd.append('file', audioBlob, filename)
+        fd.append('model', MODEL)
+        fd.append('language', LANGUAGE)
+  
+        const r = await fetch(TRANSCRIBE_URL || 'https://api.openai.com/v1/audio/transcriptions', {
+          method: 'POST',
+          headers: TRANSCRIBE_URL ? {} : { 'Authorization': await getAuthHeader(userKey) },
+          body: fd
+        })
+        
+        if (!r.ok) throw new Error('OpenAI/Relay error: ' + r.status + ' ' + (await r.text()))
+        const json = await r.json()
+        setTranscript(json.text ?? JSON.stringify(json))
+        setLatencyMs(Math.round(performance.now() - start))
+        setMessage("你說的是: " + (json.text ?? JSON.stringify(json)));
+      } catch (e) {
+        setError(e.message || String(e))
+      }
+    }
+
+
   const handleStartClick = () => {
     if (running) return;
     setRunning(true);
@@ -45,8 +129,6 @@ const MessageBox = ({ onStart, onSend }) => {
         window.electronAPI.sendMessage('start-message');
       }
     }
-
-    setMessage(prev => prev + "\n\n已啟動。");
   };
 
   const sendMessage = async (message) => {
@@ -142,14 +224,21 @@ const handleSend = async () => {
           <div className="mt-2 flex items-center gap-2">
             {/* 🎙️ Start 按鈕（左） */}
             <button
-              onClick={handleStartClick}
-              disabled={running}
+              onClick={async () => {
+                if (!running) {
+                  setRunning(true);
+                  await startRecording();
+                } else {
+                  setRunning(false);
+                  await stopRecording();
+                }
+              }}
               aria-pressed={running}
-              title={running ? '已啟動' : '開始'}
-              className={`btn btn-sm ${running ? 'btn-disabled' : 'btn-primary'} text-white px-2 py-1 min-h-0 h-auto`}
+              title={running ? '停止錄音' : '開始錄音'}
+              className={`btn btn-sm ${running ? 'btn-primary' : 'btn-ghost'} text-white px-2 py-1 min-h-0 h-auto`}
               style={{ WebkitAppRegion: 'no-drag' }}
             >
-              {running ? 'Running…' : '🎙️'}
+              {running ? '🛑' : '🎙️'}
             </button>
 
             {/* 輸入框（中，伸縮） */}
