@@ -3,7 +3,7 @@
 """
 
 from .base import MCPTool
-from .calculator import CalculatorTool
 from .conversation_log import ConversationLogTool
+from .google_search_tool import GoogleSearchTool
 
-__all__ = ['MCPTool', 'CalculatorTool', 'ConversationLogTool']
+__all__ = ['MCPTool', 'ConversationLogTool', 'GoogleSearchTool']
