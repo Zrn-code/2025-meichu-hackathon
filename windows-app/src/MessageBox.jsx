@@ -67,7 +67,6 @@ const MessageBox = ({ onStart, onSend }) => {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } })
       mediaStreamRef.current = stream
       const mimeType = pickSupportedMime()
-      setMessage("錄音中2...");
       const mr = new MediaRecorder(stream, mimeType ? { mimeType } : undefined)
       mediaRecorderRef.current = mr
       mr.ondataavailable = ev => { if (ev.data && ev.data.size > 0) audioChunksRef.current.push(ev.data) }
@@ -235,7 +234,7 @@ const handleSend = async () => {
               }}
               aria-pressed={running}
               title={running ? '停止錄音' : '開始錄音'}
-              className={`btn btn-sm ${running ? 'btn-primary' : 'btn-ghost'} text-white px-2 py-1 min-h-0 h-auto`}
+              className={`btn btn-sm ${running ? 'btn-ghost' : 'btn-primary'} text-white px-2 py-1 min-h-0 h-auto`}
               style={{ WebkitAppRegion: 'no-drag' }}
             >
               {running ? '🛑' : '🎙️'}
