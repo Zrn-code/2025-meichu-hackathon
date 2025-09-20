@@ -3,6 +3,7 @@ import './index.css';
 import llmService from './services/llmService';
 import { getAuthHeader } from './services/apikey';
 import audioPlaybackService from './services/audioPlaybackService';
+import VideoStats from './VideoStats.jsx';
 
 const MODEL = import.meta.env.VITE_STT_MODEL || 'whisper-1'
 const LANGUAGE = import.meta.env.VITE_LANGUAGE || 'zh'
@@ -102,6 +103,18 @@ function App() {
       title: "Avatar 選擇",
       personality: "???",
       audioLabel: "(試聽音檔)"
+    }
+  ];
+
+  // Youyube 卡片資料
+  const YoutubeInfo = [
+    {
+      img: "youtubeCover/cover1.jpg",
+      metadata: "youtubeCover/metadata1.json",
+      view_count: 0,
+      like_count: 0,
+      upload_date: "2023-01-01",
+      tags: []
     }
   ];
 
@@ -392,8 +405,9 @@ function App() {
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className="p-6 max-w-6xl mx-auto">
+      <div className="grid grid-cols-3 gap-6">
+        {/* lg:grid-cols-2  */}
         
         {/* 懸浮 Avatar 控制卡片 */}
         <div className="card shadow-lg border border-primary">
@@ -505,241 +519,82 @@ function App() {
             </div>
           )}
           
-          </div>
-        </div>
-
-        {/* Chrome 標籤頁監控卡片 */}
-        <div className="card shadow-lg border border-info">
-          <div className="card-body">
-            <h2 className="card-title text-info mb-2">
-              <span>🌐</span>
-              Chrome 標籤頁監控
-            </h2>
-            <p className="text-base-content opacity-70 text-sm mb-4">
-              即時監控 Chrome 瀏覽器的標籤頁資訊，需要安裝對應的 Chrome 擴充功能。
-            </p>
-            
-            {/* 服務器狀態 */}
-            <div className="bg-base-100 rounded-lg p-4 border border-base-300 mb-4">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-sm font-semibold">監控服務狀態:</span>
-                <div className={`badge ${serverStatus.isRunning ? 'badge-success' : 'badge-error'} gap-1`}>
-                  <div className={`w-2 h-2 rounded-full ${serverStatus.isRunning ? 'bg-base-100' : 'bg-base-content opacity-60'}`}></div>
-                  {serverStatus.isRunning ? '運行中' : '未運行'}
-                </div>
-              </div>
-              <div className="text-xs text-base-content opacity-60">
-                {serverStatus.isRunning ? `監聽端口: ${serverStatus.port}` : '服務未啟動'}
-              </div>
-            </div>
-
-            {/* 標籤頁統計資訊 */}
-            {tabsData && (
+            <div className="card-body">
+              <h2 className="card-title text-secondary mb-2">
+                <span>🎵</span>
+                語音播放控制
+              </h2>
+              <p className="text-base-content opacity-70 text-sm mb-4">
+                自動檢查並播放與 YouTube 時間點對應的語音內容
+              </p>
+              
+              {/* 播放狀態顯示 */}
               <div className="bg-base-100 rounded-lg p-4 border border-base-300 mb-4">
-                <h3 className="font-semibold text-info mb-3">📊 標籤頁統計:</h3>
-                
-                <div className="grid grid-cols-2 gap-4 mb-3">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-primary">{tabsData.totalTabs}</div>
-                    <div className="text-xs text-base-content opacity-70">總標籤頁</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-success">
-                      {tabsData.tabs ? tabsData.tabs.filter(tab => tab.isActive).length : 0}
-                    </div>
-                    <div className="text-xs text-base-content opacity-70">活動標籤頁</div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-sm font-semibold">播放狀態:</span>
+                  <div className={`badge ${audioPlaybackEnabled ? 'badge-success' : 'badge-neutral'} gap-1`}>
+                    <div className={`w-2 h-2 rounded-full ${audioPlaybackEnabled ? 'bg-base-100' : 'bg-base-content opacity-60'}`}></div>
+                    {audioPlaybackStatus}
                   </div>
                 </div>
-
-                {/* 最後更新時間 */}
-                <div className="text-xs text-base-content opacity-60 text-center mb-3">
-                  {lastUpdateTime ? `最後更新: ${lastUpdateTime.toLocaleTimeString()}` : '尚未接收資料'}
-                </div>
-
-                {/* 活動標籤頁資訊 */}
-                {tabsData.tabs && (() => {
-                  const activeTab = tabsData.tabs.find(tab => tab.isActive);
-                  return activeTab ? (
-                    <div className="bg-success bg-opacity-10 rounded-lg p-3 border border-success border-opacity-30">
-                      <div className="text-sm font-semibold text-success mb-1">🔍 當前活動標籤頁:</div>
-                      <div className="text-sm text-base-content truncate" title={activeTab.title}>
-                        {activeTab.title || 'Loading...'}
-                      </div>
-                      <div className="text-xs text-base-content opacity-60 truncate" title={activeTab.url}>
-                        {activeTab.url || 'about:blank'}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-sm text-base-content opacity-60 text-center">
-                      沒有活動標籤頁
-                    </div>
-                  );
-                })()}
+                {lastPlaybackMessage && (
+                  <div className="text-sm text-base-content opacity-70">
+                    💬 {lastPlaybackMessage}
+                  </div>
+                )}
               </div>
-            )}
 
-            {/* 最近標籤頁列表 */}
-            {tabsData && tabsData.tabs && tabsData.tabs.length > 0 && (
-              <div className="bg-base-100 rounded-lg p-4 border border-base-300">
-                <h3 className="font-semibold text-info mb-3">📑 最近標籤頁 (最多顯示5個):</h3>
-                <div className="space-y-2 max-h-48 overflow-y-auto">
-                  {tabsData.tabs.slice(0, 5).map((tab, index) => (
-                    <div key={tab.id} className={`p-2 rounded border-l-4 ${tab.isActive ? 'border-l-success bg-success bg-opacity-10' : 'border-l-base-300 bg-base-200'}`}>
-                      <div className="flex items-start gap-2">
-                        <div className="flex-shrink-0 text-xs text-base-content opacity-60">
-                          #{index + 1}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium truncate" title={tab.title}>
-                            {tab.title || 'Loading...'}
-                          </div>
-                          <div className="text-xs text-base-content opacity-60 truncate" title={tab.url}>
-                            {tab.url || 'about:blank'}
-                          </div>
-                        </div>
-                        {tab.isActive && (
-                          <div className="badge badge-success badge-sm">活動</div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* 沒有資料時的提示 */}
-            {!tabsData && serverStatus.isRunning && (
-              <div className="text-center py-8">
-                <div className="text-4xl mb-2">🔍</div>
-                <div className="text-sm text-base-content opacity-70">等待 Chrome 擴充功能連接...</div>
-                <div className="text-xs text-base-content opacity-50 mt-1">
-                  請確認已安裝並啟用 Tab Monitor 擴充功能
-                </div>
-              </div>
-            )}
-
-            {/* 服務未運行時的提示 */}
-            {!serverStatus.isRunning && (
-              <div className="text-center py-8">
-                <div className="text-4xl mb-2">⚠️</div>
-                <div className="text-sm text-warning">監控服務未運行</div>
-                <div className="text-xs text-base-content opacity-50 mt-1">
-                  請重新啟動應用程式
-                </div>
-              </div>
-            )}
-
-          </div>
-        </div>
-
-        {/* 音檔播放控制卡片 */}
-        <div className="card shadow-lg border border-secondary">
-          <div className="card-body">
-            <h2 className="card-title text-secondary mb-2">
-              <span>🎵</span>
-              語音播放控制
-            </h2>
-            <p className="text-base-content opacity-70 text-sm mb-4">
-              自動檢查並播放與 YouTube 時間點對應的語音內容
-            </p>
-            
-            {/* 播放狀態顯示 */}
-            <div className="bg-base-100 rounded-lg p-4 border border-base-300 mb-4">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-sm font-semibold">播放狀態:</span>
-                <div className={`badge ${audioPlaybackEnabled ? 'badge-success' : 'badge-neutral'} gap-1`}>
-                  <div className={`w-2 h-2 rounded-full ${audioPlaybackEnabled ? 'bg-base-100' : 'bg-base-content opacity-60'}`}></div>
-                  {audioPlaybackStatus}
-                </div>
-              </div>
-              {lastPlaybackMessage && (
-                <div className="text-sm text-base-content opacity-70">
-                  💬 {lastPlaybackMessage}
+              {/* 當前播放內容 */}
+              {currentAudioContent && (
+                <div className="bg-base-100 rounded-lg p-4 border border-base-300 mb-4">
+                  <h3 className="font-semibold text-secondary mb-2">🎧 當前內容:</h3>
+                  <div className="space-y-1">
+                    <div className="text-sm"><strong>訊息:</strong> {currentAudioContent.message}</div>
+                    <div className="text-sm"><strong>情緒:</strong> {currentAudioContent.emotion}</div>
+                    <div className="text-sm"><strong>時間點:</strong> {currentAudioContent.timestamp} 秒</div>
+                    <div className="text-sm"><strong>影片ID:</strong> {currentAudioContent.video_id}</div>
+                  </div>
                 </div>
               )}
-            </div>
 
-            {/* 當前播放內容 */}
-            {currentAudioContent && (
-              <div className="bg-base-100 rounded-lg p-4 border border-base-300 mb-4">
-                <h3 className="font-semibold text-secondary mb-2">🎧 當前內容:</h3>
-                <div className="space-y-1">
-                  <div className="text-sm"><strong>訊息:</strong> {currentAudioContent.message}</div>
-                  <div className="text-sm"><strong>情緒:</strong> {currentAudioContent.emotion}</div>
-                  <div className="text-sm"><strong>時間點:</strong> {currentAudioContent.timestamp} 秒</div>
-                  <div className="text-sm"><strong>影片ID:</strong> {currentAudioContent.video_id}</div>
+              {/* 控制按鈕 */}
+              <div className="flex gap-2 flex-wrap">
+                <button 
+                  className={`btn ${audioPlaybackEnabled ? 'btn-error' : 'btn-success'}`}
+                  onClick={toggleAudioPlayback}
+                >
+                  {audioPlaybackEnabled ? '⏸️ 停止監聽' : '▶️ 開始監聽'}
+                </button>
+                
+                <button 
+                  className="btn btn-info"
+                  onClick={manualCheckAudio}
+                  disabled={audioPlaybackStatus === '手動檢查中...'}
+                >
+                  🔍 手動測試
+                </button>
+                
+                <button 
+                  className="btn btn-warning"
+                  onClick={stopCurrentAudio}
+                >
+                  🔇 停止播放
+                </button>
+              </div>
+
+              {/* 說明文字 */}
+              <div className="mt-4 p-3 bg-base-200 rounded-lg">
+                <div className="text-xs text-base-content opacity-70">
+                  <strong>使用說明:</strong>
+                  <ul className="mt-1 space-y-1">
+                    <li>• 點擊「開始監聽」後，系統每秒檢查是否有對應的語音內容</li>
+                    <li>• 「手動測試」會播放測試音檔（時間點 60 秒）</li>
+                    <li>• 確保 backend server 運行在 localhost:3000</li>
+                  </ul>
                 </div>
               </div>
-            )}
-
-            {/* 控制按鈕 */}
-            <div className="flex gap-2 flex-wrap">
-              <button 
-                className={`btn ${audioPlaybackEnabled ? 'btn-error' : 'btn-success'}`}
-                onClick={toggleAudioPlayback}
-              >
-                {audioPlaybackEnabled ? '⏸️ 停止監聽' : '▶️ 開始監聽'}
-              </button>
-              
-              <button 
-                className="btn btn-info"
-                onClick={manualCheckAudio}
-                disabled={audioPlaybackStatus === '手動檢查中...'}
-              >
-                🔍 手動測試
-              </button>
-              
-              <button 
-                className="btn btn-warning"
-                onClick={stopCurrentAudio}
-              >
-                🔇 停止播放
-              </button>
             </div>
 
-            {/* 說明文字 */}
-            <div className="mt-4 p-3 bg-base-200 rounded-lg">
-              <div className="text-xs text-base-content opacity-70">
-                <strong>使用說明:</strong>
-                <ul className="mt-1 space-y-1">
-                  <li>• 點擊「開始監聽」後，系統每秒檢查是否有對應的語音內容</li>
-                  <li>• 「手動測試」會播放測試音檔（時間點 60 秒）</li>
-                  <li>• 確保 backend server 運行在 localhost:3000</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        {/* -------------------------------------------------------------------------------------- */}
-        {/* 語音輸入提示卡 */}
-        <div className="card shadow-lg border border-info">
-          <div className="card-body">
-            <h2 className="card-title text-info mb-2">
-              Speech 2 text 區塊
-            </h2>
-            <p className="text-base-content opacity-70 text-sm mb-4">
-              可以和Agent使用語音聊天
-            </p>
-            
-            {!TRANSCRIBE_URL && (
-            <div style={{ margin: '1rem 0', padding: '0.75rem', border: '1px solid #ddd', borderRadius: 8 }}>
-              <strong>開發模式（未設代理端點）：</strong>
-              <div>請貼上你的 OpenAI API Key（僅本機；正式環境請改用 Vercel Edge 代理）。</div>
-              <input type="password" placeholder="sk-..." value={userKey} onChange={e => setUserKey(e.target.value)}
-                  style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem' }} /> 
-            </div>)}
-
-            <button onMouseDown={() => !recording && startRecording()} onMouseUp={() => recording && stopRecording()}
-                    disabled={recording} style={{ padding: '0.75rem 1.25rem', fontSize: '1.1rem', borderRadius: 12 }}>
-              {recording ? '錄音中…放開停止' : '按住開始錄音（也可按 Enter）'}
-            </button>
-
-            {latencyMs !== null && <p>⏱️ 往返延遲：約 {latencyMs} ms</p>}
-            {transcript && <div style={{ marginTop: '1rem', padding: '0.75rem', border: '1px solid #ddd', borderRadius: 8 }}>
-              <div style={{ fontWeight: 600, marginBottom: 6 }}>轉寫結果</div><div>{transcript}</div></div>}
-            {error && <div style={{ marginTop: '1rem', padding: '0.75rem', border: '1px solid #f99', background: '#fff7f7', borderRadius: 8, color: '#900' }}>
-            <div style={{ fontWeight: 600 }}>錯誤</div><div style={{ whiteSpace: 'pre-wrap' }}>{error}</div></div>}
           </div>
         </div>
 
@@ -750,7 +605,10 @@ function App() {
             <div className="bg-base-100 rounded-lg ml-5 mr-5 mt-5">
               <div className="avatar m-3">
                 <div className="mask mask-squircle w-24">
-                  <img src={AvatarInfo[0].img} alt="Movie" />
+                  {/* <div className="ring-primary ring-offset-base-100 w-24 rounded-full ring-2 ring-offset-2"> */}
+                    <img src={AvatarInfo[0].img} alt="Movie" />
+                  {/* </div> */}
+                  
                 </div>
               </div>
               <div className="card-body">
@@ -776,6 +634,104 @@ function App() {
               <div className="card-body">
                 <h2 className="card-title">New movie is released!</h2>
                 <p>Click the button to watch on Jetflix app.</p>
+                <div className="card-actions justify-end">
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => loadAvatar(avatarImages[1])}
+                  >
+                    Avatar 2
+                  </button>
+                </div>
+              </div>  
+            </div>
+
+            <div className="bg-base-100 rounded-lg m-5">
+              <div className="avatar m-3">
+                <div className="mask mask-squircle w-24">
+                  <img src={AvatarInfo[2].img} alt="Movie" />
+                </div>
+              </div>
+              <div className="card-body">
+                <h2 className="card-title">New movie is released!</h2>
+                <p>Click the button to watch on Jetflix app.</p>
+                <div className="card-actions justify-end">
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => loadAvatar(avatarImages[2])}
+                  >
+                    Avatar 3
+                  </button>
+                </div>
+              </div>  
+            </div>
+
+
+            <div className="bg-base-100 rounded-lg m-5">
+              <div className="avatar m-3">
+                <div className="mask mask-squircle w-24">
+                  <img src={AvatarInfo[3].img} alt="Movie" />
+                </div>
+              </div>
+              <div className="card-body">
+                <h2 className="card-title">New movie is released!</h2>
+                <p>Click the button to watch on Jetflix app.</p>
+                <div className="card-actions justify-end">
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => loadAvatar(avatarImages[3])}
+                  >
+                    Avatar 4
+                  </button>
+                </div>
+              </div>  
+            </div>
+          </div>
+        </div>
+
+        {/* -------------------------------------------------------------------------------------- */}
+        {/* youtube 影片預覽 卡片*/}
+        <div className="card shadow-lg border border-info">
+          <div className="grid grid-cols-1 gap-0" >
+            <div className="bg-base-100 rounded-lg ml-5 mr-5 mt-5">
+              <figure>
+                <img
+                  src={YoutubeInfo[0].img}
+                  alt="Shoes" />
+              </figure>
+              {/* <div className="avatar m-3">
+                <div className="w-32 rounded">
+                  <img src={YoutubeInfo[0].img} alt="Movie" />
+                </div>
+              </div> */}
+              <div className="card-body">
+                <h2 className="card-title">Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)</h2>
+                <VideoStats view_count={1695253126} like_count={18551627} upload_date="2009-10-25T00:00:00Z" />
+                <div className="badge badge-soft badge-primary">rick astley</div>
+                <div className="badge badge-soft badge-secondary">Never Gonna Give You Up</div>
+                <div className="badge badge-soft badge-accent">nggyu</div>
+
+                <div className="card-actions justify-end">
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => window.electronAPI?.openExternalUrl?.('https://www.youtube.com/watch?v=dQw4w9WgXcQ')}
+                  >
+                    link
+                  </button>
+                </div>
+
+
+              </div>  
+            </div>
+            
+            <div className="bg-base-100 rounded-lg ml-5 mr-5 mt-5">
+              <div className="avatar m-3">
+                <div className="mask mask-squircle w-24">
+                  <img src={AvatarInfo[1].img} alt="Movie" />
+                </div>
+              </div>
+              <div className="card-body">
+                <h2 className="card-title">New movie is released!</h2>
+                
                 <div className="card-actions justify-end">
                   <button
                     className="btn btn-primary"
