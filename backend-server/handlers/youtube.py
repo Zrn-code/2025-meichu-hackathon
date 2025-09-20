@@ -338,9 +338,16 @@ class YouTubeHandler:
     
     def get_current_video_id(self) -> Optional[str]:
         """獲取當前活動視頻的ID"""
-        if self.current_data and self.current_data.get('videoId'):
-            return self.current_data.get('videoId')
-        return None
+        if not self.current_data:
+            logger.debug("No current_data available")
+            return None
+            
+        video_id = self.current_data.get('videoId')
+        if not video_id:
+            logger.debug(f"No videoId in current_data. Available keys: {list(self.current_data.keys()) if self.current_data else 'None'}")
+            return None
+            
+        return video_id
     
     def _process_subtitle_data(self, data: Dict[str, Any]):
         """處理字幕數據"""
