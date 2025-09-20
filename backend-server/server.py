@@ -22,11 +22,8 @@ from handlers.chat import ChatHandler
 from handlers.tools import ToolsHandler
 from handlers.youtube import YouTubeHandler
 from config.settings import Settings
-from tools.calculator import (
-    CalculatorTool, AddTool, SubtractTool, 
-    MultiplyTool, DivideTool, CalculateTool
-)
 from tools.conversation_log import ConversationLogTool
+from tools.google_search_tool import GoogleSearchTool
 
 # 設置 UTF-8 編碼（簡化版）
 import os
@@ -86,13 +83,8 @@ class UnifiedServer:
         """註冊工具"""
         # 註冊所有工具
         tools = [
-            CalculatorTool(),
-            AddTool(),
-            SubtractTool(),
-            MultiplyTool(),
-            DivideTool(),
-            CalculateTool(),
-            ConversationLogTool(self.youtube_handler)  # 傳遞 YouTubeHandler 實例
+            ConversationLogTool(self.youtube_handler),  # 傳遞 YouTubeHandler 實例
+            GoogleSearchTool(self.youtube_handler)  # 傳遞 YouTubeHandler 實例
         ]
         
         for tool in tools:
