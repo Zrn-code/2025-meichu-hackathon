@@ -3,6 +3,6 @@
 """
 
 from .chat import ChatHandler
-from .tools import ToolsHandler
+from .youtube import YouTubeHandler
 
-__all__ = ['ChatHandler', 'ToolsHandler']
+__all__ = ['ChatHandler', 'YouTubeHandler']
