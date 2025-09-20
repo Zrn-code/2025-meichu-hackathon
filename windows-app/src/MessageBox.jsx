@@ -48,6 +48,10 @@ const MessageBox = ({ onStart, onSend }) => {
     }
   };
 
+  const handleInformClick = () => {
+    window.electronAPI.showInform();
+  }
+
   const handleMouseEnter = () => {
     if (window.electronAPI && window.electronAPI.sendMessage) {
       window.electronAPI.sendMessage('mouse-enter-message');
@@ -204,11 +208,19 @@ const handleSend = async () => {
           >
             ❌
           </button>
+          <button
+            onClick={() => handleInformClick()}
+            className="btn btn-xs btn-ghost text-white absolute right-10 top-3"
+            style={{ WebkitAppRegion: 'no-drag' }}
+            title="Help"
+          >
+            ❔
+          </button>
 
           {/* 訊息顯示區（可滾動，撐滿上方空間） */}
           <div
             ref={messagesRef}
-            className="text-base text-white leading-relaxed overflow-auto mb-3 flex-1"
+            className="text-base text-white leading-relaxed overflow-auto mb-3 flex-1 mt-5"
             style={{ maxHeight: '100%', whiteSpace: 'pre-wrap' }}
           >
             {lines.map((line, index) => (

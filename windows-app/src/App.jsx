@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './index.css';
 import llmService from './services/llmService';
-import { getAuthHeader } from './services/apikey'
+import { getAuthHeader } from './services/apikey';
+import audioPlaybackService from './services/audioPlaybackService';
 
 const MODEL = import.meta.env.VITE_STT_MODEL || 'whisper-1'
 const LANGUAGE = import.meta.env.VITE_LANGUAGE || 'zh'
@@ -64,6 +65,12 @@ function App() {
   const [latencyMs, setLatencyMs] = useState(null)
   const [error, setError] = useState('')
   const [userKey, setUserKey] = useState('') // 僅在沒有代理端點時使用
+
+  // 音檔播放相關狀態
+  const [audioPlaybackEnabled, setAudioPlaybackEnabled] = useState(false);
+  const [currentAudioContent, setCurrentAudioContent] = useState(null);
+  const [audioPlaybackStatus, setAudioPlaybackStatus] = useState('停止');
+  const [lastPlaybackMessage, setLastPlaybackMessage] = useState('');
 
   // 音訊 chain refs
   const mediaStreamRef = useRef(null)
@@ -161,6 +168,23 @@ function App() {
     window.addEventListener('keydown', onKeyDown)
     window.addEventListener('keyup', onKeyUp)
 
+    // 音檔播放事件監聽
+    const handleAudioPlayback = (event) => {
+      const { content } = event.detail;
+      setCurrentAudioContent(content);
+      setLastPlaybackMessage(`播放: ${content.message} (${content.emotion})`);
+      setAudioPlaybackStatus('播放中');
+    };
+
+    const handleAutoplayBlocked = (event) => {
+      const { content, message } = event.detail;
+      setLastPlaybackMessage(`自動播放被阻止: ${message}`);
+      setAudioPlaybackStatus('被阻止');
+    };
+
+    window.addEventListener('audioPlayback', handleAudioPlayback);
+    window.addEventListener('autoplayBlocked', handleAutoplayBlocked);
+
     // 清理監聽器
     return () => {
       if (cleanupAvatar) {
@@ -169,8 +193,14 @@ function App() {
       if (cleanupTabs) {
         cleanupTabs();
       }
-      window.removeEventListener('keydown', onKeyDown); window.removeEventListener('keyup', onKeyUp)
-      // cleanupAudio()
+      window.removeEventListener('keydown', onKeyDown); 
+      window.removeEventListener('keyup', onKeyUp);
+      window.removeEventListener('audioPlayback', handleAudioPlayback);
+      window.removeEventListener('autoplayBlocked', handleAutoplayBlocked);
+      
+      // 停止音檔播放服務
+      audioPlaybackService.stopPeriodicCheck();
+      audioPlaybackService.stopCurrentAudio();
     };
   }, [recording]);
 
@@ -263,6 +293,36 @@ function App() {
     }
   };
 
+  // 音檔播放控制函數
+  const toggleAudioPlayback = () => {
+    if (audioPlaybackEnabled) {
+      audioPlaybackService.stopPeriodicCheck();
+      setAudioPlaybackStatus('已停止');
+      setLastPlaybackMessage('');
+    } else {
+      audioPlaybackService.startPeriodicCheck(1000); // 每秒檢查一次
+      setAudioPlaybackStatus('監聽中');
+      setLastPlaybackMessage('開始監聽 YouTube 播放狀態...');
+    }
+    setAudioPlaybackEnabled(!audioPlaybackEnabled);
+  };
+
+  const manualCheckAudio = async () => {
+    try {
+      setAudioPlaybackStatus('手動檢查中...');
+      // 檢查當前 YouTube 狀態並播放對應語音
+      await audioPlaybackService.manualCheckAndPlay();
+      setAudioPlaybackStatus('檢查完成');
+    } catch (error) {
+      setLastPlaybackMessage(`手動檢查錯誤: ${error.message}`);
+      setAudioPlaybackStatus('檢查失敗');
+    }
+  };
+
+  const stopCurrentAudio = () => {
+    audioPlaybackService.stopCurrentAudio();
+    setAudioPlaybackStatus('已停止播放');
+  };
 
   // 開始錄音
   async function startRecording() {
@@ -569,6 +629,85 @@ function App() {
               </div>
             )}
 
+          </div>
+        </div>
+
+        {/* 音檔播放控制卡片 */}
+        <div className="card shadow-lg border border-secondary">
+          <div className="card-body">
+            <h2 className="card-title text-secondary mb-2">
+              <span>🎵</span>
+              語音播放控制
+            </h2>
+            <p className="text-base-content opacity-70 text-sm mb-4">
+              自動檢查並播放與 YouTube 時間點對應的語音內容
+            </p>
+            
+            {/* 播放狀態顯示 */}
+            <div className="bg-base-100 rounded-lg p-4 border border-base-300 mb-4">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-sm font-semibold">播放狀態:</span>
+                <div className={`badge ${audioPlaybackEnabled ? 'badge-success' : 'badge-neutral'} gap-1`}>
+                  <div className={`w-2 h-2 rounded-full ${audioPlaybackEnabled ? 'bg-base-100' : 'bg-base-content opacity-60'}`}></div>
+                  {audioPlaybackStatus}
+                </div>
+              </div>
+              {lastPlaybackMessage && (
+                <div className="text-sm text-base-content opacity-70">
+                  💬 {lastPlaybackMessage}
+                </div>
+              )}
+            </div>
+
+            {/* 當前播放內容 */}
+            {currentAudioContent && (
+              <div className="bg-base-100 rounded-lg p-4 border border-base-300 mb-4">
+                <h3 className="font-semibold text-secondary mb-2">🎧 當前內容:</h3>
+                <div className="space-y-1">
+                  <div className="text-sm"><strong>訊息:</strong> {currentAudioContent.message}</div>
+                  <div className="text-sm"><strong>情緒:</strong> {currentAudioContent.emotion}</div>
+                  <div className="text-sm"><strong>時間點:</strong> {currentAudioContent.timestamp} 秒</div>
+                  <div className="text-sm"><strong>影片ID:</strong> {currentAudioContent.video_id}</div>
+                </div>
+              </div>
+            )}
+
+            {/* 控制按鈕 */}
+            <div className="flex gap-2 flex-wrap">
+              <button 
+                className={`btn ${audioPlaybackEnabled ? 'btn-error' : 'btn-success'}`}
+                onClick={toggleAudioPlayback}
+              >
+                {audioPlaybackEnabled ? '⏸️ 停止監聽' : '▶️ 開始監聽'}
+              </button>
+              
+              <button 
+                className="btn btn-info"
+                onClick={manualCheckAudio}
+                disabled={audioPlaybackStatus === '手動檢查中...'}
+              >
+                🔍 手動測試
+              </button>
+              
+              <button 
+                className="btn btn-warning"
+                onClick={stopCurrentAudio}
+              >
+                🔇 停止播放
+              </button>
+            </div>
+
+            {/* 說明文字 */}
+            <div className="mt-4 p-3 bg-base-200 rounded-lg">
+              <div className="text-xs text-base-content opacity-70">
+                <strong>使用說明:</strong>
+                <ul className="mt-1 space-y-1">
+                  <li>• 點擊「開始監聽」後，系統每秒檢查是否有對應的語音內容</li>
+                  <li>• 「手動測試」會播放測試音檔（時間點 60 秒）</li>
+                  <li>• 確保 backend server 運行在 localhost:3000</li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
         
