@@ -16,14 +16,9 @@ from flask import Flask, request, jsonify, Response, send_file, abort
 from flask_cors import CORS
 
 # 導入自定義模組
-from core.mcp_client import MCPClient
-from core.registry import ToolRegistry
 from handlers.chat import ChatHandler
-from handlers.tools import ToolsHandler
 from handlers.youtube import YouTubeHandler
 from config.settings import Settings
-from tools.conversation_log import ConversationLogTool
-from tools.google_search_tool import GoogleSearchTool
 
 # 設置 UTF-8 編碼（簡化版）
 import os
@@ -46,20 +41,8 @@ class UnifiedServer:
         self.app = Flask(__name__)
         CORS(self.app, origins="*")
         
-        # 初始化核心組件
-        self.mcp_client = MCPClient()
-        self.tool_registry = ToolRegistry()
-        
         # 初始化處理器
-        self.tools_handler = ToolsHandler(self.mcp_client, self.tool_registry)
-        self.youtube_handler = YouTubeHandler()
-        self.chat_handler = ChatHandler(
-            self.settings.get_llm_config(),
-            self.tools_handler
-        )
-        
-        # 註冊工具
-        self._register_tools()
+        self._setup_handlers()
         
         # 設置路由
         self._setup_routes()
@@ -79,35 +62,22 @@ class UnifiedServer:
             ]
         )
     
-    def _register_tools(self):
-        """註冊工具"""
-        # 註冊所有工具
-        tools = [
-            ConversationLogTool(self.youtube_handler),  # 傳遞 YouTubeHandler 實例
-            GoogleSearchTool(self.youtube_handler)  # 傳遞 YouTubeHandler 實例
-        ]
+    def _setup_handlers(self):
+        """初始化各種處理器"""
+        # 初始化 YouTube 處理器 (不需要參數)
+        self.youtube_handler = YouTubeHandler()
         
-        for tool in tools:
-            self.tool_registry.register_tool_instance(tool)
+        # 初始化聊天處理器 (需要 LLM 配置)
+        llm_config = self.settings.get_llm_config()
+        self.chat_handler = ChatHandler(llm_config, tools_handler=None)
         
-        self.logger.info(f"Registered {len(tools)} local tools")
+        # 暫時設置一個空的 tools_handler 以避免錯誤
+        self.tools_handler = None
+        
+        self.logger.info("Handlers initialized successfully")
     
     def _setup_routes(self):
         """設置 API 路由"""
-        
-        @self.app.route('/health', methods=['GET'])
-        def health_check():
-            """健康檢查"""
-            return jsonify({
-                "status": "ok",
-                "timestamp": datetime.now().isoformat(),
-                "services": {
-                    "mcp": self.mcp_client.is_initialized,
-                    "llm": bool(self.settings.get("endpointUrl")),
-                    "tools": self.tools_handler.get_tool_count()
-                },
-                "version": "2.0.0"
-            })
         
 
         @self.app.route('/api/chat', methods=['POST'])
@@ -185,6 +155,14 @@ class UnifiedServer:
         @self.app.route('/api/tools', methods=['GET'])
         def get_available_tools():
             """獲取可用工具列表"""
+            if self.tools_handler is None:
+                return jsonify({
+                    "success": True,
+                    "tools": [],
+                    "summary": "Tools handler not initialized",
+                    "timestamp": datetime.now().isoformat()
+                })
+            
             return jsonify({
                 "success": True,
                 "tools": self.tools_handler.get_available_tools(),
@@ -196,6 +174,12 @@ class UnifiedServer:
         def call_tool(tool_name):
             """調用特定工具"""
             try:
+                if self.tools_handler is None:
+                    return jsonify({
+                        "success": False,
+                        "error": "Tools handler not initialized"
+                    }), 503
+                
                 data = request.get_json()
                 arguments = data.get('arguments', {})
                 
@@ -987,35 +971,6 @@ class UnifiedServer:
                 self.logger.error(f"Error serving audio file {filename}: {e}")
                 return abort(500, "Internal server error")
     
-    async def _start_mcp_server(self):
-        """啟動 MCP 服務器"""
-        try:
-            mcp_config = self.settings.get_mcp_config()
-            success = await self.mcp_client.start_server(
-                mcp_config["command"], 
-                mcp_config["args"]
-            )
-            
-            if success:
-                self.logger.info("MCP server started successfully")
-            else:
-                self.logger.warning("MCP server failed to start")
-                
-        except Exception as e:
-            self.logger.error(f"Failed to start MCP server: {e}")
-    
-    def _start_mcp_in_thread(self):
-        """在背景執行緒中啟動 MCP 服務器"""
-        def start_mcp():
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            loop.run_until_complete(self._start_mcp_server())
-        
-        mcp_thread = threading.Thread(target=start_mcp, daemon=True)
-        mcp_thread.start()
-        
-        # 等待 MCP 服務器啟動
-        time.sleep(2)
     
     def run(self, host: str = None, port: int = None, debug: bool = None):
         """運行服務器"""
@@ -1027,9 +982,6 @@ class UnifiedServer:
         
         self.logger.info(f"Starting Unified Server v2.0.0 on {host}:{port}")
         self.logger.info(f"Debug mode: {debug}")
-        
-        # 在後台啟動 MCP 服務器
-        self._start_mcp_in_thread()
         
         try:
             # 啟動 Flask 服務器
@@ -1047,9 +999,6 @@ class UnifiedServer:
         if self.youtube_handler:
             self.youtube_handler.shutdown()
         
-        if self.mcp_client:
-            await self.mcp_client.close()
-            
         self.logger.info("Server shutdown complete")
 
 

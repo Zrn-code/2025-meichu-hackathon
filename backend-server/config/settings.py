@@ -26,11 +26,6 @@ class Settings:
                 "port": 3000,
                 "debug": False
             },
-            "mcp": {
-                "command": "python",
-                "args": ["mcp_server.py"],
-                "timeout": 30
-            },
             "chat": {
                 "max_tokens": 100,
                 "temperature": 0.7,
