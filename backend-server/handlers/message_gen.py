@@ -86,7 +86,9 @@ def process_video_subtitles(video_data, character_info, video_id=None):
             captions.clear()
             llm_summary.append({
                 "time": stamp,
-                "Reply": reply_text
+                "Reply": reply_text,
+                "is_generated": False,
+                "file_path": ""
             })
             stamp = ""
     
@@ -108,7 +110,9 @@ def process_video_subtitles(video_data, character_info, video_id=None):
         
         llm_summary.append({
             "time": stamp,
-            "Reply": reply_text
+            "Reply": reply_text,
+            "is_generated": False,
+            "file_path": ""
         })
     
     print(f"📝 完成處理，總共生成了 {reply_count} 個角色回復")
@@ -148,6 +152,13 @@ def generate_avatar_response_for_video(video_id, character_index=0):
             logger.warning(f"字幕檔案不存在: {subtitle_file}")
             return False
         
+        # 檢查角色回應檔案是否已存在
+        output_file = os.path.join(AVATAR_TALK_DIR, f"{video_id}.json")
+        if os.path.exists(output_file):
+            print(f"⚠️  角色回應檔案已存在，跳過處理: avatar_talk/{video_id}.json")
+            logger.info(f"角色回應檔案已存在，跳過處理: {output_file}")
+            return True
+        
         logger.info(f"開始為影片 {video_id} 生成角色回應...")
         
         # 讀取影片字幕資料
@@ -158,9 +169,6 @@ def generate_avatar_response_for_video(video_id, character_index=0):
         
         # 處理字幕生成回應
         llm_summary = process_video_subtitles(video_data, character_info, video_id)
-        
-        # 輸出檔案路徑
-        output_file = os.path.join(AVATAR_TALK_DIR, f"{video_id}.json")
         
         # 儲存結果
         with open(output_file, "w", encoding="utf-8") as f:
@@ -209,6 +217,14 @@ def generate_avatar_responses_batch():
             # 取得檔案名稱（不包含副檔名）作為 video ID
             video_id = os.path.splitext(os.path.basename(subtitle_file))[0]
             
+            # 檢查角色回應檔案是否已存在
+            output_file = os.path.join(AVATAR_TALK_DIR, f"{video_id}.json")
+            if os.path.exists(output_file):
+                print(f"⚠️  影片 {video_id} 的角色回應檔案已存在，跳過處理")
+                logger.info(f"角色回應檔案已存在，跳過處理: {output_file}")
+                success_count += 1  # 視為成功，因為檔案已存在
+                continue
+            
             # 讀取影片字幕資料
             with open(subtitle_file, "r", encoding="utf-8") as f:
                 video_data = json.load(f)
@@ -216,9 +232,6 @@ def generate_avatar_responses_batch():
             # 處理這個影片的字幕
             print(f"\n🎯 處理影片: {video_id}")
             llm_summary = process_video_subtitles(video_data, character_info, video_id)
-            
-            # 輸出檔案路徑
-            output_file = os.path.join(AVATAR_TALK_DIR, f"{video_id}.json")
             
             # 儲存結果
             with open(output_file, "w", encoding="utf-8") as f:
