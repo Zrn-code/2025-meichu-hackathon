@@ -1,0 +1,44 @@
+[
+  {
+    "time": 0,
+    "Reply": "(\"聽起來很有趣\") *smirks slightly*",
+    "is_generated": true,
+    "file_path": "MFoPBqZ2CmE_response_0_20250920_230510.wav"
+  },
+  {
+    "time": 99920,
+    "Reply": "「這位譯者真的很了不起，早早就把遊戲內容分享了出來。」",
+    "is_generated": true,
+    "file_path": "MFoPBqZ2CmE_response_1_20250920_230609.wav"
+  },
+  {
+    "time": 160300,
+    "Reply": "*沉默了一秒*「這人...確實很有才華，但翻譯的問題實在太多了。」*望向遠方*",
+    "is_generated": true,
+    "file_path": "MFoPBqZ2CmE_response_2_20250920_230721.wav"
+  },
+  {
+    "time": 222440,
+    "Reply": "「翻譯的差異讓人感到困惑。」\n（A subtle difference in translation can be perplexing.）",
+    "is_generated": false,
+    "file_path": ""
+  },
+  {
+    "time": 284600,
+    "Reply": "「這些翻譯的討論，讓我覺得有趣。」",
+    "is_generated": false,
+    "file_path": ""
+  },
+  {
+    "time": 344920,
+    "Reply": "\"Translation can be a delicate art. Sometimes, the original intention is lost in translation, leaving only the essence. I understand the translator's intention, but sometimes less is more.\" *draws sword, gaze piercing*",
+    "is_generated": false,
+    "file_path": ""
+  },
+  {
+    "time": 407020,
+    "Reply": "「翻譯的難度不易衡量，櫻桃的努力值得稱讚。」",
+    "is_generated": false,
+    "file_path": ""
+  }
+]
