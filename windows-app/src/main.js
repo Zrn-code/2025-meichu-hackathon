@@ -80,16 +80,6 @@ const createInformWindow = (message = "") => {
     informWindow = null;
   });
 
-  // 初始穿透
-  informWindow.setIgnoreMouseEvents(true, { forward: true });
-
-  informWindow.webContents.once('dom-ready', () => {
-    informWindow.webContents.send('message-received', message);
-    setTimeout(() => {
-      setupInformClickRegion();
-    }, 100);
-  });
-
   // 若 messageBox 存在，放在 messageBox 左側
   // if (messageBoxWindow) {
   //   updateInformPosition();
@@ -145,19 +135,6 @@ const updateInformPosition = () => {
   }
 };
 
-// inform page 點擊區域設置
-const setupInformClickRegion = () => {
-  if (informWindow && !informWindow.isDestroyed()) {
-    informWindow.setIgnoreMouseEvents(true, { forward: true });
-    informWindow.webContents.on('ipc-message', (event, channel) => {
-      if (channel === 'mouse-enter-inform') {
-        informWindow.setIgnoreMouseEvents(false);
-      } else if (channel === 'mouse-leave-inform') {
-        informWindow.setIgnoreMouseEvents(true, { forward: true });
-      }
-    });
-  }
-};
 // IPC handlers for inform window
 ipcMain.handle('show-inform', () => {
   if (informWindow && !informWindow.isDestroyed()) {
@@ -261,11 +238,7 @@ const createAvatarWindow = () => {
   // 監聽 Avatar 窗口移動，同步更新 MessageBox 位置
   avatarWindow.on('moved', () => {
     updateMessageBoxPosition();
-    updateInformPosition();
   });
-
-  // 設置窗口可拖動
-  avatarWindow.setIgnoreMouseEvents(false);
 };
 
 const closeAvatarWindow = () => {
@@ -316,23 +289,10 @@ const createMessageBoxWindow = (message = "你好！我是你的桌面小助手 
   messageBoxWindow.on('closed', () => {
     messageBoxWindow = null;
   });
-
-  // 設置初始鼠標穿透 - 整個窗口都穿透點擊
-  messageBoxWindow.setIgnoreMouseEvents(true, { forward: true });
-
-  // 窗口加載完成後發送訊息並設置點擊區域
-  messageBoxWindow.webContents.once('dom-ready', () => {
-    messageBoxWindow.webContents.send('message-received', message);
-    // 設置只有對話框區域可以點擊，其他區域穿透
-    setTimeout(() => {
-      setupMessageBoxClickRegion();
-    }, 100);
-  });
-
+  
   // 如果 avatar 窗口存在，將 MessageBox 放在 avatar 左邊
   if (avatarWindow) {
     updateMessageBoxPosition();
-    updateInformPosition();
   }
 };
 
@@ -388,24 +348,6 @@ const updateMessageBoxPosition = () => {
   }
 };
 
-// 設定 MessageBox 窗口的點擊區域
-const setupMessageBoxClickRegion = () => {
-  if (messageBoxWindow && !messageBoxWindow.isDestroyed()) {
-    // 預設穿透所有點擊
-    messageBoxWindow.setIgnoreMouseEvents(true, { forward: true });
-    
-    // 監聽來自 renderer 的訊息來切換點擊狀態
-    messageBoxWindow.webContents.on('ipc-message', (event, channel) => {
-      if (channel === 'mouse-enter-message') {
-        // 滑鼠進入對話框區域，禁用穿透
-        messageBoxWindow.setIgnoreMouseEvents(false);
-      } else if (channel === 'mouse-leave-message') {
-        // 滑鼠離開對話框區域，啟用穿透
-        messageBoxWindow.setIgnoreMouseEvents(true, { forward: true });
-      }
-    });
-  }
-};
 
 // 定期從後端服務器獲取標籤頁數據
 let tabsUpdateTimer = null;

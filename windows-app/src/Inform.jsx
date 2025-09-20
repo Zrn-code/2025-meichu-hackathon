@@ -3,6 +3,10 @@ import React from 'react';
 import './index.css';
 
 const Inform = () => {
+  const handleClick = (type) => {
+    // 這裡可以自訂觸發事件，例如彈窗、console.log 或其他行為
+    alert(`你點擊了「${type}」按鈕！`);
+  };
   return (
     <div
       style={{
@@ -22,12 +26,25 @@ const Inform = () => {
         gap: '8px',
       }}
     >
-      <div>劇情</div>
-      <div>恐怖</div>
-      <div>懸疑</div>
-      <div>首映</div>
-      <div>鬼魂</div>
-      <div></div>
+      {['劇情', '恐怖', '懸疑', '首映', '鬼魂'].map((t) => (
+        <button
+          key={t}
+          type="button"
+          onClick={() => handleClick(t)}
+          style={{
+            cursor: 'pointer',        // ✅ 游標變手指
+            padding: '6px 10px',
+            borderRadius: '8px',
+            border: 'none',
+            background: '#ffffff',
+            color: '#333',
+            WebkitAppRegion: 'no-drag',
+          }}
+        >
+          {t}
+        </button>
+      ))}
+      <div aria-hidden />
     </div>
   );
 };
