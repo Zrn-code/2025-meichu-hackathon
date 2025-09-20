@@ -6,8 +6,10 @@ YouTube 數據處理器
 
 import logging
 import json
+import os
 import threading
 import time
+import requests
 from datetime import datetime
 from typing import Dict, List, Optional, Any
 
@@ -29,6 +31,16 @@ class YouTubeHandler:
         self.subtitle_history = []  # 字幕歷史記錄
         self.max_subtitle_history = 200  # 最大字幕歷史記錄數量
         self.current_subtitles = None  # 當前字幕信息
+        
+        # Supadata API 相關設定
+        self.supadata_api_key = "sd_9aafb77d7110d078e7f233732bb02d69"
+        self.supadata_base_url = "https://api.supadata.ai/v1/transcript"
+        self.processed_fullscreen_videos = set()  # 避免重複處理同一個視頻
+        self.last_mode_state = {}  # 記錄上次的模式狀態
+        
+        # 設定字幕檔案存儲路徑
+        self.subtitles_dir = os.path.join(os.path.dirname(__file__), '..', 'data', 'video_subtitles')
+        self._ensure_subtitles_dir_exists()
         
         # 啟動監控線程
         self.monitoring = True
@@ -64,6 +76,9 @@ class YouTubeHandler:
             
             # 更新當前數據
             self.current_data = data
+            
+            # 檢測全螢幕或影劇模式並處理轉錄
+            self._check_and_handle_special_modes(data)
             
             # 處理字幕數據
             self._process_subtitle_data(data)
@@ -589,6 +604,266 @@ class YouTubeHandler:
                     "total_count": 0
                 }
             }
+    
+    def _check_and_handle_special_modes(self, data: Dict[str, Any]):
+        """檢測全螢幕或影劇模式並觸發轉錄處理"""
+        try:
+            video_id = data.get('videoId')
+            video_url = data.get('url')
+            is_fullscreen = data.get('isFullscreen', False)
+            is_theater_mode = data.get('isTheaterMode', False)
+            
+            if not video_id or not video_url:
+                return
+            
+            # 檢查是否進入了全螢幕或影劇模式
+            current_special_mode = is_fullscreen or is_theater_mode
+            previous_special_mode = self.last_mode_state.get(video_id, False)
+            
+            # 更新狀態記錄
+            self.last_mode_state[video_id] = current_special_mode
+            
+            # 如果從非特殊模式切換到特殊模式，且該視頻未被處理過
+            if current_special_mode and not previous_special_mode and video_id not in self.processed_fullscreen_videos:
+                logger.info(f"Detected special mode for video {video_id}: fullscreen={is_fullscreen}, theater={is_theater_mode}")
+                
+                # 檢查字幕檔案是否已存在
+                subtitle_file_path = self._get_subtitle_file_path(video_id)
+                if os.path.exists(subtitle_file_path):
+                    logger.info(f"Subtitle file already exists for video {video_id}, skipping API call")
+                    self.processed_fullscreen_videos.add(video_id)
+                    return
+                
+                # 標記為已處理，避免重複
+                self.processed_fullscreen_videos.add(video_id)
+                
+                # 在後台線程中處理轉錄，避免阻塞主線程
+                threading.Thread(
+                    target=self._process_video_transcript,
+                    args=(video_url, video_id),
+                    daemon=True
+                ).start()
+                
+        except Exception as e:
+            logger.error(f"Error in _check_and_handle_special_modes: {e}")
+    
+    def _process_video_transcript(self, video_url: str, video_id: str):
+        """處理視頻轉錄（在後台線程中運行）"""
+        try:
+            logger.info(f"Starting transcript processing for video: {video_id}")
+            
+            # 調用 Supadata API
+            transcript_result = self._call_supadata_api(video_url)
+            
+            if transcript_result.get('success'):
+                logger.info(f"Successfully retrieved transcript for video: {video_id}")
+                
+                # 將轉錄結果存儲到字幕歷史中
+                self._store_transcript_result(video_id, video_url, transcript_result)
+                
+                # 通知訂閱者有新的轉錄數據
+                self._notify_transcript_update(video_id, transcript_result)
+                
+            else:
+                logger.warning(f"Failed to retrieve transcript for video {video_id}: {transcript_result.get('error')}")
+                
+        except Exception as e:
+            logger.error(f"Error processing video transcript for {video_id}: {e}")
+    
+    def _call_supadata_api(self, video_url: str) -> Dict[str, Any]:
+        """調用 Supadata API 獲取轉錄"""
+        try:
+            # 準備 API 請求
+            api_url = f"{self.supadata_base_url}?url={video_url}"
+            headers = {
+                'x-api-key': self.supadata_api_key,
+                'Content-Type': 'application/json'
+            }
+            
+            logger.info(f"Calling Supadata API: {api_url}")
+            
+            # 發送 GET 請求
+            response = requests.get(api_url, headers=headers, timeout=30)
+            
+            if response.status_code == 200:
+                result = response.json()
+                return {
+                    'success': True,
+                    'data': result,
+                    'timestamp': datetime.now().isoformat()
+                }
+            else:
+                logger.error(f"Supadata API error: {response.status_code} - {response.text}")
+                return {
+                    'success': False,
+                    'error': f"API returned status {response.status_code}",
+                    'response_text': response.text
+                }
+                
+        except requests.exceptions.Timeout:
+            logger.error("Supadata API request timeout")
+            return {
+                'success': False,
+                'error': 'Request timeout'
+            }
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Supadata API request error: {e}")
+            return {
+                'success': False,
+                'error': str(e)
+            }
+        except Exception as e:
+            logger.error(f"Unexpected error calling Supadata API: {e}")
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    def _store_transcript_result(self, video_id: str, video_url: str, transcript_result: Dict[str, Any]):
+        """將轉錄結果存儲到字幕歷史和檔案中"""
+        try:
+            transcript_data = transcript_result.get('data', {})
+            
+            # 創建轉錄條目
+            transcript_entry = {
+                'video_id': video_id,
+                'video_url': video_url,
+                'video_title': self.current_data.get('title', 'Unknown') if self.current_data else 'Unknown',
+                'transcript_type': 'supadata_api',
+                'transcript_data': transcript_data,
+                'timestamp': transcript_result.get('timestamp'),
+                'created_at': datetime.now().isoformat(),
+                'mode_trigger': 'fullscreen_or_theater'
+            }
+            
+            # 儲存到檔案系統
+            self._save_transcript_to_file(video_id, transcript_entry)
+            
+            # 添加到字幕歷史
+            self.subtitle_history.append(transcript_entry)
+            
+            # 限制歷史記錄數量
+            if len(self.subtitle_history) > self.max_subtitle_history:
+                self.subtitle_history.pop(0)
+            
+            logger.info(f"Stored transcript result for video: {video_id} (both in memory and file)")
+            
+        except Exception as e:
+            logger.error(f"Error storing transcript result: {e}")
+    
+    def _notify_transcript_update(self, video_id: str, transcript_result: Dict[str, Any]):
+        """通知訂閱者有新的轉錄更新"""
+        try:
+            notification_data = {
+                'type': 'transcript_update',
+                'video_id': video_id,
+                'transcript_available': transcript_result.get('success', False),
+                'timestamp': datetime.now().isoformat()
+            }
+            
+            # 通知所有訂閱者
+            self._notify_subscribers(notification_data)
+            
+        except Exception as e:
+            logger.error(f"Error notifying transcript update: {e}")
+    
+    def get_video_transcripts(self, video_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        """獲取視頻的轉錄數據"""
+        if video_id is None:
+            video_id = self.get_current_video_id()
+        
+        if not video_id:
+            return []
+        
+        # 篩選出該視頻的轉錄數據
+        transcripts = [
+            entry for entry in self.subtitle_history
+            if entry.get('video_id') == video_id and entry.get('transcript_type') == 'supadata_api'
+        ]
+        
+        return transcripts
+    
+    def get_latest_transcript(self, video_id: Optional[str] = None) -> Optional[Dict[str, Any]]:
+        """獲取最新的轉錄數據"""
+        transcripts = self.get_video_transcripts(video_id)
+        return transcripts[-1] if transcripts else None
+    
+    def _ensure_subtitles_dir_exists(self):
+        """確保字幕目錄存在"""
+        try:
+            if not os.path.exists(self.subtitles_dir):
+                os.makedirs(self.subtitles_dir, exist_ok=True)
+                logger.info(f"Created subtitles directory: {self.subtitles_dir}")
+        except Exception as e:
+            logger.error(f"Error creating subtitles directory: {e}")
+    
+    def _get_subtitle_file_path(self, video_id: str) -> str:
+        """獲取字幕檔案的完整路徑"""
+        return os.path.join(self.subtitles_dir, f"{video_id}.json")
+    
+    def _save_transcript_to_file(self, video_id: str, transcript_entry: Dict[str, Any]):
+        """將轉錄結果保存到檔案"""
+        try:
+            file_path = self._get_subtitle_file_path(video_id)
+            
+            # 確保目錄存在
+            self._ensure_subtitles_dir_exists()
+            
+            # 將轉錄條目保存為 JSON 檔案
+            with open(file_path, 'w', encoding='utf-8') as f:
+                json.dump(transcript_entry, f, ensure_ascii=False, indent=2)
+            
+            logger.info(f"Successfully saved transcript to file: {file_path}")
+            
+        except Exception as e:
+            logger.error(f"Error saving transcript to file for video {video_id}: {e}")
+    
+    def _load_transcript_from_file(self, video_id: str) -> Optional[Dict[str, Any]]:
+        """從檔案載入轉錄結果"""
+        try:
+            file_path = self._get_subtitle_file_path(video_id)
+            
+            if not os.path.exists(file_path):
+                return None
+            
+            with open(file_path, 'r', encoding='utf-8') as f:
+                transcript_data = json.load(f)
+            
+            logger.info(f"Successfully loaded transcript from file: {file_path}")
+            return transcript_data
+            
+        except Exception as e:
+            logger.error(f"Error loading transcript from file for video {video_id}: {e}")
+            return None
+    
+    def get_transcript_from_file_or_memory(self, video_id: str) -> Optional[Dict[str, Any]]:
+        """優先從檔案載入轉錄，如果沒有則從記憶體中獲取"""
+        # 首先嘗試從檔案載入
+        transcript = self._load_transcript_from_file(video_id)
+        
+        if transcript:
+            return transcript
+        
+        # 如果檔案中沒有，則從記憶體中獲取
+        return self.get_latest_transcript(video_id)
+    
+    def list_available_transcripts(self) -> List[str]:
+        """列出所有可用的轉錄檔案"""
+        try:
+            if not os.path.exists(self.subtitles_dir):
+                return []
+            
+            transcript_files = []
+            for filename in os.listdir(self.subtitles_dir):
+                if filename.endswith('.json'):
+                    video_id = filename[:-5]  # 移除 .json 副檔名
+                    transcript_files.append(video_id)
+            
+            return sorted(transcript_files)
+            
+        except Exception as e:
+            logger.error(f"Error listing transcript files: {e}")
+            return []
     
 
     
