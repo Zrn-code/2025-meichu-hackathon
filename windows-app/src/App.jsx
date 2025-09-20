@@ -3,7 +3,9 @@ import './index.css';
 import llmService from './services/llmService';
 import { getAuthHeader } from './services/apikey';
 import audioPlaybackService from './services/audioPlaybackService';
+
 import VideoStats from './VideoStats.jsx';
+import Note from "./Note.jsx";
 
 const MODEL = import.meta.env.VITE_STT_MODEL || 'whisper-1'
 const LANGUAGE = import.meta.env.VITE_LANGUAGE || 'zh'
@@ -180,6 +182,8 @@ function App() {
         setLastUpdateTime(new Date());
       });
     }
+
+    // 監聽 notebook 更新事件
 
     // enter 輸入音訊
     const onKeyDown = e => { if (e.key === 'Enter' && !recording) startRecording().catch(err => setError(err.message)) }
@@ -429,28 +433,28 @@ function App() {
         <div className="card shadow-lg border border-primary">
           <div className="card-body">
             <h2 className="card-title text-primary mb-2">😻 影片小助手 Avatar</h2>
-          <p className="text-base-content opacity-70 text-base mb-6">無論是追劇、看電影或是讀書，Avatar 都能成為你的最佳夥伴！</p>
+            <p className="text-base-content opacity-70 text-base mb-6">無論是追劇、看電影或是讀書，Avatar 都能成為你的最佳夥伴！</p>
           
-          <div className="flex items-center gap-4 mb-6">
-            <button 
-              className={`btn gap-2 ${avatarVisible ? 'btn-error' : 'btn-primary'}`}
-              onClick={toggleAvatar}
-            >
-              <span>🐱</span>
-              {avatarVisible ? '隱藏 Avatar' : '顯示 Avatar'}
-            </button>
-            
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-base-content opacity-70">狀態:</span>
-              <div className={`badge ${avatarVisible ? 'badge-success' : 'badge-neutral'} gap-1`}>
-                <div className={`w-2 h-2 rounded-full ${avatarVisible ? 'bg-base-100' : 'bg-base-content opacity-60'}`}></div>
-                {avatarVisible ? '已啟用' : '已停用'}
+            <div className="flex items-center gap-4 mb-6">
+              <button 
+                className={`btn gap-2 ${avatarVisible ? 'btn-error' : 'btn-primary'}`}
+                onClick={toggleAvatar}
+              >
+                <span>🐱</span>
+                {avatarVisible ? '隱藏 Avatar' : '顯示 Avatar'}
+              </button>
+              
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-base-content opacity-70">狀態:</span>
+                <div className={`badge ${avatarVisible ? 'badge-success' : 'badge-neutral'} gap-1`}>
+                  <div className={`w-2 h-2 rounded-full ${avatarVisible ? 'bg-base-100' : 'bg-base-content opacity-60'}`}></div>
+                  {avatarVisible ? '已啟用' : '已停用'}
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* LLM 連線狀態顯示 */}
-          <div className="bg-base-100 rounded-lg p-4 border border-base-300 mb-4">
+            {/* LLM 連線狀態顯示 */}
+            <div className="bg-base-100 rounded-lg p-4 border border-base-300 mb-4">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-sm font-semibold">LLM 服務狀態:</span>
               <div className={`badge ${llmConnected ? 'badge-success' : 'badge-error'} gap-1`}>
@@ -463,10 +467,10 @@ function App() {
                 ⚠️ 請確認本地 LLM server 運行於 localhost:8000
               </div>
             )}
-          </div>
+            </div>
 
-          {/* 對話輸入區域 */}
-          {avatarVisible && (
+            {/* 對話輸入區域 */}
+            {avatarVisible && (
             <div className="bg-base-100 rounded-lg p-4 border border-base-300 mb-4">
               <h3 className="font-semibold text-primary mb-3">💬 與 Avatar 對話:</h3>
               
@@ -533,7 +537,7 @@ function App() {
                 </button>
               </div>
             </div>
-          )}
+            )}
           
             <div className="card-body">
               <h2 className="card-title text-secondary mb-2">
@@ -610,6 +614,8 @@ function App() {
                 </div>
               </div>
             </div>
+            
+            <Note />
 
           </div>
         </div>
@@ -736,7 +742,8 @@ function App() {
                 </div>
 
 
-              </div>  
+              </div> 
+                
             </div>
             
             <div className="bg-base-100 rounded-lg ml-5 mr-5 mt-5">
