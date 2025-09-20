@@ -1,25 +1,13 @@
 {
   "logs": [
     {
-      "timestamp": "30",
-      "emotion": "友善的",
-      "message": "歡迎大家！",
-      "video_id": "abc123",
-      "logs_id": "log001"
-    },
-    {
-      "timestamp": "120",
-      "emotion": "專業的",
-      "message": "現在開始我們的主題",
-      "video_id": "abc123",
-      "logs_id": "log002"
-    },
-    {
-      "timestamp": "35",
-      "emotion": "友善的",
-      "message": "歡迎大家！",
-      "video_id": "abc567",
-      "logs_id": "log001"
+      "logs_id": "4020454b-b20a-4fa9-b646-68b9ac67f005",
+      "video_id": "video_bb4be737",
+      "timestamp": "60",
+      "emotion": "興奮的",
+      "message": "這首歌真是經典！",
+      "is_generated": true,
+      "voice_file_path": "generated_audio/video_bb4be737_4020454b-b20a-4fa9-b646-68b9ac67f005_60_20250920_120000.wav"
     }
   ]
 }

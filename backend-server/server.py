@@ -91,7 +91,7 @@ class UnifiedServer:
             MultiplyTool(),
             DivideTool(),
             CalculateTool(),
-            ConversationLogTool()  # 新增對話記錄工具
+            ConversationLogTool(self.youtube_handler)  # 傳遞 YouTubeHandler 實例
         ]
         
         for tool in tools:
@@ -295,6 +295,47 @@ class UnifiedServer:
                 return jsonify({
                     "success": False,
                     "error": str(e)
+                }), 500
+
+        @self.app.route('/api/youtube/video-id', methods=['GET'])
+        def get_current_video_id():
+            """獲取當前 YouTube 影片 ID"""
+            try:
+                # 調試信息
+                current_data = self.youtube_handler.get_current_data()
+                self.logger.debug(f"Current data exists: {current_data is not None}")
+                if current_data:
+                    self.logger.debug(f"Current data keys: {list(current_data.keys())}")
+                
+                video_id = self.youtube_handler.get_current_video_id()
+                
+                if video_id:
+                    return jsonify({
+                        "success": True,
+                        "video_id": video_id,
+                        "timestamp": datetime.now().isoformat()
+                    })
+                else:
+                    # 返回更詳細的調試信息
+                    debug_info = {
+                        "has_current_data": current_data is not None,
+                        "current_data_keys": list(current_data.keys()) if current_data else None,
+                        "videoId_value": current_data.get('videoId') if current_data else None
+                    }
+                    
+                    return jsonify({
+                        "success": False,
+                        "error": "No active YouTube video",
+                        "video_id": None,
+                        "debug": debug_info
+                    }), 404
+                
+            except Exception as e:
+                self.logger.error(f"Get video ID error: {e}")
+                return jsonify({
+                    "success": False,
+                    "error": str(e),
+                    "video_id": None
                 }), 500
         
         @self.app.route('/api/youtube/current', methods=['GET'])
@@ -590,6 +631,65 @@ class UnifiedServer:
                         "success": False,
                         "error": str(e)
                     }), 500
+
+        @self.app.route('/api/voice_generation_complete', methods=['POST'])
+        def handle_voice_generation_complete():
+            """處理語音生成完成的回調"""
+            try:
+                data = request.get_json()
+                
+                if not data:
+                    return jsonify({
+                        "success": False,
+                        "error": "No data provided"
+                    }), 400
+                
+                logs_id = data.get('logs_id')
+                success = data.get('success', False)
+                filepath = data.get('filepath')
+                error_message = data.get('error_message')
+                
+                if not logs_id:
+                    return jsonify({
+                        "success": False,
+                        "error": "Missing logs_id"
+                    }), 400
+                
+                # 找到 ConversationLogTool 實例並更新狀態
+                conversation_tool = None
+                for tool in self.tool_registry.tools.values():
+                    if tool.name == "conversation_log":
+                        conversation_tool = tool
+                        break
+                
+                if conversation_tool:
+                    updated = conversation_tool.update_voice_generation_status(
+                        logs_id, success, filepath, error_message
+                    )
+                    
+                    if updated:
+                        self.logger.info(f"Voice generation status updated for {logs_id}: {success}")
+                        return jsonify({
+                            "success": True,
+                            "message": "Voice generation status updated"
+                        })
+                    else:
+                        return jsonify({
+                            "success": False,
+                            "error": "Failed to update status"
+                        }), 404
+                else:
+                    return jsonify({
+                        "success": False,
+                        "error": "ConversationLogTool not found"
+                    }), 500
+                    
+            except Exception as e:
+                self.logger.error(f"Voice generation complete error: {e}")
+                return jsonify({
+                    "success": False,
+                    "error": str(e)
+                }), 500
     
     async def _start_mcp_server(self):
         """啟動 MCP 服務器"""

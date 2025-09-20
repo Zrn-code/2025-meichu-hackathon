@@ -10,7 +10,7 @@ import os
 import uuid
 import requests
 import threading
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from .base import MCPTool
 
 logger = logging.getLogger(__name__)
@@ -19,13 +19,16 @@ logger = logging.getLogger(__name__)
 class ConversationLogTool(MCPTool):
     """對話記錄工具 - 提供表單式的對話記錄功能"""
     
-    def __init__(self):
+    def __init__(self, youtube_handler=None):
         # 設定資料存儲文件路徑
         self.data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
         self.data_file = os.path.join(self.data_dir, "conversation_logs.json")
         
         # 語音生成服務器配置
         self.voice_server_url = "http://localhost:5001/api/generate_voice"
+        
+        # YouTube Handler 實例
+        self.youtube_handler = youtube_handler
         
         # 確保資料目錄存在
         os.makedirs(self.data_dir, exist_ok=True)
@@ -40,7 +43,7 @@ class ConversationLogTool(MCPTool):
     
     @property
     def description(self) -> str:
-        return "記錄對話日誌，包含時間、對話語句和情緒敘述。用於安排在特定時間以特定語氣說特定的話。"
+        return "記錄對話日誌，包含時間、對話語句和情緒敘述。自動使用當前正在觀看的 YouTube 影片 ID，用於安排在特定時間以特定語氣說特定的話。"
     
     @property
     def input_schema(self) -> Dict:
@@ -58,10 +61,6 @@ class ConversationLogTool(MCPTool):
                 "message": {
                     "type": "string",
                     "description": "要說的對話語句內容"
-                },
-                "video_id": {
-                    "type": "string",
-                    "description": "影片ID（可選，如果未提供將自動生成）"
                 }
             },
             "required": ["timestamp", "emotion", "message"]
@@ -95,6 +94,41 @@ class ConversationLogTool(MCPTool):
         except Exception as e:
             logger.error(f"Failed to save data: {e}")
             raise
+    
+    def _get_current_youtube_id(self) -> Optional[str]:
+        """獲取當前 YouTube 影片 ID"""
+        if self.youtube_handler:
+            try:
+                return self.youtube_handler.get_current_video_id()
+            except Exception as e:
+                logger.error(f"Error getting current YouTube ID: {e}")
+        return None
+    
+    def update_voice_generation_status(self, logs_id: str, success: bool, filepath: str = None, error_message: str = None) -> bool:
+        """更新語音生成狀態"""
+        try:
+            data = self._load_data()
+            
+            # 找到對應的記錄
+            for log in data["logs"]:
+                if log.get("logs_id") == logs_id:
+                    log["is_generated"] = success
+                    if success and filepath:
+                        log["voice_file_path"] = filepath
+                    if error_message:
+                        log["generation_error"] = error_message
+                    
+                    # 保存更新後的資料
+                    self._save_data(data)
+                    logger.info(f"Updated voice generation status for {logs_id}: {success}")
+                    return True
+            
+            logger.warning(f"Log record not found for logs_id: {logs_id}")
+            return False
+            
+        except Exception as e:
+            logger.error(f"Error updating voice generation status: {e}")
+            return False
     
     def _send_voice_generation_request(self, record: Dict):
         """向語音生成服務器發送請求"""
@@ -144,7 +178,6 @@ class ConversationLogTool(MCPTool):
             timestamp = arguments.get("timestamp")
             message = arguments.get("message")
             emotion = arguments.get("emotion")
-            video_id = arguments.get("video_id")
             
             # 驗證必要欄位
             if not timestamp:
@@ -179,8 +212,14 @@ class ConversationLogTool(MCPTool):
             
             # 生成唯一 ID
             logs_id = str(uuid.uuid4())
+            
+            # 直接獲取當前 YouTube ID
+            video_id = self._get_current_youtube_id()
             if not video_id:
                 video_id = f"video_{str(uuid.uuid4())[:8]}"
+                logger.warning("沒有當前 YouTube ID，使用自動生成的 ID")
+            else:
+                logger.info(f"使用當前 YouTube ID: {video_id}")
             
             # 載入現有資料
             data = self._load_data()
@@ -191,7 +230,8 @@ class ConversationLogTool(MCPTool):
                 "video_id": video_id,
                 "timestamp": timestamp,
                 "emotion": emotion,
-                "message": message
+                "message": message,
+                "is_generated": False  # 初始設為 False，等語音生成完成後會更新
             }
             
             # 新增記錄
