@@ -10,7 +10,7 @@ const Avatar = ({ onClick, src }) => {
     if (typeof onClick === 'function') {
       onClick(e);
     } else {
-      setOpenDialog(true);
+      window.electronAPI.showMessageBox("你想說些甚麼?");
     }
   };
 
