@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './index.css';
+import llmService from './services/llmService';
 
 const MessageBox = ({ onStart, onSend }) => {
   const [message, setMessage] = useState("你好！我是你的桌面小助手 🐱\n拖動我到任何地方吧～");
   const [running, setRunning] = useState(false);
   const [inputText, setInputText] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef(null);
   const messagesRef = useRef(null);
 
@@ -47,35 +49,35 @@ const MessageBox = ({ onStart, onSend }) => {
     setMessage(prev => prev + "\n\n已啟動。");
   };
 
-const handleSend = () => {
-  // 先取得 trim 後文字
-  const text = inputText.trim();
+  const sendMessage = async (message) => {
+    if (window.electronAPI) {
+      await window.electronAPI.showMessageBox(message);
+    }
+  };
 
-  // 若為空（或只有空白），就清空輸入並結束（不發訊息）
-  if (!text) {
+const handleSend = async () => {
+  if (!inputText.trim() || isLoading) return;
+
+    const message = inputText.trim();
     setInputText('');
-    inputRef.current && inputRef.current.focus();
-    return;
-  }
+    setIsLoading(true);
 
-  // 發送給主程序
-  if (window.electronAPI && window.electronAPI.sendMessage) {
-    window.electronAPI.sendMessage('chat-to-avatar', text);
-  }
+    try {
+      // 先顯示思考狀態
+      await sendMessage('🤔 思考中...');
 
-  // 呼叫外部回調（如果有）
-  if (typeof onSend === 'function') {
-    try { onSend(text); } catch (e) { console.warn(e); }
-  }
+      // 使用 stream 功能逐字輸出
+      await llmService.sendMessageStream(message, (chunk, fullResponse) => {
+        // 每次接收到新的文字片段時更新 MessageBox
+        sendMessage(fullResponse);
+      });
 
-  // 清空輸入欄並把焦點放回去
-  setInputText('');
-  inputRef.current && inputRef.current.focus();
-
-  // 自動滾到底（若你有訊息顯示區）
-  setTimeout(() => {
-    if (messagesRef.current) messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
-  }, 0);
+    } catch (error) {
+      console.error('發送訊息錯誤:', error);
+      await sendMessage('❌ 錯誤: 無法獲取回應');
+    } finally {
+      setIsLoading(false);
+    }
 };
 
   const handleKeyDown = (e) => {
