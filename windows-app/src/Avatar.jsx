@@ -10,7 +10,7 @@ const Avatar = ({ onClick, src }) => {
     if (typeof onClick === 'function') {
       onClick(e);
     } else {
-      window.electronAPI.showMessageBox("你想說些甚麼?");
+      window.electronAPI.showMessageBox("對 Avatar 說些...");
     }
   };
 

@@ -3,7 +3,7 @@ import './index.css';
 import llmService from './services/llmService';
 
 const MessageBox = ({ onStart, onSend }) => {
-  const [message, setMessage] = useState("你好！我是你的桌面小助手 🐱\n拖動我到任何地方吧～");
+  const [message, setMessage] = useState("你好！我是你的桌面小助手🐱");
   const [running, setRunning] = useState(false);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
