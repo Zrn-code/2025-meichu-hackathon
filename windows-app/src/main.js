@@ -1,7 +1,8 @@
 import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
-
+const fs = require("fs");
+const fsp = require("fs").promises;
 // 如果 Node.js 版本 < 18，可能需要 polyfill fetch
 if (!globalThis.fetch) {
   import('node-fetch').then(({ default: fetch }) => {
@@ -527,3 +528,112 @@ ipcMain.handle('open-external-url', async (_event, url) => {
   if (!isHttpUrl(url)) throw new Error('Only http(s) URLs are allowed.');
   await shell.openExternal(url); // 會用預設瀏覽器開啟
 });
+
+function resolveNotebookDir() {
+  const candidates = [
+    path.join(app.getAppPath(), "public", "notebook"),
+    path.join(process.resourcesPath || "", "public", "notebook"),
+    path.join(__dirname, "public", "notebook"),
+  ];
+  for (const p of candidates) {
+    try { fs.accessSync(p, fs.constants.R_OK); return p; } catch {}
+  }
+  return null;
+}
+
+// 幫你把任何常見結構展開成 [{keywords, url}, ...]
+function extractNotePairs(data) {
+  const out = [];
+  const pushCandidate = (obj) => {
+    if (obj && typeof obj === "object" && obj.keywords != null && obj.url != null) {
+      out.push({ keywords: String(obj.keywords), url: String(obj.url) });
+    }
+  };
+
+  data.forEach(pushCandidate);
+  return out;
+}
+
+ipcMain.handle("notebook:list", async () => {
+  const dir = resolveNotebookDir();
+  if (!dir) return [];
+
+  const files = await fsp.readdir(dir);
+  const jsonFiles = files.filter((f) => f.toLowerCase().endsWith(".json"));
+  const rows = [];
+
+  for (const filename of jsonFiles) {
+    const full = path.join(dir, filename);
+    try {
+      const text = await fsp.readFile(full, "utf8");
+      const data = JSON.parse(text);
+      const pairs = extractNotePairs(data);
+      pairs.forEach((p, i) => {
+        rows.push({
+          id: `${filename}:${i}`,     // 供 React key 使用
+          filename,
+          keywords: p.keywords,
+          url: p.url,
+        });
+      });
+    } catch (e) {
+      console.error("[notebook:list] 讀取失敗:", filename, e);
+    }
+  }
+  return rows;
+});
+
+//
+// function resolveYoutubeMetaDataDir() {
+//   const candidates = [
+//     path.join(app.getAppPath(), "public", "youtubeCover"),
+//     path.join(process.resourcesPath || "", "public", "youtubeCover"),
+//     path.join(__dirname, "public", "youtubeCover"),
+//   ];
+//   for (const p of candidates) {
+//     try { fs.accessSync(p, fs.constants.R_OK); return p; } catch {}
+//   }
+//   return null;
+// }
+
+// function extractYoutubeMetaData(data) {
+//   const out = [];
+//   const pushCandidate = (obj) => {
+//     if (obj && typeof obj === "object" && obj.title != null && obj.upload_date != null && obj.view_count != null && obj.like_count != null && obj.url != null) {
+//       out.push({ title: String(obj.keywords), upload_date: String(obj.upload_date), view_count: obj.view_count, like_count: obj.like_count, tags: obj.tags, url: String(obj.url) } );
+//     }
+//   };
+
+//   data.forEach(pushCandidate);
+//   return out;
+// }
+
+// ipcMain.handle("fetch-youtube-metadata", async () => {
+//   const dir = resolveYoutubeMetaDataDir();
+//   if (!dir) return [];
+
+//   const files = await fsp.readdir(dir);
+//   const jsonFiles = files.filter((f) => f.toLowerCase().endsWith(".json"));
+//   print("jsonFiles:", jsonFiles)
+//   const rows = [];
+
+//   for (const filename of jsonFiles) {
+//     const full = path.join(dir, filename);
+//     try {
+//       const text = await fsp.readFile(full, "utf8");
+//       const data = JSON.parse(text);
+//       const pairs = extractYoutubeMetaData(data);
+//       console.log(pairs)
+//       pairs.forEach((p, i) => {
+//         rows.push(p);
+//         if (p == null){
+//           print("NOTHING!")
+//           console.log("null")
+//         }
+//       });
+//     } catch (e) {
+//       console.error("[youtube-metadata] 讀取失敗:", filename, e);
+//     }
+//   }
+//   return rows;
+// });

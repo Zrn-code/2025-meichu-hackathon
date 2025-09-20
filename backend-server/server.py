@@ -79,6 +79,15 @@ class UnifiedServer:
     def _setup_routes(self):
         """設置 API 路由"""
         
+        @self.app.route('/health', methods=['GET'])
+        def health_check():
+            """健康檢查端點"""
+            return jsonify({
+                "status": "healthy",
+                "message": "Server is running",
+                "timestamp": datetime.now().isoformat(),
+                "version": "2.0.0"
+            })
 
         @self.app.route('/api/chat', methods=['POST'])
         def chat_with_llm():
@@ -814,7 +823,7 @@ class UnifiedServer:
 
         @self.app.route('/api/check-playback', methods=['GET'])
         def check_playback():
-            """檢查當前是否需要播放語音內容（基於 YouTube 當前資料）"""
+            """檢查當前是否需要播放語音內容（基於 YouTube 當前資料和 avatar_talk 檔案）"""
             try:
                 # 獲取 YouTube 當前播放資料
                 current_youtube_data = self.youtube_handler.get_current_data()
@@ -827,80 +836,80 @@ class UnifiedServer:
                     }), 400
                 
                 # 從 YouTube 資料獲取當前播放信息
-                current_time = current_youtube_data.get('currentTime', 0)
+                current_time = current_youtube_data.get('currentTime', 0)  # 秒
+                current_time_ms = current_time * 1000  # 轉換為毫秒用於匹配
                 video_id = current_youtube_data.get('videoId', '')
                 is_playing = current_youtube_data.get('isPlaying', False)
                 video_title = current_youtube_data.get('title', '')
                 
-                self.logger.info(f"[CHECK PLAYBACK] 當前播放: {video_title[:30]}... | 時間: {current_time}s | 播放中: {is_playing} | 影片ID: {video_id}")
+                self.logger.info(f"[CHECK PLAYBACK] 當前播放: {video_title[:30]}... | 時間: {current_time}s ({current_time_ms}ms) | 播放中: {is_playing} | 影片ID: {video_id}")
                 
-                # 讀取 conversation logs
-                conversation_tool = None
-                for tool in self.tool_registry.tools.values():
-                    if tool.name == "conversation_log":
-                        conversation_tool = tool
-                        break
+                # 構建 avatar_talk JSON 檔案路徑
+                backend_dir = os.path.dirname(os.path.abspath(__file__))
+                parent_dir = os.path.dirname(backend_dir)
+                avatar_talk_dir = os.path.join(parent_dir, "windows-app", "src", "data", "avatar_talk")
+                avatar_file_path = os.path.join(avatar_talk_dir, f"{video_id}.json")
                 
-                if not conversation_tool:
+                self.logger.debug(f"[AVATAR TALK] 查找檔案: {avatar_file_path}")
+                
+                # 檢查 avatar_talk 檔案是否存在
+                if not os.path.exists(avatar_file_path):
+                    self.logger.info(f"[NO AVATAR FILE] 沒有找到 avatar talk 檔案: {video_id}.json")
+                    return jsonify({
+                        "success": True,
+                        "should_play": False,
+                        "content": None
+                    })
+                
+                # 讀取 avatar_talk JSON 檔案
+                try:
+                    with open(avatar_file_path, 'r', encoding='utf-8') as f:
+                        avatar_data = json.load(f)
+                except (json.JSONDecodeError, IOError) as e:
+                    self.logger.error(f"[AVATAR FILE ERROR] 讀取檔案失敗: {e}")
                     return jsonify({
                         "success": False,
-                        "error": "ConversationLogTool not found"
+                        "error": f"Failed to read avatar talk file: {str(e)}"
                     }), 500
                 
-                # 載入對話記錄資料
-                data = conversation_tool._load_data()
-                
                 # 尋找符合條件的語音內容
-                matching_log = None
-                tolerance = 2.0  # 容許誤差範圍（秒）
+                matching_entry = None
+                tolerance_ms = 2000  # 容許誤差範圍（毫秒）
                 
-                for log in data.get("logs", []):
+                for entry in avatar_data:
                     try:
-                        log_timestamp = float(log.get("timestamp", "0"))
-                        log_video_id = log.get("video_id", "")
-                        is_generated = log.get("is_generated", False)
+                        entry_time = entry.get("time", 0)  # avatar_talk 使用毫秒
+                        is_generated = entry.get("is_generated", False)
+                        reply = entry.get("Reply", "")
+                        file_path = entry.get("file_path", "")
                         
-                        # 檢查時間和影片ID是否匹配
-                        time_matches = abs(log_timestamp - current_time) <= tolerance
-                        video_matches = log_video_id == video_id
+                        # 檢查時間是否匹配（都轉換為毫秒比較）
+                        time_matches = abs(entry_time - current_time_ms) <= tolerance_ms
                         
-                        self.logger.debug(f"[CHECK LOG] 記錄: {log.get('message', '')[:20]}... | 時間: {log_timestamp}s | 影片: {log_video_id} | 已生成: {is_generated} | 時間匹配: {time_matches} | 影片匹配: {video_matches}")
+                        self.logger.debug(f"[CHECK ENTRY] 回應: {reply[:20]}... | 時間: {entry_time}ms | 當前: {current_time_ms}ms | 差異: {abs(entry_time - current_time_ms)}ms | 已生成: {is_generated} | 匹配: {time_matches}")
                         
-                        if time_matches and video_matches and is_generated:
-                            matching_log = log
-                            self.logger.info(f"[FOUND MATCH] 找到匹配內容: {log.get('message', '')} (時間: {log_timestamp}s)")
+                        if time_matches and is_generated and file_path:
+                            matching_entry = entry
+                            self.logger.info(f"[FOUND MATCH] 找到匹配內容: {reply} (時間: {entry_time}ms)")
                             break
                             
                     except (ValueError, TypeError) as e:
-                        self.logger.warning(f"[LOG ERROR] 處理記錄時發生錯誤: {e}")
+                        self.logger.warning(f"[ENTRY ERROR] 處理記錄時發生錯誤: {e}")
                         continue
                 
                 # 回應結果
-                if matching_log:
-                    # 從 voice_file_path 提取檔案名稱並創建 HTTP URL
-                    voice_file_path = matching_log.get("voice_file_path", "")
-                    filename = os.path.basename(voice_file_path) if voice_file_path else ""
-                    audio_url = f"http://localhost:3000/api/audio/{filename}" if filename else ""
+                if matching_entry:
+                    filename = matching_entry.get("file_path", "")
                     
-                    self.logger.info(f"[RESPONSE] 回傳播放內容: {matching_log.get('message', '')} | 音檔: {filename}")
+                    self.logger.info(f"[RESPONSE] 回傳播放內容: {matching_entry.get('Reply', '')} | 音檔: {filename}")
                     
                     return jsonify({
                         "success": True,
                         "should_play": True,
-                        "current_youtube_data": {
-                            "video_title": video_title,
-                            "current_time": current_time,
-                            "is_playing": is_playing,
-                            "video_id": video_id
-                        },
                         "content": {
-                            "logs_id": matching_log.get("logs_id"),
-                            "message": matching_log.get("message"),
-                            "emotion": matching_log.get("emotion"),
-                            "timestamp": matching_log.get("timestamp"),
-                            "video_id": matching_log.get("video_id"),
-                            "voice_file_path": matching_log.get("voice_file_path"),
-                            "audio_url": audio_url
+                            "message": matching_entry.get("Reply"),
+                            "is_generated": matching_entry.get("is_generated"),
+                            "file_path": matching_entry.get("file_path")
                         }
                     })
                 else:
@@ -909,14 +918,7 @@ class UnifiedServer:
                     return jsonify({
                         "success": True,
                         "should_play": False,
-                        "current_youtube_data": {
-                            "video_title": video_title,
-                            "current_time": current_time,
-                            "is_playing": is_playing,
-                            "video_id": video_id
-                        },
-                        "content": None,
-                        "message": f"沒有找到時間點 {current_time}s 的語音內容"
+                        "content": None
                     })
                     
             except Exception as e:

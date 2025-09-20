@@ -10,6 +10,12 @@ class AudioPlaybackService {
     this.checkInterval = null;
     this.lastPlayedLogId = null;
     this.currentAudio = null;
+    
+    // 自動啟動檢查（延遲 2 秒讓應用程式完全載入）
+    setTimeout(() => {
+      this.startPeriodicCheck(1000);
+      console.log('[AudioPlayback] 🚀 自動啟動語音播放檢查服務 (每秒檢查一次)');
+    }, 2000);
   }
 
   /**
@@ -21,9 +27,13 @@ class AudioPlaybackService {
       this.stopPeriodicCheck();
     }
 
-    console.log('[AudioPlayback] 開始定時檢查語音播放');
+    console.log(`[AudioPlayback] ▶️ 開始定時檢查語音播放 (間隔: ${intervalMs}ms)`);
     this.isChecking = true;
     
+    // 立即執行一次檢查
+    this.checkAndPlayAudio();
+    
+    // 然後設定定時器
     this.checkInterval = setInterval(() => {
       this.checkAndPlayAudio();
     }, intervalMs);
@@ -46,48 +56,38 @@ class AudioPlaybackService {
    */
   async checkAndPlayAudio() {
     try {
-      console.log('[AudioPlayback] 檢查當前是否需要播放語音...');
-
       // 呼叫 check-playback API（不再需要傳遞參數，後端會自動從 YouTube 資料獲取）
       const response = await this.fetchCheckPlayback();
       
-      console.log('[AudioPlayback] API 回應:', response);
-      
-      if (response.success && response.should_play && response.content) {
+      // 只在有新內容時才記錄詳細資訊
+      if (response.success && response.content && response.content.file_path) {
         const content = response.content;
-        const youtubeData = response.current_youtube_data;
-        
-        console.log(`[AudioPlayback] YouTube 狀態: "${youtubeData.video_title}" | 時間: ${youtubeData.current_time}s | 播放中: ${youtubeData.is_playing}`);
-        console.log(`[AudioPlayback] 找到可播放內容: "${content.message}" (logs_id: ${content.logs_id})`);
         
         // 檢查是否是新內容（避免重複播放）
-        if (content.logs_id !== this.lastPlayedLogId) {
-          console.log(`[AudioPlayback] 播放新語音: "${content.message}" (${content.emotion})`);
+        if (content.file_path !== this.lastPlayedLogId) {
+          console.log(`[AudioPlayback] 🎵 播放新語音: "${content.message}"`);
+          
+          // 先觸發 MessageBox 顯示事件
+          this.dispatchMessageBoxEvent(content);
           
           await this.playAudio(content);
-          this.lastPlayedLogId = content.logs_id;
+          this.lastPlayedLogId = content.file_path;
           
           // 觸發自定義事件，讓其他組件知道有新語音播放
-          this.dispatchPlaybackEvent({
-            ...content,
-            youtube_data: youtubeData
-          });
-        } else {
-          console.log('[AudioPlayback] 內容已播放過，跳過');
+          this.dispatchPlaybackEvent(content);
         }
-      } else if (response.success) {
-        // 有 YouTube 資料但沒有匹配的語音內容
-        const youtubeData = response.current_youtube_data;
-        if (youtubeData) {
-          console.log(`[AudioPlayback] YouTube: "${youtubeData.video_title}" | 時間: ${youtubeData.current_time}s | ${response.message || '沒有匹配的語音內容'}`);
-        } else {
-          console.log('[AudioPlayback] 沒有 YouTube 播放資料');
-        }
-      } else {
-        console.log(`[AudioPlayback] API 錯誤: ${response.error || response.message}`);
+      } else if (!response.success) {
+        // 只在錯誤時記錄
+        console.warn(`[AudioPlayback] ⚠️ API 回應錯誤: ${response.error}`);
       }
+      // 沒有內容時不記錄，避免過多日誌
     } catch (error) {
-      console.error('[AudioPlayback] 檢查播放時發生錯誤:', error);
+      // 區分連接錯誤和其他錯誤
+      if (error.message.includes('fetch') || error.message.includes('Failed to fetch')) {
+        console.warn('[AudioPlayback] 🔗 後端連接失敗，將繼續重試...');
+      } else {
+        console.error('[AudioPlayback] ❌ 檢查播放時發生錯誤:', error);
+      }
     }
   }
 
@@ -118,16 +118,19 @@ class AudioPlaybackService {
         this.currentAudio = null;
       }
 
-      if (!content.audio_url) {
-        console.warn('[AudioPlayback] 沒有可用的音檔 URL');
+      if (!content.file_path) {
+        console.warn('[AudioPlayback] 沒有可用的音檔路徑');
         return;
       }
 
-      console.log(`[AudioPlayback] 準備播放音檔: ${content.audio_url}`);
-      console.log(`[AudioPlayback] 內容: "${content.message}" (${content.emotion})`);
+      // 構建音檔 URL (使用 public 資料夾中的檔案)
+      const audio_url = `/voice_wav/${content.file_path}`;
+
+      console.log(`[AudioPlayback] 準備播放音檔: ${audio_url}`);
+      console.log(`[AudioPlayback] 內容: "${content.message}"`);
       
       // 創建新的 Audio 物件
-      this.currentAudio = new Audio(content.audio_url);
+      this.currentAudio = new Audio(audio_url);
       
       // 預載音檔以提高播放成功率
       this.currentAudio.preload = 'auto';
@@ -152,17 +155,42 @@ class AudioPlaybackService {
       
       this.currentAudio.onerror = (error) => {
         console.error('[AudioPlayback] 音檔載入/播放錯誤:', error);
-        console.error('[AudioPlayback] 音檔 URL:', content.audio_url);
+        console.error('[AudioPlayback] 音檔 URL:', audio_url);
         this.currentAudio = null;
       };
 
       // 等待音檔載入並嘗試播放
       console.log('[AudioPlayback] 開始播放音檔...');
-      const playPromise = this.currentAudio.play();
       
-      if (playPromise !== undefined) {
-        await playPromise;
-        console.log('[AudioPlayback] ✅ 音檔播放成功');
+      // 添加載入檢查
+      if (this.currentAudio.readyState >= 1) {
+        // 音檔已載入足夠資料，直接播放
+        const playPromise = this.currentAudio.play();
+        if (playPromise !== undefined) {
+          await playPromise;
+          console.log('[AudioPlayback] ✅ 音檔播放成功');
+        }
+      } else {
+        // 等待音檔載入
+        return new Promise((resolve, reject) => {
+          this.currentAudio.oncanplaythrough = async () => {
+            try {
+              const playPromise = this.currentAudio.play();
+              if (playPromise !== undefined) {
+                await playPromise;
+                console.log('[AudioPlayback] ✅ 音檔播放成功（延遲載入）');
+              }
+              resolve();
+            } catch (error) {
+              reject(error);
+            }
+          };
+          
+          // 設定超時，避免無限等待
+          setTimeout(() => {
+            reject(new Error('音檔載入超時'));
+          }, 5000);
+        });
       }
       
     } catch (error) {
@@ -229,6 +257,24 @@ class AudioPlaybackService {
     const event = new CustomEvent('audioPlayback', {
       detail: {
         content: content,
+        message: content.message,
+        timestamp: new Date().toISOString()
+      }
+    });
+    
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(event);
+    }
+  }
+
+  /**
+   * 觸發 MessageBox 顯示事件
+   * @param {Object} content - 播放的內容
+   */
+  dispatchMessageBoxEvent(content) {
+    const event = new CustomEvent('showMessageBox', {
+      detail: {
+        message: content.message,
         timestamp: new Date().toISOString()
       }
     });

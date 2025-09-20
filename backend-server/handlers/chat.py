@@ -7,10 +7,7 @@
 import asyncio
 import logging
 import requests
-import re
-from typing import Dict, List, Optional, Any
-from datetime import datetime
-
+from typing import Dict, List
 logger = logging.getLogger(__name__)
 
 
@@ -129,15 +126,10 @@ class ChatHandler:
             
             # 調用 LLM
             messages = [system_message] + self.conversation_history[-self.max_history:]
-            response = asyncio.run(self._call_llm(messages))
-            
-            # 檢查是否需要使用工具
-            tool_result = asyncio.run(self._check_and_use_tools(user_message))
+            response = asyncio.run(self._call_llm(messages))          
             
             # 組合最終響應
             final_response = response
-            if tool_result:
-                final_response += f"\n\n{tool_result}"
             
             # 添加助手回應到歷史
             self.conversation_history.append({
@@ -160,42 +152,7 @@ class ChatHandler:
         except Exception as e:
             logger.error(f"Stream LLM call failed: {e}")
             yield {"error": f"抱歉，處理您的消息時發生錯誤: {str(e)}"}
-    
-    async def _check_and_use_tools(self, user_message: str) -> str:
-        """檢查是否需要使用工具並執行"""
-        if not self.tools_handler:
-            return ""
         
-        try:
-            # 檢查是否包含數學運算關鍵字
-            math_keywords = ["計算", "加法", "減法", "乘法", "除法", "+", "-", "*", "/", "加", "減", "乘", "除"]
-            
-            if any(keyword in user_message for keyword in math_keywords):
-                # 嘗試提取數字
-                numbers = re.findall(r'\d+(?:\.\d+)?', user_message)
-                
-                if len(numbers) >= 2:
-                    a = float(numbers[0])
-                    b = float(numbers[1])
-                    
-                    # 根據關鍵字決定運算類型
-                    if "加" in user_message or "+" in user_message:
-                        return await self.tools_handler.call_tool("add", {"a": a, "b": b})
-                    elif "減" in user_message or "-" in user_message:
-                        return await self.tools_handler.call_tool("subtract", {"a": a, "b": b})
-                    elif "乘" in user_message or "*" in user_message:
-                        return await self.tools_handler.call_tool("multiply", {"a": a, "b": b})
-                    elif "除" in user_message or "/" in user_message:
-                        return await self.tools_handler.call_tool("divide", {"a": a, "b": b})
-                    else:
-                        return await self.tools_handler.call_tool("add", {"a": a, "b": b})
-            
-            return ""
-            
-        except Exception as e:
-            logger.error(f"Tool usage error: {e}")
-            return f"工具調用錯誤: {str(e)}"
-    
     def clear_history(self):
         """清除對話歷史"""
         self.conversation_history.clear()

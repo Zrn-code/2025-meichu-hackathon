@@ -41,4 +41,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   // 開啟外部網址
   openExternalUrl: (url) => ipcRenderer.invoke('open-external-url', url),
+  // Notebook 相關
+  listNotebook: () => ipcRenderer.invoke("notebook:list"),
+  // Youtube metadata 相關
+  fetchYoutubeMetadata: () => ipcRenderer.invoke('fetch-youtube-metadata'),
 });
