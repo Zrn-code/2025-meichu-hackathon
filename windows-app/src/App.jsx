@@ -158,6 +158,12 @@ function App() {
     checkServerStatus();
     loadTabsData();
 
+    // 自動啟用語音播放檢查服務
+    console.log('[App] 自動啟用語音播放監聽服務');
+    setAudioPlaybackEnabled(true);
+    setAudioPlaybackStatus('監聽中');
+    setLastPlaybackMessage('自動開始監聽 YouTube 播放狀態...');
+
     // 監聽 avatar 關閉事件
     let cleanupAvatar = null;
     if (window.electronAPI && window.electronAPI.onAvatarClosed) {
@@ -185,7 +191,7 @@ function App() {
     const handleAudioPlayback = (event) => {
       const { content } = event.detail;
       setCurrentAudioContent(content);
-      setLastPlaybackMessage(`播放: ${content.message} (${content.emotion})`);
+      setLastPlaybackMessage(`播放: ${content.message}`);
       setAudioPlaybackStatus('播放中');
     };
 
@@ -197,6 +203,15 @@ function App() {
 
     window.addEventListener('audioPlayback', handleAudioPlayback);
     window.addEventListener('autoplayBlocked', handleAutoplayBlocked);
+
+    // 監聽 MessageBox 顯示事件
+    const handleShowMessageBox = (event) => {
+      const { message } = event.detail;
+      console.log(`[App] 收到 MessageBox 顯示請求: "${message}"`);
+      sendMessage(`${message}`);
+    };
+
+    window.addEventListener('showMessageBox', handleShowMessageBox);
 
     // 清理監聽器
     return () => {
@@ -210,6 +225,7 @@ function App() {
       window.removeEventListener('keyup', onKeyUp);
       window.removeEventListener('audioPlayback', handleAudioPlayback);
       window.removeEventListener('autoplayBlocked', handleAutoplayBlocked);
+      window.removeEventListener('showMessageBox', handleShowMessageBox);
       
       // 停止音檔播放服務
       audioPlaybackService.stopPeriodicCheck();
