@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './index.css';
 import llmService from './services/llmService';
 import { getAuthHeader } from './services/apikey';
@@ -76,6 +76,38 @@ function App() {
   const mediaStreamRef = useRef(null)
   const mediaRecorderRef = useRef(null)
   const audioChunksRef = useRef([])
+
+  // Avatar 卡片資料
+  const AvatarInfo = [
+    {
+      img: "avatar.jpg",
+      title: "Avatar 選擇",
+      personality: "傲嬌型",
+      audioLabel: "(試聽音檔)"
+    },
+    {
+      img: "avatar2.jpg",
+      title: "Avatar 選擇",
+      personality: "樂觀開朗",
+      audioLabel: "(試聽音檔)"
+    },
+    {
+      img: "avatar3.jpg",
+      title: "Avatar 選擇",
+      personality: "高冷型",
+      audioLabel: "(試聽音檔)"
+    },
+    {
+      img: "avatar4.jpg",
+      title: "Avatar 選擇",
+      personality: "???",
+      audioLabel: "(試聽音檔)"
+    }
+  ];
+
+  // const [Cardi, setCardI] = useState(0);
+  // const Cardprev = useCallback(() => setCardI((p) => (p - 1 + AvatarInfo.length) % AvatarInfo.length), []);
+  // const Cardnext = useCallback(() => setCardI((p) => (p + 1) % AvatarInfo.length), []);
 
   // 檢查懸浮 avatar 的狀態和 LLM 連線狀態
   useEffect(() => {
@@ -691,53 +723,113 @@ function App() {
             </p>
             
             {!TRANSCRIBE_URL && (
-        <div style={{ margin: '1rem 0', padding: '0.75rem', border: '1px solid #ddd', borderRadius: 8 }}>
-          <strong>開發模式（未設代理端點）：</strong>
-          <div>請貼上你的 OpenAI API Key（僅本機；正式環境請改用 Vercel Edge 代理）。</div>
-          <input type="password" placeholder="sk-..." value={userKey} onChange={e => setUserKey(e.target.value)}
-                 style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem' }} />
-        </div>
-      )}
+            <div style={{ margin: '1rem 0', padding: '0.75rem', border: '1px solid #ddd', borderRadius: 8 }}>
+              <strong>開發模式（未設代理端點）：</strong>
+              <div>請貼上你的 OpenAI API Key（僅本機；正式環境請改用 Vercel Edge 代理）。</div>
+              <input type="password" placeholder="sk-..." value={userKey} onChange={e => setUserKey(e.target.value)}
+                  style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem' }} /> 
+            </div>)}
 
-      <button onMouseDown={() => !recording && startRecording()} onMouseUp={() => recording && stopRecording()}
-              disabled={recording} style={{ padding: '0.75rem 1.25rem', fontSize: '1.1rem', borderRadius: 12 }}>
-        {recording ? '錄音中…放開停止' : '按住開始錄音（也可按 Enter）'}
-      </button>
+            <button onMouseDown={() => !recording && startRecording()} onMouseUp={() => recording && stopRecording()}
+                    disabled={recording} style={{ padding: '0.75rem 1.25rem', fontSize: '1.1rem', borderRadius: 12 }}>
+              {recording ? '錄音中…放開停止' : '按住開始錄音（也可按 Enter）'}
+            </button>
 
-      {latencyMs !== null && <p>⏱️ 往返延遲：約 {latencyMs} ms</p>}
-      {transcript && <div style={{ marginTop: '1rem', padding: '0.75rem', border: '1px solid #ddd', borderRadius: 8 }}>
-        <div style={{ fontWeight: 600, marginBottom: 6 }}>轉寫結果</div><div>{transcript}</div></div>}
-      {error && <div style={{ marginTop: '1rem', padding: '0.75rem', border: '1px solid #f99', background: '#fff7f7', borderRadius: 8, color: '#900' }}>
-        <div style={{ fontWeight: 600 }}>錯誤</div><div style={{ whiteSpace: 'pre-wrap' }}>{error}</div></div>}
+            {latencyMs !== null && <p>⏱️ 往返延遲：約 {latencyMs} ms</p>}
+            {transcript && <div style={{ marginTop: '1rem', padding: '0.75rem', border: '1px solid #ddd', borderRadius: 8 }}>
+              <div style={{ fontWeight: 600, marginBottom: 6 }}>轉寫結果</div><div>{transcript}</div></div>}
+            {error && <div style={{ marginTop: '1rem', padding: '0.75rem', border: '1px solid #f99', background: '#fff7f7', borderRadius: 8, color: '#900' }}>
+            <div style={{ fontWeight: 600 }}>錯誤</div><div style={{ whiteSpace: 'pre-wrap' }}>{error}</div></div>}
           </div>
         </div>
 
+        {/* -------------------------------------------------------------------------------------- */}
+        {/* avatar 卡片*/}
+        <div className="card shadow-lg border border-info">
+          <div className="grid grid-cols-1 gap-0" >
+            <div className="bg-base-100 rounded-lg ml-5 mr-5 mt-5">
+              <div className="avatar m-3">
+                <div className="mask mask-squircle w-24">
+                  <img src={AvatarInfo[0].img} alt="Movie" />
+                </div>
+              </div>
+              <div className="card-body">
+                <h2 className="card-title">New movie is released!</h2>
+                <p>Click the button to watch on Jetflix app.</p>
+                <div className="card-actions justify-end">
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => loadAvatar(avatarImages[0])}
+                  >
+                    Avatar 1
+                  </button>
+                </div>
+              </div>  
+            </div>
+            
+            <div className="bg-base-100 rounded-lg ml-5 mr-5 mt-5">
+              <div className="avatar m-3">
+                <div className="mask mask-squircle w-24">
+                  <img src={AvatarInfo[1].img} alt="Movie" />
+                </div>
+              </div>
+              <div className="card-body">
+                <h2 className="card-title">New movie is released!</h2>
+                <p>Click the button to watch on Jetflix app.</p>
+                <div className="card-actions justify-end">
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => loadAvatar(avatarImages[1])}
+                  >
+                    Avatar 2
+                  </button>
+                </div>
+              </div>  
+            </div>
 
-      </div>
+            <div className="bg-base-100 rounded-lg m-5">
+              <div className="avatar m-3">
+                <div className="mask mask-squircle w-24">
+                  <img src={AvatarInfo[2].img} alt="Movie" />
+                </div>
+              </div>
+              <div className="card-body">
+                <h2 className="card-title">New movie is released!</h2>
+                <p>Click the button to watch on Jetflix app.</p>
+                <div className="card-actions justify-end">
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => loadAvatar(avatarImages[2])}
+                  >
+                    Avatar 3
+                  </button>
+                </div>
+              </div>  
+            </div>
 
-      {/* 自定義 avatar */}
-      <div className="card shadow-lg border border-info">
-        <div className="card-body">
-          <h2 className="card-title text-info mb-2">
-            自定義 Avatar 區塊
-          </h2>
-          <p className="text-base-content opacity-70 text-sm mb-4">
-            可以調整Agent的個性
-          </p>
-          <div className="flex gap-2 flex-wrap">
-            {avatarImages.map((img, idx) => (
-              <button
-                key={img}
-                className="btn btn-primary"
-                onClick={() => loadAvatar(img)}
-              >
-                Avatar {idx + 1}
-              </button>
-            ))}
+
+            <div className="bg-base-100 rounded-lg m-5">
+              <div className="avatar m-3">
+                <div className="mask mask-squircle w-24">
+                  <img src={AvatarInfo[3].img} alt="Movie" />
+                </div>
+              </div>
+              <div className="card-body">
+                <h2 className="card-title">New movie is released!</h2>
+                <p>Click the button to watch on Jetflix app.</p>
+                <div className="card-actions justify-end">
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => loadAvatar(avatarImages[3])}
+                  >
+                    Avatar 4
+                  </button>
+                </div>
+              </div>  
+            </div>
           </div>
         </div>
       </div>
-
 
     </div>
   );

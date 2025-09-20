@@ -38,12 +38,12 @@ const createInformWindow = (message = "") => {
     // 如果 messageBox 存在，放在 messageBox 左側
     const mb = messageBoxWindow.getBounds();
     startX = mb.x - 10;
-    startY = mb.y - 150;
+    startY = mb.y - 100;
   } else if (avatarWindow && !avatarWindow.isDestroyed()) {
     const av = avatarWindow.getBounds();
     // 放在 avatar 左側（與 messageBox 類似）
-    startX = av.x - 20;
-    startY = av.y - 150; // 與 avatar 同垂直位置
+    startX = av.x - 310;
+    startY = av.y - 100; // 與 avatar 同垂直位置
   } else {
     // fallback：螢幕右下
     const wa = screen.getPrimaryDisplay().workArea;
@@ -116,12 +116,12 @@ const updateInformPosition = () => {
     const av = avatarWindow.getBounds();
     // messageBox 寬度預設 300, offset 與你的邏輯一致 (300 + 10)
     mbTargetX = av.x; // avatar 左邊: messageBox x
-    mbTargetY = av.y-150;       // 與 avatar 同垂直位置
+    mbTargetY = av.y-100;       // 與 avatar 同垂直位置
   } else if (messageBoxWindow && !messageBoxWindow.isDestroyed()) {
     // 若 avatar 不可用，但 messageBox 可用，就依 messageBox 當下位置
     const mb = messageBoxWindow.getBounds();
     mbTargetX = mb.x;
-    mbTargetY = mb.y;
+    mbTargetY = mb.y-100;
   } else {
     // 都沒有基準，直接 return
     return;
@@ -276,6 +276,9 @@ const closeAvatarWindow = () => {
   // 隱藏 avatar 時同時關閉 messagebox
   if (messageBoxWindow) {
     closeMessageBoxWindow();
+  }
+  if( informWindow ) {
+    closeInformWindow();
   }
 };
 
