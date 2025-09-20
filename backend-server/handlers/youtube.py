@@ -15,6 +15,15 @@ from typing import Dict, List, Optional, Any
 
 logger = logging.getLogger(__name__)
 
+# 導入角色回應生成功能
+try:
+    from .message_gen import generate_avatar_response_for_video
+    MESSAGE_GEN_AVAILABLE = True
+    logger.info("Message generation module loaded successfully")
+except ImportError as e:
+    logger.warning(f"Message generation module not available: {e}")
+    MESSAGE_GEN_AVAILABLE = False
+
 
 class YouTubeHandler:
     """YouTube 數據處理器"""
@@ -38,8 +47,8 @@ class YouTubeHandler:
         self.processed_fullscreen_videos = set()  # 避免重複處理同一個視頻
         self.last_mode_state = {}  # 記錄上次的模式狀態
         
-        # 設定字幕檔案存儲路徑
-        self.subtitles_dir = os.path.join(os.path.dirname(__file__), '..', 'data', 'video_subtitles')
+        # 設定字幕檔案存儲路徑 - 指向 windows-app/src/data/video_subtitles
+        self.subtitles_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'windows-app', 'src', 'data', 'video_subtitles')
         self._ensure_subtitles_dir_exists()
         
         # 啟動監控線程
@@ -815,8 +824,40 @@ class YouTubeHandler:
             
             logger.info(f"Successfully saved transcript to file: {file_path}")
             
+            # 自動觸發角色回應生成
+            self._auto_generate_avatar_response(video_id)
+            
         except Exception as e:
             logger.error(f"Error saving transcript to file for video {video_id}: {e}")
+    
+    def _auto_generate_avatar_response(self, video_id: str):
+        """自動為新字幕生成角色回應"""
+        if not MESSAGE_GEN_AVAILABLE:
+            logger.debug(f"Message generation not available, skipping avatar response for video {video_id}")
+            return
+            
+        try:
+            logger.info(f"🤖 開始為影片 {video_id} 自動生成角色回應...")
+            
+            # 在背景執行緒中執行，避免阻塞主線程
+            def generate_in_background():
+                try:
+                    success = generate_avatar_response_for_video(video_id, character_index=0)
+                    if success:
+                        logger.info(f"✅ 影片 {video_id} 的角色回應生成完成")
+                    else:
+                        logger.warning(f"❌ 影片 {video_id} 的角色回應生成失敗")
+                except Exception as e:
+                    logger.error(f"❌ 生成角色回應時發生錯誤 (影片 {video_id}): {e}")
+            
+            # 啟動背景執行緒
+            thread = threading.Thread(target=generate_in_background, daemon=True)
+            thread.start()
+            
+            logger.debug(f"Avatar response generation started in background for video {video_id}")
+            
+        except Exception as e:
+            logger.error(f"Error starting avatar response generation for video {video_id}: {e}")
     
     def _load_transcript_from_file(self, video_id: str) -> Optional[Dict[str, Any]]:
         """從檔案載入轉錄結果"""
