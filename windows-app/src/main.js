@@ -20,6 +20,7 @@ let mainWindow;
 let avatarWindow = null;
 let messageBoxWindow = null;
 let informWindow = null;
+let messagePanelWindow = null;
 // informWindow 建立
 const createInformWindow = (message = "") => {
   if (informWindow) {
@@ -257,6 +258,7 @@ const closeAvatarWindow = () => {
 };
 
 const createMessageBoxWindow = (message = "你好！我是你的桌面小助手 🐱") => {
+  console.log("Creating MessageBox window with message:", message);
   if (messageBoxWindow) {
     messageBoxWindow.show();
     // 發送新訊息到現有窗口
@@ -294,6 +296,7 @@ const createMessageBoxWindow = (message = "你好！我是你的桌面小助手 
   // 如果 avatar 窗口存在，將 MessageBox 放在 avatar 左邊
   if (avatarWindow) {
     updateMessageBoxPosition();
+    updateMessagePanelPosition();
   }
 };
 
@@ -303,6 +306,49 @@ const closeMessageBoxWindow = () => {
     messageBoxWindow = null;
     // 關閉 messageBox 時自動關閉 inform
     closeInformWindow();
+  }
+};
+
+const updateMessagePanelPosition = () => {
+  if (messagePanelWindow && !messagePanelWindow.isDestroyed() && avatarWindow && !avatarWindow.isDestroyed()) {
+    const avatarBounds = messagePanelWindow.getBounds();
+    const currentBounds = messagePanelWindow.getBounds();
+    const targetBounds = {
+      x: avatarBounds.x - 310, // MessageBox 寬度 (300) + 10px 間距
+      y: avatarBounds.y,
+      width: 300,
+      height: 300  // 增加高度
+    };
+
+    // 添加動畫效果：使用 requestAnimationFrame 實現平滑移動
+    const animatePosition = (startTime) => {
+      const duration = 200; // 動畫持續時間 200ms
+      const progress = Math.min((Date.now() - startTime) / duration, 1);
+      
+      // 使用 easeOutCubic 緩動函數
+      const easeProgress = 1 - Math.pow(1 - progress, 3);
+      
+      const currentX = currentBounds.x + (targetBounds.x - currentBounds.x) * easeProgress;
+      const currentY = currentBounds.y + (targetBounds.y - currentBounds.y) * easeProgress;
+      
+      if (messagePanelWindow && !messagePanelWindow.isDestroyed()) {
+        messagePanelWindow.setBounds({
+          x: Math.round(currentX),
+          y: Math.round(currentY),
+          width: targetBounds.width,
+          height: targetBounds.height
+        });
+        
+        if (progress < 1) {
+          setTimeout(() => animatePosition(startTime), 16); // 約 60fps
+        }
+      }
+    };
+    
+    // 只有當位置實際發生變化時才執行動畫
+    if (Math.abs(currentBounds.x - targetBounds.x) > 2 || Math.abs(currentBounds.y - targetBounds.y) > 2) {
+      animatePosition(Date.now());
+    }
   }
 };
 
@@ -349,6 +395,74 @@ const updateMessageBoxPosition = () => {
   }
 };
 
+// 建立 messagePanelWindow
+const createMessagePanelWindow = (message = "") => {
+  console.log("Creating MessagePanel window with message:", message);
+  if (messagePanelWindow) {
+    messagePanelWindow.show();
+    // 發送新訊息到現有窗口
+    messagePanelWindow.webContents.send('message-received', message);
+    return;
+  }
+
+  messagePanelWindow = new BrowserWindow({
+    width: 300,
+    height: 300,
+    frame: false,
+    transparent: true,
+    alwaysOnTop: true,
+    skipTaskbar: true,
+    resizable: false,
+    hasShadow: false,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js'),
+    },
+  });
+
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+    messagePanelWindow.loadURL(`${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/messagePanel.html`);
+  } else {
+    messagePanelWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/messagePanel.html`));
+  }
+
+  messagePanelWindow.on('closed', () => {
+    messagePanelWindow = null;
+  });
+  // 可根據 avatarWindow 位置定位
+  if (avatarWindow) {
+    const av = avatarWindow.getBounds();
+    messagePanelWindow.setBounds({
+      x: av.x + av.width + 20,
+      y: av.y,
+      width: 400,
+      height: 200,
+    });
+  }
+};
+
+const closeMessagePanelWindow = () => {
+  if (messagePanelWindow) {
+    messagePanelWindow.close();
+    messagePanelWindow = null;
+  }
+};
+
+// IPC handlers for MessagePanel window
+ipcMain.handle('show-message-panel', (event, message) => {
+  createMessagePanelWindow(message);
+  return { success: true };
+});
+
+ipcMain.handle('close-message-panel', () => {
+  closeMessagePanelWindow();
+  return { success: true };
+});
+
+ipcMain.handle('is-message-panel-visible', () => {
+  return { visible: messagePanelWindow !== null && !messagePanelWindow.isDestroyed() };
+});
 
 // 定期從後端服務器獲取標籤頁數據
 let tabsUpdateTimer = null;
@@ -531,9 +645,9 @@ ipcMain.handle('open-external-url', async (_event, url) => {
 
 function resolveNotebookDir() {
   const candidates = [
-    path.join(app.getAppPath(), "public", "notebook"),
-    path.join(process.resourcesPath || "", "public", "notebook"),
-    path.join(__dirname, "public", "notebook"),
+    path.join(app.getAppPath(), "src", "data", "note"),
+    path.join(process.resourcesPath || "", "src", "data", "note"),
+    path.join(__dirname, "src", "data", "note"),
   ];
   for (const p of candidates) {
     try { fs.accessSync(p, fs.constants.R_OK); return p; } catch {}
@@ -545,8 +659,8 @@ function resolveNotebookDir() {
 function extractNotePairs(data) {
   const out = [];
   const pushCandidate = (obj) => {
-    if (obj && typeof obj === "object" && obj.keywords != null && obj.url != null) {
-      out.push({ keywords: String(obj.keywords), url: String(obj.url) });
+    if (obj && typeof obj === "object" && obj.Keyword != null && obj.url != null) {
+      out.push({ keywords: String(obj.Keyword), url: String(obj.url) });
     }
   };
 
@@ -575,6 +689,7 @@ ipcMain.handle("notebook:list", async () => {
           keywords: p.keywords,
           url: p.url,
         });
+        console.log(p.keywords, p.url);
       });
     } catch (e) {
       console.error("[notebook:list] 讀取失敗:", filename, e);
