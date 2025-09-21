@@ -76,7 +76,7 @@ class AudioPlaybackService {
           // 在播放音檔前顯示對應的 reply
           await this.showReplyMessage();
           
-          await this.playAudio(content);
+          // await this.playAudio(content);
           this.lastPlayedLogId = content.file_path;
           
           // 觸發自定義事件，讓其他組件知道有新語音播放
@@ -444,9 +444,18 @@ class AudioPlaybackService {
             // 使用 Electron API 顯示 MessageBox
             if (window.electronAPI && window.electronAPI.showMessageBox) {
               await window.electronAPI.showMessageBox(replyMessage);
-              console.log(`[AudioPlayback] ✅ MessageBox 已顯示 Reply ${this.replyIndex}`);
+              console.log(`[AudioPlayback] ✅ MessageBox 已顯示 Reply ${this.replyIndex} (via Electron API)`);
             } else {
               console.warn('[AudioPlayback] Electron API 不可用，無法顯示 MessageBox');
+            }
+            
+            // 同時發送自定義事件作為備用
+            if (typeof window !== 'undefined') {
+              const event = new CustomEvent('showMessageBox', {
+                detail: { message: replyMessage }
+              });
+              window.dispatchEvent(event);
+              console.log(`[AudioPlayback] 📤 已發送 showMessageBox 事件作為備用: "${replyMessage}"`);
             }
             
             // 增加 reply 索引

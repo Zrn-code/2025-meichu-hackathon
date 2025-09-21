@@ -192,70 +192,99 @@ const MessageBox = ({ isNormalMode = true, onClose, onStart, youtube_id }) => {
     let cleanup = null;
     if (window.electronAPI && window.electronAPI.onMessageReceived) {
       cleanup = window.electronAPI.onMessageReceived((newMessage) => {
+        console.log('[MessageBox] 收到來自 Electron 的訊息:', newMessage);
         setMessage(newMessage);
         setTimeout(() => {
           if (messagesRef.current) messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
         }, 0);
       });
+      console.log('[MessageBox] 已設置 onMessageReceived 監聽器');
+    } else {
+      console.warn('[MessageBox] electronAPI 或 onMessageReceived 不可用');
     }
     return () => {
-      if (cleanup) cleanup();
+      if (cleanup) {
+        cleanup();
+        console.log('[MessageBox] 清理 onMessageReceived 監聽器');
+      }
     };
   }, []);
 
+  // 監聽 audioPlaybackService 的 showMessageBox 事件
   useEffect(() => {
-    if (!isNormalMode) {
-      let intervalId = null;
-      console.log("[MessageBox] 啟動關鍵字同步，YouTube ID:", youtube_id);
-      const checkAndUpdateMessage = async () => {
-        try {
-          // 使用 audioPlaybackService 獲取當前影片時間
-          const currentTime = await audioPlaybackService.getCurrentYouTubeTime();
-          
-          // 如果無法獲取時間，使用 simulatedTimeRef 作為後備
-          const timeToCheck = currentTime !== null ? currentTime : simulatedTimeRef.current;
-          
-          const next = noteData.find(
-            (item) => typeof item.time === "number" && item.time > timeToCheck
-          );
-          
-          if (next) {
-            console.log("[MessageBox] 更新 Keyword:", next.Keyword, "at", next.time, "s");
-            setMessage(next.Keyword);
-          } else {
-            setMessage("（已無下一個關鍵字）");
-          }
-        } catch (error) {
-          console.error('[MessageBox] 獲取影片時間失敗:', error);
-          // 發生錯誤時使用 simulatedTimeRef 作為後備
-          const currentTime = simulatedTimeRef.current;
-          const next = noteData.find(
-            (item) => typeof item.time === "number" && item.time > currentTime
-          );
-          if (next) {
-            console.log("[MessageBox] 更新 Keyword:", next.Keyword, "at", next.time, "s");
-            setMessage(next.Keyword);
-          } else {
-            setMessage("（已無下一個關鍵字）");
-          }
-        }
-      };
-      
-      // 立即執行一次檢查
-      checkAndUpdateMessage();
-      
-      // 設定定時檢查（每秒檢查一次）
-      intervalId = setInterval(checkAndUpdateMessage, 1000);
-      
-      // 清理函數
-      return () => {
-        if (intervalId) {
-          clearInterval(intervalId);
-        }
-      };
+    const handleShowMessageBox = (event) => {
+      const { message: eventMessage } = event.detail;
+      console.log('[MessageBox] 收到 showMessageBox 事件:', eventMessage);
+      setMessage(eventMessage);
+    };
+
+    // 添加事件監聽器
+    if (typeof window !== 'undefined') {
+      window.addEventListener('showMessageBox', handleShowMessageBox);
+      console.log('[MessageBox] 已添加 showMessageBox 事件監聽器');
     }
-    // eslint-disable-next-line
-  }, []); // 只在 mount 時執行
+
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('showMessageBox', handleShowMessageBox);
+        console.log('[MessageBox] 已移除 showMessageBox 事件監聽器');
+      }
+    };
+  }, []);
+
+  // useEffect(() => {
+  //   if (!isNormalMode) {
+  //     let intervalId = null;
+  //     console.log("[MessageBox] 啟動關鍵字同步，YouTube ID:", youtube_id);
+  //     const checkAndUpdateMessage = async () => {
+  //       try {
+  //         // 使用 audioPlaybackService 獲取當前影片時間
+  //         const currentTime = await audioPlaybackService.getCurrentYouTubeTime();
+          
+  //         // 如果無法獲取時間，使用 simulatedTimeRef 作為後備
+  //         const timeToCheck = currentTime !== null ? currentTime : simulatedTimeRef.current;
+          
+  //         const next = noteData.find(
+  //           (item) => typeof item.time === "number" && item.time > timeToCheck
+  //         );
+          
+  //         if (next) {
+  //           console.log("[MessageBox] 更新 Keyword:", next.Keyword, "at", next.time, "s");
+  //           setMessage(next.Keyword);
+  //         } else {
+  //           setMessage("（已無下一個關鍵字）");
+  //         }
+  //       } catch (error) {
+  //         console.error('[MessageBox] 獲取影片時間失敗:', error);
+  //         // 發生錯誤時使用 simulatedTimeRef 作為後備
+  //         const currentTime = simulatedTimeRef.current;
+  //         const next = noteData.find(
+  //           (item) => typeof item.time === "number" && item.time > currentTime
+  //         );
+  //         if (next) {
+  //           console.log("[MessageBox] 更新 Keyword:", next.Keyword, "at", next.time, "s");
+  //           setMessage(next.Keyword);
+  //         } else {
+  //           setMessage("（已無下一個關鍵字）");
+  //         }
+  //       }
+  //     };
+      
+  //     // 立即執行一次檢查
+  //     checkAndUpdateMessage();
+      
+  //     // 設定定時檢查（每秒檢查一次）
+  //     intervalId = setInterval(checkAndUpdateMessage, 1000);
+      
+  //     // 清理函數
+  //     return () => {
+  //       if (intervalId) {
+  //         clearInterval(intervalId);
+  //       }
+  //     };
+  //   }
+  //   // eslint-disable-next-line
+  // }, []); // 只在 mount 時執行
 
   const lines = message.split('\n');
 
