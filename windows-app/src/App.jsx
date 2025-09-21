@@ -116,35 +116,35 @@ function App() {
     {
       id: 1,
       img: "youtubeCover/cover1.jpg",
-      metadata: "youtubeCover/metadata1.json",
-      title: "Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)",
-      view_count: 1695253126,
-      like_count: 18551627,
-      upload_date: "2009-10-25T00:00:00Z",
-      tags: ["music", "classic", "80s"],
-      url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+      metadata: "youtubeCover/cover1.json",
+      title: "電機系要燃燒新鮮的肝？高中成績最重要？要提早修物理？｜大學校系圖鑑 EP 1",
+      view_count: 116562,
+      like_count: 2002,
+      upload_date: "2023-12-01T00:00:00Z",
+      tags: ["台大", "電機系", "大學", "教育", "學習歷程"],
+      url: "https://www.youtube.com/watch?v=Ia7MUrAk99o"
     },
     {
       id: 2,
       img: "youtubeCover/cover2.jpg",
-      metadata: "youtubeCover/metadata2.json",
-      title: "Darude - Sandstorm (Official Video)",
-      view_count: 456789012,
-      like_count: 3456789,
-      upload_date: "2009-02-18T00:00:00Z",
-      tags: ["electronic", "dance", "2000s"],
-      url: "https://www.youtube.com/watch?v=y6120QOlsfU"
+      metadata: "youtubeCover/cover2.json",
+      title: "AI Agents, Clearly Explained",
+      view_count: 2915965,
+      like_count: 77844,
+      upload_date: "2025-04-08T00:00:00Z",
+      tags: ["AI", "AI Agents", "教育", "科技", "人工智慧"],
+      url: "https://www.youtube.com/watch?v=FwOTs4UxQS4"
     },
     {
       id: 3,
       img: "youtubeCover/cover3.jpg",
-      metadata: "youtubeCover/metadata3.json",
-      title: "Queen - Bohemian Rhapsody (Official Video Remastered)",
-      view_count: 2134567890,
-      like_count: 15234567,
-      upload_date: "2008-08-01T00:00:00Z",
-      tags: ["rock", "classic", "queen"],
-      url: "https://www.youtube.com/watch?v=fJ9rUzIMcZQ"
+      metadata: "youtubeCover/cover3.json",
+      title: "一年過去了，《Hades II》的Early Access到底交出了什麼成績？ feat. #節奏魔女舞動的骷髏",
+      view_count: 18964,
+      like_count: 423,
+      upload_date: "2025-05-11T00:00:00Z",
+      tags: ["遊戲", "Hades II", "遊戲評測", "獨立遊戲"],
+      url: "https://www.youtube.com/watch?v=RkIf3b3fUdY"
     }
   ];
 
@@ -521,6 +521,20 @@ function App() {
                 </button>
               </div>
 
+              {/* 黑客松活動敘述框 */}
+              <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg p-4 border border-primary/20">
+                <div className="flex items-center gap-3">
+                  <div className="text-2xl">🎉</div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-primary mb-2">黑客松活動真的讚</h4>
+                    <audio controls className="w-full" style={{ height: '32px' }}>
+                      <source src="/voice_wav/avatar1r.wav" type="audio/mpeg" />
+                      您的瀏覽器不支援音頻播放
+                    </audio>
+                  </div>
+                </div>
+              </div>
+
               {/* Avatar 2 - 派大星 */}
               <div className="flex items-center gap-4 p-4 bg-base-100 rounded-lg border border-base-300">
                 <div className="avatar">
@@ -556,32 +570,20 @@ function App() {
                   選擇
                 </button>
               </div>
-
-              {/* Avatar 3 - 蠟筆小新 */}
-              <div className="flex items-center gap-4 p-4 bg-base-100 rounded-lg border border-base-300">
-                <div className="avatar">
-                  <div className="mask mask-squircle w-20">
-                    <img src={AvatarInfo[2].img} alt="蠟筆小新" />
+              <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg p-4 border border-primary/20">
+                <div className="flex items-center gap-3">
+                  <div className="text-2xl">🎉</div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-primary mb-2">AMD 產品好處多多</h4>
+                    <audio controls className="w-full" style={{ height: '32px' }}>
+                      <source src="/voice_wav/avatar2r.wav" type="audio/mpeg" />
+                      您的瀏覽器不支援音頻播放
+                    </audio>
                   </div>
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-semibold text-base">🖍️ 蠟筆小新</h3>
-                    <div className="badge badge-success badge-xs">陪伴型</div>
-                  </div>
-                  <p className="text-sm opacity-70">調皮搗蛋的小朋友</p>
-                  <audio controls className="mt-2 w-full" style={{ height: '30px' }}>
-                    <source src="/voice_wav/avatar3.mp3" type="audio/mpeg" />
-                    您的瀏覽器不支援音頻播放
-                  </audio>
-                </div>
-                <button
-                  className="btn btn-sm btn-primary"
-                  onClick={() => loadAvatar(avatarImages[2])}
-                >
-                  選擇
-                </button>
               </div>
+
+            
 
               {/* Avatar 4 - 老師 */}
               <div className="flex items-center gap-4 p-4 bg-base-100 rounded-lg border border-base-300">

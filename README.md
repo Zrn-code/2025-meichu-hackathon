@@ -1,56 +1,119 @@
 # 2025 Meichu Hackathon
 
-本專案為 2025 年梅竹黑客松（Meichu Hackathon）開發專案，包含多個子系統，涵蓋後端伺服器、語音生成服務、Chrome 擴充功能與 Windows 桌面應用。
+This project is developed for the 2025 Meichu Hackathon, featuring a multi-component system that includes a backend server, voice generation service, Chrome extension, and Windows desktop application for YouTube video monitoring and interaction.
 
-## 專案結構
+## How It Works
 
+The system operates as an integrated YouTube monitoring and interaction platform:
+
+1. **YouTube Monitoring**: The Chrome extension monitors YouTube video playback and sends real-time status updates to the backend server
+2. **Data Processing**: The backend server processes video information, chat interactions, and coordinates between different services
+3. **Voice Generation**: When triggered, the voice generation server creates audio files based on processed data
+4. **Desktop Interface**: The Windows application provides a comprehensive UI for users to interact with the system and view processed information
+
+## Project Structure
+
+```text
+backend-server/           # Python Flask server handling APIs and core logic
+chrome-extension/         # Chrome extension for YouTube page monitoring
+lemonade-server/          # Additional service components
+voice-generation-server/  # Voice synthesis service for audio generation
+windows-app/              # Electron-based Windows desktop application
 ```
-backend-server/           # Python 後端伺服器，處理 API 與核心邏輯
-chrome-extension/         # Chrome 擴充功能，提供瀏覽器端互動
-lemonade-server/          # 其他服務（用途請補充）
-voice-generation-server/  # 語音生成服務，支援語音合成
-windows-app/              # Windows 桌面應用，前端 UI 與整合
-```
 
-## 子專案簡介
+## Components Overview
 
 ### backend-server
-- 使用 Python 開發，負責 API、資料處理與業務邏輯。
-- 主要檔案：`main.py`, `server.py`, `requirements.txt`
+
+- Python Flask application managing API endpoints, data processing, and business logic
+- Integrates chat handling, YouTube monitoring, and voice generation coordination
+- Key files: `main.py`, `server.py`, `requirements.txt`
 
 ### chrome-extension
-- Chrome 擴充功能，增強瀏覽器端體驗。
-- 主要檔案：`background.js`, `content.js`, `manifest.json`, `popup.html`
+
+- Chrome extension that monitors YouTube page status and communicates with the local server
+- Provides browser-side interaction and real-time video monitoring
+- Key files: `background.js`, `content.js`, `manifest.json`, `popup.html`
 
 ### voice-generation-server
-- 語音生成服務，支援語音合成與音檔產生。
-- 主要檔案：`app.py`, `requirements.txt`
+
+- Standalone Flask service for voice synthesis and audio file generation
+- Generates audio files based on processed video and chat data
+- Key files: `app.py`, `requirements.txt`
 
 ### windows-app
-- Windows 桌面應用，使用現代前端技術（如 React, Vite）。
-- 主要檔案：`src/`, `package.json`, `index.html`
 
-## 快速開始
+- Electron-based desktop application with modern frontend technologies (React, Vite)
+- Provides comprehensive UI for system interaction and data visualization
+- Key files: `src/`, `package.json`, `index.html`
 
-請依照各子資料夾內的 README.md 進行安裝與啟動。
+## Getting Started
 
-### 1. 進入子專案資料夾
-```sh
-cd backend-server  # 或 chrome-extension, voice-generation-server, windows-app
+To run the complete system, you'll need to start multiple services in the following order:
+
+### 1. Backend Server
+
+Navigate to the backend server directory and start the main service:
+
+```bash
+cd backend-server
+pip install -r requirements.txt
+python server.py
 ```
 
-### 2. 依照子專案說明安裝依賴與啟動
+### 2. Voice Generation Server
 
-## 貢獻方式
+In a separate terminal, start the voice generation service:
 
-1. Fork 本專案並建立分支。
-2. 提交 Pull Request，並詳述修改內容。
-3. 請遵守各子專案的開發規範。
+```bash
+cd voice-generation-server
+pip install -r requirements.txt
+python app.py
+```
 
-## 聯絡方式
+### 3. Chrome Extension
 
-如有問題請聯絡專案負責人或於 Issues 留言。
+1. Open Chrome and navigate to `chrome://extensions/`
+2. Enable "Developer mode"
+3. Click "Load unpacked" and select the `chrome-extension` folder
+4. The extension will appear in your browser toolbar
+
+### 4. Windows Application
+
+Start the Electron desktop application:
+
+```bash
+cd windows-app
+npm install
+npm start
+```
+
+## System Workflow
+
+1. **YouTube Monitoring**: Open a YouTube video with the Chrome extension installed
+2. **Data Collection**: The extension monitors video playback and sends data to the backend server
+3. **Processing**: The backend processes video information and chat interactions
+4. **Voice Generation**: Audio files are generated based on the processed data
+5. **UI Display**: The Windows application displays real-time information and generated content
+
+## Prerequisites
+
+- Python 3.10+
+- Node.js 16+
+- Chrome Browser
+- Windows OS (for the desktop application)
+
+## Contributing
+
+1. Fork this repository and create a new branch
+2. Make your changes and commit them with clear messages
+3. Submit a Pull Request with detailed description of your changes
+4. Follow the coding standards of each sub-project
+
+## Contact
+
+For questions or issues, please contact the project maintainers or create an issue in the repository.
 
 ---
 
-> 本專案由 2025 梅竹黑客松團隊開發維護。
+> This project is developed and maintained by the 2025 Meichu Hackathon Team.
