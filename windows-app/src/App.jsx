@@ -139,12 +139,12 @@ function App() {
       id: 3,
       img: "youtubeCover/cover3.jpg",
       metadata: "youtubeCover/cover3.json",
-      title: "一年過去了，《Hades II》的Early Access到底交出了什麼成績？ feat. #節奏魔女舞動的骷髏",
-      view_count: 18964,
-      like_count: 423,
-      upload_date: "2025-05-11T00:00:00Z",
-      tags: ["遊戲", "Hades II", "遊戲評測", "獨立遊戲"],
-      url: "https://www.youtube.com/watch?v=RkIf3b3fUdY"
+      title: "AI PC Revolution: The AMD Ryzen™ AI Architectural Advantage",
+      view_count: 825060,
+      like_count: 853,
+      upload_date: "2024-03-19T00:00:00Z",
+      tags: ["AMD", "AI", "處理器", "科技", "人工智慧"],
+      url: "https://www.youtube.com/watch?v=UwxqlftCLOo"
     }
   ];
 
