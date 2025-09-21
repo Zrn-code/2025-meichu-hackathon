@@ -1,0 +1,2153 @@
+{
+  "video_id": "Ia7MUrAk99o",
+  "video_url": "https://www.youtube.com/watch?v=Ia7MUrAk99o",
+  "video_title": "電機系要燃燒新鮮的肝？高中成績最重要？要提早修物理？｜大學校系圖鑑 EP 1",
+  "transcript_type": "supadata_api",
+  "transcript_data": {
+    "lang": "zh-TW",
+    "availableLangs": [
+      "zh-TW"
+    ],
+    "content": [
+      {
+        "lang": "zh-TW",
+        "text": "在升學的路上",
+        "offset": 0,
+        "duration": 1333
+      },
+      {
+        "lang": "zh-TW",
+        "text": "我們勢必一定會碰到選科系的問題",
+        "offset": 1333,
+        "duration": 2733
+      },
+      {
+        "lang": "zh-TW",
+        "text": "有很多人甚至不知道這個科系在做什麼",
+        "offset": 4100,
+        "duration": 2366
+      },
+      {
+        "lang": "zh-TW",
+        "text": "就稀里糊塗的踏了進去",
+        "offset": 6466,
+        "duration": 2167
+      },
+      {
+        "lang": "zh-TW",
+        "text": "據此",
+        "offset": 8733,
+        "duration": 633
+      },
+      {
+        "lang": "zh-TW",
+        "text": "我也打算開啟一個新系列",
+        "offset": 9366,
+        "duration": 1334
+      },
+      {
+        "lang": "zh-TW",
+        "text": "帶得大家藉由訪談科系系主任",
+        "offset": 11166,
+        "duration": 2500
+      },
+      {
+        "lang": "zh-TW",
+        "text": "探索這個科系的資訊",
+        "offset": 13666,
+        "duration": 1834
+      },
+      {
+        "lang": "zh-TW",
+        "text": "希望能藉此幫助到各位高中生",
+        "offset": 15500,
+        "duration": 2200
+      },
+      {
+        "lang": "zh-TW",
+        "text": "以及對這個科系有興趣的人",
+        "offset": 17700,
+        "duration": 2100
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那麼第一站呢",
+        "offset": 19866,
+        "duration": 1200
+      },
+      {
+        "lang": "zh-TW",
+        "text": "就是我所在的科系",
+        "offset": 21066,
+        "duration": 1534
+      },
+      {
+        "lang": "zh-TW",
+        "text": "電",
+        "offset": 23100,
+        "duration": 1133
+      },
+      {
+        "lang": "zh-TW",
+        "text": "各位觀眾大家好",
+        "offset": 24533,
+        "duration": 1200
+      },
+      {
+        "lang": "zh-TW",
+        "text": "我是台大電機系主任李建模",
+        "offset": 25733,
+        "duration": 2967
+      },
+      {
+        "lang": "zh-TW",
+        "text": "啊那今天很高興來參加這個訪談",
+        "offset": 28700,
+        "duration": 3000
+      },
+      {
+        "lang": "zh-TW",
+        "text": "我自己本身也是台大電機系的系友",
+        "offset": 31700,
+        "duration": 3466
+      },
+      {
+        "lang": "zh-TW",
+        "text": "小的時候呢",
+        "offset": 35166,
+        "duration": 1034
+      },
+      {
+        "lang": "zh-TW",
+        "text": "就常常從玩電動玩具開始",
+        "offset": 36200,
+        "duration": 2500
+      },
+      {
+        "lang": "zh-TW",
+        "text": "對電機領域產生了很大的興趣",
+        "offset": 38700,
+        "duration": 2233
+      },
+      {
+        "lang": "zh-TW",
+        "text": "考大學的時候呢",
+        "offset": 40933,
+        "duration": 1167
+      },
+      {
+        "lang": "zh-TW",
+        "text": "就選填了台大電機系為第一志願",
+        "offset": 42100,
+        "duration": 2333
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那今天呢很高興接受這個訪問",
+        "offset": 44433,
+        "duration": 2233
+      },
+      {
+        "lang": "zh-TW",
+        "text": "跟大家介紹一下",
+        "offset": 46666,
+        "duration": 1034
+      },
+      {
+        "lang": "zh-TW",
+        "text": "電機領域到底是怎麼樣的一個系",
+        "offset": 47700,
+        "duration": 2300
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那也很高興主任",
+        "offset": 50000,
+        "duration": 1333
+      },
+      {
+        "lang": "zh-TW",
+        "text": "能來到我們這個影片",
+        "offset": 51333,
+        "duration": 1600
+      },
+      {
+        "lang": "zh-TW",
+        "text": "讓我做訪談啊",
+        "offset": 52933,
+        "duration": 1000
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那我們就話不多說直接進入正題",
+        "offset": 53933,
+        "duration": 2067
+      },
+      {
+        "lang": "zh-TW",
+        "text": "第一個我想要問主任的是",
+        "offset": 56466,
+        "duration": 1934
+      },
+      {
+        "lang": "zh-TW",
+        "text": "電機系主要會學什麼知識",
+        "offset": 58400,
+        "duration": 2166
+      },
+      {
+        "lang": "zh-TW",
+        "text": "電機系學的知識非常的多",
+        "offset": 60566,
+        "duration": 2400
+      },
+      {
+        "lang": "zh-TW",
+        "text": "我們電機從這個英文名字我們就知道",
+        "offset": 62966,
+        "duration": 2734
+      },
+      {
+        "lang": "zh-TW",
+        "text": "electrical engineering",
+        "offset": 65700,
+        "duration": 1433
+      },
+      {
+        "lang": "zh-TW",
+        "text": "就是任何用電的方式",
+        "offset": 67133,
+        "duration": 2067
+      },
+      {
+        "lang": "zh-TW",
+        "text": "來改善我們人類生活的工程",
+        "offset": 69200,
+        "duration": 2733
+      },
+      {
+        "lang": "zh-TW",
+        "text": "都算在電機領域裡面",
+        "offset": 72166,
+        "duration": 1900
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那我們在大一大二",
+        "offset": 74066,
+        "duration": 1934
+      },
+      {
+        "lang": "zh-TW",
+        "text": "如果考上電機系以後",
+        "offset": 76000,
+        "duration": 1466
+      },
+      {
+        "lang": "zh-TW",
+        "text": "我們就會從最基礎的普物",
+        "offset": 77466,
+        "duration": 2200
+      },
+      {
+        "lang": "zh-TW",
+        "text": "微積分",
+        "offset": 79666,
+        "duration": 834
+      },
+      {
+        "lang": "zh-TW",
+        "text": "然後呢我們也會學交換電路",
+        "offset": 80500,
+        "duration": 2600
+      },
+      {
+        "lang": "zh-TW",
+        "text": "邏輯設計",
+        "offset": 83100,
+        "duration": 933
+      },
+      {
+        "lang": "zh-TW",
+        "text": "還有計算機程式這些基本的科目",
+        "offset": 84033,
+        "duration": 2433
+      },
+      {
+        "lang": "zh-TW",
+        "text": "到了大二我們就會學電機系的核心",
+        "offset": 86466,
+        "duration": 2300
+      },
+      {
+        "lang": "zh-TW",
+        "text": "比如說電子電路電磁",
+        "offset": 88766,
+        "duration": 2367
+      },
+      {
+        "lang": "zh-TW",
+        "text": "這三個重要的電",
+        "offset": 91533,
+        "duration": 1400
+      },
+      {
+        "lang": "zh-TW",
+        "text": "然後再來還有工程數學微分方程",
+        "offset": 92933,
+        "duration": 2533
+      },
+      {
+        "lang": "zh-TW",
+        "text": "複變機率等等",
+        "offset": 95466,
+        "duration": 1267
+      },
+      {
+        "lang": "zh-TW",
+        "text": "到了大三呢",
+        "offset": 96733,
+        "duration": 900
+      },
+      {
+        "lang": "zh-TW",
+        "text": "我們就會學習演算法",
+        "offset": 97633,
+        "duration": 1667
+      },
+      {
+        "lang": "zh-TW",
+        "text": "還有各個領域的這些選修科目",
+        "offset": 99300,
+        "duration": 2433
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那我們電機系有非常多的領域",
+        "offset": 101733,
+        "duration": 2333
+      },
+      {
+        "lang": "zh-TW",
+        "text": "包括了傳統的電力還有控制",
+        "offset": 104066,
+        "duration": 2500
+      },
+      {
+        "lang": "zh-TW",
+        "text": "還有現在很紅的CS",
+        "offset": 106566,
+        "duration": 2067
+      },
+      {
+        "lang": "zh-TW",
+        "text": "就是有一些人工智慧等等的東西",
+        "offset": 108633,
+        "duration": 2400
+      },
+      {
+        "lang": "zh-TW",
+        "text": "再來呢我們也會有傳統的電波",
+        "offset": 111033,
+        "duration": 2700
+      },
+      {
+        "lang": "zh-TW",
+        "text": "通信 資料網路",
+        "offset": 113733,
+        "duration": 1533
+      },
+      {
+        "lang": "zh-TW",
+        "text": "還有我們的光電 生醫 奈米電子",
+        "offset": 115266,
+        "duration": 2567
+      },
+      {
+        "lang": "zh-TW",
+        "text": "還有ICS",
+        "offset": 117833,
+        "duration": 1100
+      },
+      {
+        "lang": "zh-TW",
+        "text": "就是做積體電路設計",
+        "offset": 118933,
+        "duration": 1600
+      },
+      {
+        "lang": "zh-TW",
+        "text": "還有electronic design automation",
+        "offset": 120533,
+        "duration": 1967
+      },
+      {
+        "lang": "zh-TW",
+        "text": "電子設計自動化",
+        "offset": 122500,
+        "duration": 1566
+      },
+      {
+        "lang": "zh-TW",
+        "text": "總共我們有11個領域這麼多",
+        "offset": 124066,
+        "duration": 2000
+      },
+      {
+        "lang": "zh-TW",
+        "text": "所以呢",
+        "offset": 126066,
+        "duration": 667
+      },
+      {
+        "lang": "zh-TW",
+        "text": "其實各位同學如果進了電機系",
+        "offset": 126733,
+        "duration": 2367
+      },
+      {
+        "lang": "zh-TW",
+        "text": "是可以有很多發揮的機會",
+        "offset": 129100,
+        "duration": 2033
+      },
+      {
+        "lang": "zh-TW",
+        "text": "好那接下來就是想要問主任的第二題啊",
+        "offset": 131400,
+        "duration": 2600
+      },
+      {
+        "lang": "zh-TW",
+        "text": "未來擔任的工作可以有哪些",
+        "offset": 134000,
+        "duration": 1933
+      },
+      {
+        "lang": "zh-TW",
+        "text": "畢竟我們現在聽到電機系",
+        "offset": 135933,
+        "duration": 1733
+      },
+      {
+        "lang": "zh-TW",
+        "text": "都是去什麼當工程師啦",
+        "offset": 137666,
+        "duration": 1567
+      },
+      {
+        "lang": "zh-TW",
+        "text": "後端前端",
+        "offset": 139233,
+        "duration": 933
+      },
+      {
+        "lang": "zh-TW",
+        "text": "或者是各種做晶片的",
+        "offset": 140166,
+        "duration": 1500
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那請問到底有什麼工作",
+        "offset": 141666,
+        "duration": 1367
+      },
+      {
+        "lang": "zh-TW",
+        "text": "是我們可以勝任的",
+        "offset": 143033,
+        "duration": 1300
+      },
+      {
+        "lang": "zh-TW",
+        "text": "這是很好的問題齁",
+        "offset": 144333,
+        "duration": 1667
+      },
+      {
+        "lang": "zh-TW",
+        "text": "電機系的同學都相當優秀",
+        "offset": 146033,
+        "duration": 1800
+      },
+      {
+        "lang": "zh-TW",
+        "text": "其實可以出去的領域呢非常的多",
+        "offset": 147833,
+        "duration": 2633
+      },
+      {
+        "lang": "zh-TW",
+        "text": "包括我剛才講的",
+        "offset": 150466,
+        "duration": 967
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那11個領域",
+        "offset": 151433,
+        "duration": 967
+      },
+      {
+        "lang": "zh-TW",
+        "text": "啊最基本的就是當個工程師啊",
+        "offset": 152400,
+        "duration": 2966
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那工程師呢也有各種不同的",
+        "offset": 155366,
+        "duration": 1934
+      },
+      {
+        "lang": "zh-TW",
+        "text": "比如說你要做",
+        "offset": 157300,
+        "duration": 866
+      },
+      {
+        "lang": "zh-TW",
+        "text": "最前端的研發工程師也可以",
+        "offset": 158166,
+        "duration": 1867
+      },
+      {
+        "lang": "zh-TW",
+        "text": "或者是說你想要做",
+        "offset": 160033,
+        "duration": 1200
+      },
+      {
+        "lang": "zh-TW",
+        "text": "產品的銷售的工程師",
+        "offset": 161233,
+        "duration": 1867
+      },
+      {
+        "lang": "zh-TW",
+        "text": "要往科技管理的方向移動",
+        "offset": 163100,
+        "duration": 2000
+      },
+      {
+        "lang": "zh-TW",
+        "text": "當然也是可以做這種project manager",
+        "offset": 165100,
+        "duration": 2466
+      },
+      {
+        "lang": "zh-TW",
+        "text": "或是做客戶的這個customer",
+        "offset": 167566,
+        "duration": 2033.9999999999998
+      },
+      {
+        "lang": "zh-TW",
+        "text": "互動的application engineer",
+        "offset": 169600,
+        "duration": 2066
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那這些都是跟人有互動",
+        "offset": 171666,
+        "duration": 1834
+      },
+      {
+        "lang": "zh-TW",
+        "text": "或者是marketing",
+        "offset": 173500,
+        "duration": 866
+      },
+      {
+        "lang": "zh-TW",
+        "text": "啊如果說你想要做學術研究",
+        "offset": 174366,
+        "duration": 1867
+      },
+      {
+        "lang": "zh-TW",
+        "text": "也可以往研究方面",
+        "offset": 176233,
+        "duration": 1433
+      },
+      {
+        "lang": "zh-TW",
+        "text": "比如說大學的老師 研究員",
+        "offset": 177666,
+        "duration": 2167
+      },
+      {
+        "lang": "zh-TW",
+        "text": "或者是說公家機關",
+        "offset": 179833,
+        "duration": 1600
+      },
+      {
+        "lang": "zh-TW",
+        "text": "比如說工研院這些單位",
+        "offset": 181433,
+        "duration": 1700
+      },
+      {
+        "lang": "zh-TW",
+        "text": "做一些研發的人才",
+        "offset": 183133,
+        "duration": 1600
+      },
+      {
+        "lang": "zh-TW",
+        "text": "這個都是很多出路的方向",
+        "offset": 184733,
+        "duration": 2067
+      },
+      {
+        "lang": "zh-TW",
+        "text": "所以電機的領域呢",
+        "offset": 186800,
+        "duration": 1300
+      },
+      {
+        "lang": "zh-TW",
+        "text": "可以說是出路非常的廣 非常的好",
+        "offset": 188100,
+        "duration": 2066
+      },
+      {
+        "lang": "zh-TW",
+        "text": "就是在這些電機系外面",
+        "offset": 190166,
+        "duration": 1634
+      },
+      {
+        "lang": "zh-TW",
+        "text": "都會聽說電機系的薪水多好多好",
+        "offset": 191800,
+        "duration": 2000
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那請問像是說這些工作的年薪",
+        "offset": 193800,
+        "duration": 1966
+      },
+      {
+        "lang": "zh-TW",
+        "text": "或者是一些工時",
+        "offset": 195766,
+        "duration": 1034
+      },
+      {
+        "lang": "zh-TW",
+        "text": "是不是有傳說中的那樣",
+        "offset": 196800,
+        "duration": 1100
+      },
+      {
+        "lang": "zh-TW",
+        "text": "比如說工時就是要十六個小時一天哪",
+        "offset": 197900,
+        "duration": 2466
+      },
+      {
+        "lang": "zh-TW",
+        "text": "然後可能年薪可以到三、四百萬",
+        "offset": 200366,
+        "duration": 2067
+      },
+      {
+        "lang": "zh-TW",
+        "text": "四、五百萬",
+        "offset": 202433,
+        "duration": 733
+      },
+      {
+        "lang": "zh-TW",
+        "text": "有沒有這麼誇張",
+        "offset": 203166,
+        "duration": 1067
+      },
+      {
+        "lang": "zh-TW",
+        "text": "電機系當然是科技產業的火車頭",
+        "offset": 204233,
+        "duration": 2867
+      },
+      {
+        "lang": "zh-TW",
+        "text": "所以收入是非常非常的好",
+        "offset": 207100,
+        "duration": 2100
+      },
+      {
+        "lang": "zh-TW",
+        "text": "不過呢我也是要跟各位同學",
+        "offset": 209200,
+        "duration": 2233
+      },
+      {
+        "lang": "zh-TW",
+        "text": "建立一個重要的觀念",
+        "offset": 211433,
+        "duration": 1267
+      },
+      {
+        "lang": "zh-TW",
+        "text": "就是說其實大家在選擇職業的時候",
+        "offset": 212700,
+        "duration": 2300
+      },
+      {
+        "lang": "zh-TW",
+        "text": "千萬不要用這個薪水來選擇職業",
+        "offset": 215000,
+        "duration": 2466
+      },
+      {
+        "lang": "zh-TW",
+        "text": "因為你畢竟年輕的時候",
+        "offset": 217466,
+        "duration": 1600
+      },
+      {
+        "lang": "zh-TW",
+        "text": "你賺的錢是小錢",
+        "offset": 219066,
+        "duration": 1434
+      },
+      {
+        "lang": "zh-TW",
+        "text": "等到你在工作崗位上",
+        "offset": 220500,
+        "duration": 1400
+      },
+      {
+        "lang": "zh-TW",
+        "text": "發揮很好的這個貢獻",
+        "offset": 221900,
+        "duration": 1866
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那當然公司就會給你不斷的升級",
+        "offset": 223766,
+        "duration": 2234
+      },
+      {
+        "lang": "zh-TW",
+        "text": "不斷的加薪",
+        "offset": 226000,
+        "duration": 833
+      },
+      {
+        "lang": "zh-TW",
+        "text": "然後後面賺的錢才是真正的大錢",
+        "offset": 226833,
+        "duration": 2700
+      },
+      {
+        "lang": "zh-TW",
+        "text": "在電機領域我相信大家只要努力",
+        "offset": 229533,
+        "duration": 1967
+      },
+      {
+        "lang": "zh-TW",
+        "text": "絕對不會餓著的",
+        "offset": 231500,
+        "duration": 1166
+      },
+      {
+        "lang": "zh-TW",
+        "text": "最重要就是要投資自己啦",
+        "offset": 232666,
+        "duration": 1800
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那至於你說的這個工作時間很長",
+        "offset": 234466,
+        "duration": 2300
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那當然不可否認",
+        "offset": 236766,
+        "duration": 1034
+      },
+      {
+        "lang": "zh-TW",
+        "text": "有一些公司競爭是很激烈",
+        "offset": 237800,
+        "duration": 1800
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那當然就是必要長時間的工作",
+        "offset": 239600,
+        "duration": 2633
+      },
+      {
+        "lang": "zh-TW",
+        "text": "不過如果就是說你很有興趣",
+        "offset": 242233,
+        "duration": 1633
+      },
+      {
+        "lang": "zh-TW",
+        "text": "比如說你看球賽或是追劇",
+        "offset": 243866,
+        "duration": 1967
+      },
+      {
+        "lang": "zh-TW",
+        "text": "你不會覺得很累對不對",
+        "offset": 245833,
+        "duration": 1067
+      },
+      {
+        "lang": "zh-TW",
+        "text": "一天有看幾十幾個小時 二十幾個小時",
+        "offset": 246900,
+        "duration": 2266
+      },
+      {
+        "lang": "zh-TW",
+        "text": "你覺得哎一下就過了哈",
+        "offset": 249166,
+        "duration": 1267
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那同樣呢",
+        "offset": 250433,
+        "duration": 733
+      },
+      {
+        "lang": "zh-TW",
+        "text": "如果說你做這個東西覺得很有興趣",
+        "offset": 251166,
+        "duration": 2134
+      },
+      {
+        "lang": "zh-TW",
+        "text": "你很有熱忱",
+        "offset": 253300,
+        "duration": 733
+      },
+      {
+        "lang": "zh-TW",
+        "text": "你也是覺得說哎",
+        "offset": 254033,
+        "duration": 933
+      },
+      {
+        "lang": "zh-TW",
+        "text": "怎麼一天十幾個小時一下就過",
+        "offset": 254966,
+        "duration": 1767
+      },
+      {
+        "lang": "zh-TW",
+        "text": "可是如果你做很無聊的事情你不想做",
+        "offset": 256733,
+        "duration": 2300
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那當然你坐一分鐘都覺得很煩",
+        "offset": 259033.00000000003,
+        "duration": 2133
+      },
+      {
+        "lang": "zh-TW",
+        "text": "哈哈所以各位同學",
+        "offset": 261166,
+        "duration": 1934
+      },
+      {
+        "lang": "zh-TW",
+        "text": "不要覺得說工時很長就很可怕",
+        "offset": 263100,
+        "duration": 2466
+      },
+      {
+        "lang": "zh-TW",
+        "text": "真的就是要培養自己的興趣",
+        "offset": 265566,
+        "duration": 1900
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那你如果說覺得這個領域值得你投入",
+        "offset": 267466,
+        "duration": 2267
+      },
+      {
+        "lang": "zh-TW",
+        "text": "我相信電機領域絕對是一份努力",
+        "offset": 269733,
+        "duration": 2367
+      },
+      {
+        "lang": "zh-TW",
+        "text": "一份收獲的",
+        "offset": 272100,
+        "duration": 1066
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那接下來就是第三個問題",
+        "offset": 273400,
+        "duration": 2066
+      },
+      {
+        "lang": "zh-TW",
+        "text": "既然我們都說到電機系",
+        "offset": 275466,
+        "duration": 1867
+      },
+      {
+        "lang": "zh-TW",
+        "text": "可能要對電機係有興趣啊之類",
+        "offset": 277333,
+        "duration": 1700
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那你覺得什麼樣的學生",
+        "offset": 279033,
+        "duration": 1600
+      },
+      {
+        "lang": "zh-TW",
+        "text": "適合進入電機系",
+        "offset": 280633,
+        "duration": 1333
+      },
+      {
+        "lang": "zh-TW",
+        "text": "人格特質有沒有差",
+        "offset": 281966,
+        "duration": 1600
+      },
+      {
+        "lang": "zh-TW",
+        "text": "就是一個人的人格特質",
+        "offset": 283566,
+        "duration": 1300
+      },
+      {
+        "lang": "zh-TW",
+        "text": "會不會決定他適合來電機系",
+        "offset": 284866,
+        "duration": 1967
+      },
+      {
+        "lang": "zh-TW",
+        "text": "電機系領域很大",
+        "offset": 286833,
+        "duration": 1267
+      },
+      {
+        "lang": "zh-TW",
+        "text": "很歡迎各種各樣的同學啊",
+        "offset": 288100,
+        "duration": 1733
+      },
+      {
+        "lang": "zh-TW",
+        "text": "如果是很喜歡沉靜讀書的",
+        "offset": 289833,
+        "duration": 2200
+      },
+      {
+        "lang": "zh-TW",
+        "text": "他可能喜歡做研究",
+        "offset": 292033,
+        "duration": 1600
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那如果說他是喜歡外向的",
+        "offset": 293633,
+        "duration": 2033
+      },
+      {
+        "lang": "zh-TW",
+        "text": "比較喜歡跟人交往的",
+        "offset": 295666,
+        "duration": 1534
+      },
+      {
+        "lang": "zh-TW",
+        "text": "也是可以做",
+        "offset": 297200,
+        "duration": 800
+      },
+      {
+        "lang": "zh-TW",
+        "text": "precaution engineer啊",
+        "offset": 298000,
+        "duration": 1300
+      },
+      {
+        "lang": "zh-TW",
+        "text": "或者是marketing的工作",
+        "offset": 299300,
+        "duration": 1633
+      },
+      {
+        "lang": "zh-TW",
+        "text": "電機系的出路很廣",
+        "offset": 300933,
+        "duration": 1433
+      },
+      {
+        "lang": "zh-TW",
+        "text": "有很多同學也是",
+        "offset": 302366,
+        "duration": 1200
+      },
+      {
+        "lang": "zh-TW",
+        "text": "將來能夠往各個方向去移動",
+        "offset": 303566,
+        "duration": 2434
+      },
+      {
+        "lang": "zh-TW",
+        "text": "所以我覺得各個人格特質",
+        "offset": 306000,
+        "duration": 1966
+      },
+      {
+        "lang": "zh-TW",
+        "text": "內向外向",
+        "offset": 307966,
+        "duration": 867
+      },
+      {
+        "lang": "zh-TW",
+        "text": "都可以很歡迎",
+        "offset": 308833,
+        "duration": 1067
+      },
+      {
+        "lang": "zh-TW",
+        "text": "不過當然就是說電機系的課業也是蠻繁重的",
+        "offset": 309900,
+        "duration": 2933
+      },
+      {
+        "lang": "zh-TW",
+        "text": "所以要能夠耐得心下來好好的讀書",
+        "offset": 312833,
+        "duration": 3033
+      },
+      {
+        "lang": "zh-TW",
+        "text": "功課要顧好",
+        "offset": 315866,
+        "duration": 1167
+      },
+      {
+        "lang": "zh-TW",
+        "text": "所以基本上來說",
+        "offset": 317033,
+        "duration": 567
+      },
+      {
+        "lang": "zh-TW",
+        "text": "就是所有的人應該都是可以進電機",
+        "offset": 317600,
+        "duration": 2966
+      },
+      {
+        "lang": "zh-TW",
+        "text": "重點是能不能把它讀完",
+        "offset": 320566,
+        "duration": 1867
+      },
+      {
+        "lang": "zh-TW",
+        "text": "然後讀好",
+        "offset": 322433,
+        "duration": 733
+      },
+      {
+        "lang": "zh-TW",
+        "text": "因為未來工作真的很多",
+        "offset": 323166,
+        "duration": 1634
+      },
+      {
+        "lang": "zh-TW",
+        "text": "所以不用去擔心什麼我需要怎樣怎樣",
+        "offset": 324800,
+        "duration": 2300
+      },
+      {
+        "lang": "zh-TW",
+        "text": "才能進電機系",
+        "offset": 327100,
+        "duration": 933
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那接下來就是第四個問題",
+        "offset": 328566,
+        "duration": 1634
+      },
+      {
+        "lang": "zh-TW",
+        "text": "如果一個高中生",
+        "offset": 330200,
+        "duration": 1100
+      },
+      {
+        "lang": "zh-TW",
+        "text": "他如果想要以電機系作為志向",
+        "offset": 331300,
+        "duration": 2366
+      },
+      {
+        "lang": "zh-TW",
+        "text": "請問他可以怎麼準備",
+        "offset": 333666,
+        "duration": 1534
+      },
+      {
+        "lang": "zh-TW",
+        "text": "他需要去如何的",
+        "offset": 335200,
+        "duration": 1166
+      },
+      {
+        "lang": "zh-TW",
+        "text": "比如說自我充實啊",
+        "offset": 336366,
+        "duration": 1200
+      },
+      {
+        "lang": "zh-TW",
+        "text": "或者是說",
+        "offset": 337566,
+        "duration": 600
+      },
+      {
+        "lang": "zh-TW",
+        "text": "他要不要去嘗試一些",
+        "offset": 338166,
+        "duration": 1100
+      },
+      {
+        "lang": "zh-TW",
+        "text": "接觸電機系的領域",
+        "offset": 339266,
+        "duration": 1567
+      },
+      {
+        "lang": "zh-TW",
+        "text": "對高中同學來講",
+        "offset": 340833,
+        "duration": 1600
+      },
+      {
+        "lang": "zh-TW",
+        "text": "當然最基本的一些物理",
+        "offset": 342433,
+        "duration": 1600
+      },
+      {
+        "lang": "zh-TW",
+        "text": "數學的這個基礎要把它打好",
+        "offset": 344033,
+        "duration": 2267
+      },
+      {
+        "lang": "zh-TW",
+        "text": "再來就是說現在通訊也是很發達",
+        "offset": 346300,
+        "duration": 2633
+      },
+      {
+        "lang": "zh-TW",
+        "text": "所以各位如果有興趣的話呢",
+        "offset": 348933,
+        "duration": 2133
+      },
+      {
+        "lang": "zh-TW",
+        "text": "可以不要只是打電動玩具",
+        "offset": 351066,
+        "duration": 2167
+      },
+      {
+        "lang": "zh-TW",
+        "text": "能夠了解一下這些電動玩具背後",
+        "offset": 353233,
+        "duration": 2233
+      },
+      {
+        "lang": "zh-TW",
+        "text": "後面用的這些電腦程式啊",
+        "offset": 355466,
+        "duration": 2367
+      },
+      {
+        "lang": "zh-TW",
+        "text": "能夠自己學一些電腦程式相關的語言",
+        "offset": 357833,
+        "duration": 2967
+      },
+      {
+        "lang": "zh-TW",
+        "text": "相關的知識",
+        "offset": 360800,
+        "duration": 1066
+      },
+      {
+        "lang": "zh-TW",
+        "text": "甚至自己寫一些code",
+        "offset": 361866,
+        "duration": 1334
+      },
+      {
+        "lang": "zh-TW",
+        "text": "更深入的了解出",
+        "offset": 363200,
+        "duration": 1233
+      },
+      {
+        "lang": "zh-TW",
+        "text": "ㄟ這些軟體",
+        "offset": 364433,
+        "duration": 1233
+      },
+      {
+        "lang": "zh-TW",
+        "text": "硬體後面背後運作的",
+        "offset": 365666,
+        "duration": 1800
+      },
+      {
+        "lang": "zh-TW",
+        "text": "物理還有數學",
+        "offset": 367466,
+        "duration": 1234
+      },
+      {
+        "lang": "zh-TW",
+        "text": "演算法的邏輯",
+        "offset": 368700,
+        "duration": 1200
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那這樣對大家以後進電機系來",
+        "offset": 369900,
+        "duration": 2266
+      },
+      {
+        "lang": "zh-TW",
+        "text": "會有更好的發展",
+        "offset": 372166,
+        "duration": 1200
+      },
+      {
+        "lang": "zh-TW",
+        "text": "對這些東西有興趣",
+        "offset": 373366,
+        "duration": 1567
+      },
+      {
+        "lang": "zh-TW",
+        "text": "有了解",
+        "offset": 374933,
+        "duration": 767
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那也才確定說進入電機系不會選錯行",
+        "offset": 375700,
+        "duration": 2900
+      },
+      {
+        "lang": "zh-TW",
+        "text": "當然基本在申請的時候",
+        "offset": 378600,
+        "duration": 1933
+      },
+      {
+        "lang": "zh-TW",
+        "text": "要把自己的成績顧好",
+        "offset": 380533,
+        "duration": 1600
+      },
+      {
+        "lang": "zh-TW",
+        "text": "尤其是物理",
+        "offset": 382166,
+        "duration": 834
+      },
+      {
+        "lang": "zh-TW",
+        "text": "數學這些基本的理科的科目",
+        "offset": 383000,
+        "duration": 2533
+      },
+      {
+        "lang": "zh-TW",
+        "text": "大家就是基本上把高中的課業要顧好",
+        "offset": 385533,
+        "duration": 2667
+      },
+      {
+        "lang": "zh-TW",
+        "text": "然後有能力",
+        "offset": 388200,
+        "duration": 866
+      },
+      {
+        "lang": "zh-TW",
+        "text": "再到做一些其他的課外的知識的涉略",
+        "offset": 389066,
+        "duration": 3134
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那我想這樣子一般的同學就夠了",
+        "offset": 392200,
+        "duration": 2600
+      },
+      {
+        "lang": "zh-TW",
+        "text": "所以其實基本上來說啊",
+        "offset": 394800,
+        "duration": 1566
+      },
+      {
+        "lang": "zh-TW",
+        "text": "成績應該是你要進電機系裡面",
+        "offset": 396366,
+        "duration": 2134
+      },
+      {
+        "lang": "zh-TW",
+        "text": "你最需要擔心的一件事情",
+        "offset": 398500,
+        "duration": 2200
+      },
+      {
+        "lang": "zh-TW",
+        "text": "其他地方呢",
+        "offset": 400733,
+        "duration": 733
+      },
+      {
+        "lang": "zh-TW",
+        "text": "可能就要靠自己去挖掘啊",
+        "offset": 401466,
+        "duration": 1500
+      },
+      {
+        "lang": "zh-TW",
+        "text": "像是一些遊戲背後的程式啊",
+        "offset": 402966,
+        "duration": 1834
+      },
+      {
+        "lang": "zh-TW",
+        "text": "一些他的code啊",
+        "offset": 404800,
+        "duration": 1300
+      },
+      {
+        "lang": "zh-TW",
+        "text": "或者他怎麼去運行",
+        "offset": 406100,
+        "duration": 1466
+      },
+      {
+        "lang": "zh-TW",
+        "text": "或者這個CPU他怎麼跑的",
+        "offset": 407566,
+        "duration": 1734
+      },
+      {
+        "lang": "zh-TW",
+        "text": "可能也可以自己手動組裝電腦",
+        "offset": 409300,
+        "duration": 1766
+      },
+      {
+        "lang": "zh-TW",
+        "text": "之類的東西",
+        "offset": 411066,
+        "duration": 934
+      },
+      {
+        "lang": "zh-TW",
+        "text": "可以去嘗試著接觸電機系",
+        "offset": 412033,
+        "duration": 2033
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那對於申請入學來講",
+        "offset": 414233,
+        "duration": 1567
+      },
+      {
+        "lang": "zh-TW",
+        "text": "現在高中生他們能怎麼準備學習歷程",
+        "offset": 415800,
+        "duration": 2666
+      },
+      {
+        "lang": "zh-TW",
+        "text": "比方說",
+        "offset": 418466,
+        "duration": 467
+      },
+      {
+        "lang": "zh-TW",
+        "text": "我需不需要有一些特殊的去比賽成績呀",
+        "offset": 418933,
+        "duration": 2700
+      },
+      {
+        "lang": "zh-TW",
+        "text": "或是我需不需要有什麼一些特殊的經歷",
+        "offset": 421633,
+        "duration": 2200
+      },
+      {
+        "lang": "zh-TW",
+        "text": "比如說我去外面上程式課",
+        "offset": 423833,
+        "duration": 1733
+      },
+      {
+        "lang": "zh-TW",
+        "text": "去外面參加什麼機器人大賽之類的",
+        "offset": 425566,
+        "duration": 2134
+      },
+      {
+        "lang": "zh-TW",
+        "text": "一些亮眼的東西",
+        "offset": 427700,
+        "duration": 1400
+      },
+      {
+        "lang": "zh-TW",
+        "text": "所以我覺得",
+        "offset": 429100,
+        "duration": 533
+      },
+      {
+        "lang": "zh-TW",
+        "text": "這也是現在高中生蠻在乎的一個問題",
+        "offset": 429633,
+        "duration": 2600
+      },
+      {
+        "lang": "zh-TW",
+        "text": "當然就是大家要先知道電機系的領域",
+        "offset": 432233,
+        "duration": 2933
+      },
+      {
+        "lang": "zh-TW",
+        "text": "就是我剛才講的那11個大項",
+        "offset": 435166,
+        "duration": 2300
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那如果大家要準備的話",
+        "offset": 437466,
+        "duration": 1934
+      },
+      {
+        "lang": "zh-TW",
+        "text": "這些學習歷程",
+        "offset": 439400,
+        "duration": 966
+      },
+      {
+        "lang": "zh-TW",
+        "text": "盡量就是要跟這十一個大項",
+        "offset": 440366,
+        "duration": 2167
+      },
+      {
+        "lang": "zh-TW",
+        "text": "有相關性",
+        "offset": 442533,
+        "duration": 1033
+      },
+      {
+        "lang": "zh-TW",
+        "text": "不是做一些不相關的",
+        "offset": 443566,
+        "duration": 1734
+      },
+      {
+        "lang": "zh-TW",
+        "text": "然後來申請這樣子",
+        "offset": 445300,
+        "duration": 1366
+      },
+      {
+        "lang": "zh-TW",
+        "text": "評審在看的時候可能就會",
+        "offset": 446666,
+        "duration": 1834
+      },
+      {
+        "lang": "zh-TW",
+        "text": "覺得說這個",
+        "offset": 448500,
+        "duration": 833
+      },
+      {
+        "lang": "zh-TW",
+        "text": "好像不太知道電機系在學什麼",
+        "offset": 449333,
+        "duration": 2567
+      },
+      {
+        "lang": "zh-TW",
+        "text": "外行的學生寫的話",
+        "offset": 451900,
+        "duration": 1600
+      },
+      {
+        "lang": "zh-TW",
+        "text": "在選系之前",
+        "offset": 453500,
+        "duration": 1333
+      },
+      {
+        "lang": "zh-TW",
+        "text": "先要探索自己的興趣",
+        "offset": 454833,
+        "duration": 1567
+      },
+      {
+        "lang": "zh-TW",
+        "text": "總是要對自己的興趣有覺得",
+        "offset": 456400,
+        "duration": 2000
+      },
+      {
+        "lang": "zh-TW",
+        "text": "ㄟ這個很有趣很想要對這個領域多了解",
+        "offset": 458400,
+        "duration": 3000
+      },
+      {
+        "lang": "zh-TW",
+        "text": "才會想來申請",
+        "offset": 461400,
+        "duration": 1066
+      },
+      {
+        "lang": "zh-TW",
+        "text": "而不是說為了弄一個學習歷程",
+        "offset": 462466,
+        "duration": 2033.9999999999998
+      },
+      {
+        "lang": "zh-TW",
+        "text": "然后故意拼命勉強自己",
+        "offset": 464500,
+        "duration": 1700
+      },
+      {
+        "lang": "zh-TW",
+        "text": "去做一些自己也不太想做的事情",
+        "offset": 466200,
+        "duration": 2100
+      },
+      {
+        "lang": "zh-TW",
+        "text": "這樣就沒有它的意義了嘛",
+        "offset": 468300,
+        "duration": 1633
+      },
+      {
+        "lang": "zh-TW",
+        "text": "所以我覺得還是說到最後一句話",
+        "offset": 469933,
+        "duration": 2667
+      },
+      {
+        "lang": "zh-TW",
+        "text": "就是成績為本",
+        "offset": 472600,
+        "duration": 1133
+      },
+      {
+        "lang": "zh-TW",
+        "text": "把自己的學校成績弄好",
+        "offset": 473766,
+        "duration": 1734
+      },
+      {
+        "lang": "zh-TW",
+        "text": "然后心有餘力呢",
+        "offset": 475500,
+        "duration": 1300
+      },
+      {
+        "lang": "zh-TW",
+        "text": "探索一下自己的興趣",
+        "offset": 476800,
+        "duration": 1500
+      },
+      {
+        "lang": "zh-TW",
+        "text": "在這些電相關的11個領域裡面",
+        "offset": 478300,
+        "duration": 2633
+      },
+      {
+        "lang": "zh-TW",
+        "text": "參與一些活動或課外學習",
+        "offset": 480933,
+        "duration": 2267
+      },
+      {
+        "lang": "zh-TW",
+        "text": "顺便也看一看自己適不適合",
+        "offset": 483200,
+        "duration": 1933
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那這個我覺得才是最重要的目的",
+        "offset": 485133,
+        "duration": 2167
+      },
+      {
+        "lang": "zh-TW",
+        "text": "至於學習歷程呢",
+        "offset": 487300,
+        "duration": 1133
+      },
+      {
+        "lang": "zh-TW",
+        "text": "就是盡力而為",
+        "offset": 488433,
+        "duration": 1100
+      },
+      {
+        "lang": "zh-TW",
+        "text": "能夠呈現自己的興趣跟這個努力",
+        "offset": 489533,
+        "duration": 2767
+      },
+      {
+        "lang": "zh-TW",
+        "text": "不需要特別說",
+        "offset": 492300,
+        "duration": 1233
+      },
+      {
+        "lang": "zh-TW",
+        "text": "不喜歡做的事情",
+        "offset": 493533,
+        "duration": 1200
+      },
+      {
+        "lang": "zh-TW",
+        "text": "為了學習歷程去做",
+        "offset": 494733,
+        "duration": 1233
+      },
+      {
+        "lang": "zh-TW",
+        "text": "我再補充一個",
+        "offset": 495966,
+        "duration": 1200
+      },
+      {
+        "lang": "zh-TW",
+        "text": "因為我們現在高中",
+        "offset": 497166,
+        "duration": 1400
+      },
+      {
+        "lang": "zh-TW",
+        "text": "108課綱",
+        "offset": 498566,
+        "duration": 934
+      },
+      {
+        "lang": "zh-TW",
+        "text": "電學的部分",
+        "offset": 499500,
+        "duration": 866
+      },
+      {
+        "lang": "zh-TW",
+        "text": "好像是聽說是放在蠻後面的",
+        "offset": 500366,
+        "duration": 2434
+      },
+      {
+        "lang": "zh-TW",
+        "text": "對對對可能都要到高三下",
+        "offset": 502800,
+        "duration": 2066
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那這個部分",
+        "offset": 504866,
+        "duration": 667
+      },
+      {
+        "lang": "zh-TW",
+        "text": "就是要跟各位高中同學提醒一下啊",
+        "offset": 505533,
+        "duration": 3033
+      },
+      {
+        "lang": "zh-TW",
+        "text": "就是我們必須要把電學的部分啊",
+        "offset": 508566,
+        "duration": 2734
+      },
+      {
+        "lang": "zh-TW",
+        "text": "這個知識",
+        "offset": 511300,
+        "duration": 733
+      },
+      {
+        "lang": "zh-TW",
+        "text": "有機會的話自己要提前的涉略",
+        "offset": 512033,
+        "duration": 2367
+      },
+      {
+        "lang": "zh-TW",
+        "text": "不可以",
+        "offset": 514400,
+        "duration": 566
+      },
+      {
+        "lang": "zh-TW",
+        "text": "等到你申請考試的時候才去摸",
+        "offset": 514966,
+        "duration": 2800
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那這樣可能就有點來不及了",
+        "offset": 517765.99999999994,
+        "duration": 2067
+      },
+      {
+        "lang": "zh-TW",
+        "text": "所以在申請入學的時候",
+        "offset": 519832.99999999994,
+        "duration": 1367
+      },
+      {
+        "lang": "zh-TW",
+        "text": "其實就會考到很多",
+        "offset": 521200.00000000006,
+        "duration": 1233
+      },
+      {
+        "lang": "zh-TW",
+        "text": "像是高三下學期的東西",
+        "offset": 522433,
+        "duration": 2167
+      },
+      {
+        "lang": "zh-TW",
+        "text": "對有一些第二階段的筆試的部分",
+        "offset": 524600,
+        "duration": 2600
+      },
+      {
+        "lang": "zh-TW",
+        "text": "會考物理嘛",
+        "offset": 527200,
+        "duration": 966
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那這個時候的範圍就相當的廣",
+        "offset": 528166,
+        "duration": 2434
+      },
+      {
+        "lang": "zh-TW",
+        "text": "所以大家就是要特別提前注意",
+        "offset": 530600,
+        "duration": 2033
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那對這個東西提前涉略",
+        "offset": 532633,
+        "duration": 1833
+      },
+      {
+        "lang": "zh-TW",
+        "text": "也是自己探索一下",
+        "offset": 534466,
+        "duration": 1367
+      },
+      {
+        "lang": "zh-TW",
+        "text": "我適不適合念電機系",
+        "offset": 535833,
+        "duration": 1467
+      },
+      {
+        "lang": "zh-TW",
+        "text": "的一個很好的機會",
+        "offset": 537300,
+        "duration": 1333
+      },
+      {
+        "lang": "zh-TW",
+        "text": "不然說你念電機系",
+        "offset": 538633,
+        "duration": 1467
+      },
+      {
+        "lang": "zh-TW",
+        "text": "但對電什麼都不知道",
+        "offset": 540100,
+        "duration": 1766
+      },
+      {
+        "lang": "zh-TW",
+        "text": "這樣子有一點可惜",
+        "offset": 542166,
+        "duration": 1500
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那最後一個呢",
+        "offset": 543866,
+        "duration": 834
+      },
+      {
+        "lang": "zh-TW",
+        "text": "大概就是大家也蠻想知道的一個東西",
+        "offset": 544700,
+        "duration": 2533
+      },
+      {
+        "lang": "zh-TW",
+        "text": "請問主任",
+        "offset": 547233,
+        "duration": 467
+      },
+      {
+        "lang": "zh-TW",
+        "text": "你覺得電機系有哪些最特殊的地方",
+        "offset": 547700,
+        "duration": 2600
+      },
+      {
+        "lang": "zh-TW",
+        "text": "哎這個是好問題",
+        "offset": 550300,
+        "duration": 1300
+      },
+      {
+        "lang": "zh-TW",
+        "text": "我觉得電機系最特別的特色呢",
+        "offset": 551600,
+        "duration": 2733
+      },
+      {
+        "lang": "zh-TW",
+        "text": "有幾個",
+        "offset": 554366,
+        "duration": 534
+      },
+      {
+        "lang": "zh-TW",
+        "text": "第一個就是說我們是軟硬通吃",
+        "offset": 554900,
+        "duration": 2266
+      },
+      {
+        "lang": "zh-TW",
+        "text": "軟的硬的",
+        "offset": 557166,
+        "duration": 834
+      },
+      {
+        "lang": "zh-TW",
+        "text": "我們通通都可以",
+        "offset": 558000,
+        "duration": 1133
+      },
+      {
+        "lang": "zh-TW",
+        "text": "在軟的方面現在很紅的",
+        "offset": 559133,
+        "duration": 1700
+      },
+      {
+        "lang": "zh-TW",
+        "text": "資料科學",
+        "offset": 560833,
+        "duration": 900
+      },
+      {
+        "lang": "zh-TW",
+        "text": "人工智慧",
+        "offset": 561733,
+        "duration": 867
+      },
+      {
+        "lang": "zh-TW",
+        "text": "硬的部分呢",
+        "offset": 562600,
+        "duration": 900
+      },
+      {
+        "lang": "zh-TW",
+        "text": "大家可以知道要打造一些IC",
+        "offset": 563500,
+        "duration": 2400
+      },
+      {
+        "lang": "zh-TW",
+        "text": "再來我們要組裝成這些伺服器",
+        "offset": 565900,
+        "duration": 2566
+      },
+      {
+        "lang": "zh-TW",
+        "text": "提供這個大型的人工智慧的模型",
+        "offset": 568466,
+        "duration": 2834
+      },
+      {
+        "lang": "zh-TW",
+        "text": "這些都是台灣現在企業的最強項",
+        "offset": 571300,
+        "duration": 2733
+      },
+      {
+        "lang": "zh-TW",
+        "text": "第二個特色就是上下整合",
+        "offset": 574033,
+        "duration": 2533
+      },
+      {
+        "lang": "zh-TW",
+        "text": "從最上端的系統",
+        "offset": 576566,
+        "duration": 1467
+      },
+      {
+        "lang": "zh-TW",
+        "text": "然後到最下端的這些元件IC",
+        "offset": 578033,
+        "duration": 2900
+      },
+      {
+        "lang": "zh-TW",
+        "text": "從中間這樣一層一層的把它整合起来",
+        "offset": 580933,
+        "duration": 2633
+      },
+      {
+        "lang": "zh-TW",
+        "text": "都是要靠電機系很多人",
+        "offset": 583566,
+        "duration": 1800
+      },
+      {
+        "lang": "zh-TW",
+        "text": "大家一起的努力",
+        "offset": 585366,
+        "duration": 1267
+      },
+      {
+        "lang": "zh-TW",
+        "text": "所以軟硬通吃",
+        "offset": 586633,
+        "duration": 1167
+      },
+      {
+        "lang": "zh-TW",
+        "text": "上下整合",
+        "offset": 587800,
+        "duration": 833
+      },
+      {
+        "lang": "zh-TW",
+        "text": "所以我想說",
+        "offset": 588633,
+        "duration": 533
+      },
+      {
+        "lang": "zh-TW",
+        "text": "這就是為什麼電機系領域會在台灣",
+        "offset": 589166,
+        "duration": 2467
+      },
+      {
+        "lang": "zh-TW",
+        "text": "是一個這麼重要的產業",
+        "offset": 591800,
+        "duration": 1700
+      },
+      {
+        "lang": "zh-TW",
+        "text": "所以是因為電機系的",
+        "offset": 593500,
+        "duration": 1266
+      },
+      {
+        "lang": "zh-TW",
+        "text": "它的涵蓋的東西非常非常廣",
+        "offset": 594766,
+        "duration": 2100
+      },
+      {
+        "lang": "zh-TW",
+        "text": "所以它可以把所有的領域",
+        "offset": 596866,
+        "duration": 1567
+      },
+      {
+        "lang": "zh-TW",
+        "text": "全部都串在一起",
+        "offset": 598433,
+        "duration": 1233
+      },
+      {
+        "lang": "zh-TW",
+        "text": "像紐帶的作用嘛",
+        "offset": 599666,
+        "duration": 1367
+      },
+      {
+        "lang": "zh-TW",
+        "text": "基本上呢",
+        "offset": 601500,
+        "duration": 733
+      },
+      {
+        "lang": "zh-TW",
+        "text": "今天的問題大概就問到這邊",
+        "offset": 602233,
+        "duration": 2133
+      },
+      {
+        "lang": "zh-TW",
+        "text": "也再次謝謝主任",
+        "offset": 604366,
+        "duration": 1134
+      },
+      {
+        "lang": "zh-TW",
+        "text": "能夠來參與到我的訪談裡面",
+        "offset": 605500,
+        "duration": 1966
+      },
+      {
+        "lang": "zh-TW",
+        "text": "謝謝大家謝謝",
+        "offset": 607466,
+        "duration": 1267
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那麼大家啊",
+        "offset": 608733,
+        "duration": 933
+      },
+      {
+        "lang": "zh-TW",
+        "text": "不要忘記訂閱按讚分享",
+        "offset": 609666,
+        "duration": 1267
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那也可以去追蹤我的IG (veg._ _ _)",
+        "offset": 610933,
+        "duration": 1567
+      },
+      {
+        "lang": "zh-TW",
+        "text": "那我們就",
+        "offset": 612533,
+        "duration": 600
+      },
+      {
+        "lang": "zh-TW",
+        "text": "下隻影片再見",
+        "offset": 613733,
+        "duration": 1133
+      },
+      {
+        "lang": "zh-TW",
+        "text": "機",
+        "offset": 23433,
+        "duration": 800
+      },
+      {
+        "lang": "zh-TW",
+        "text": "2. 未來能擔任的工作",
+        "offset": 134000,
+        "duration": 139166
+      },
+      {
+        "lang": "zh-TW",
+        "text": "3. 什麼樣的人適合電機系",
+        "offset": 279033,
+        "duration": 49033
+      },
+      {
+        "lang": "zh-TW",
+        "text": "4. 如何準備進入電機系",
+        "offset": 333666,
+        "duration": 80234
+      },
+      {
+        "lang": "zh-TW",
+        "text": "5. 怎麼準備學習歷程",
+        "offset": 415800,
+        "duration": 127633
+      },
+      {
+        "lang": "zh-TW",
+        "text": "6. 電機系最特別的地方",
+        "offset": 547700,
+        "duration": 53566
+      },
+      {
+        "lang": "zh-TW",
+        "text": "1. 電機系主要學的知識",
+        "offset": 58400,
+        "duration": 72733
+      }
+    ]
+  },
+  "timestamp": "2025-09-21T11:51:27.069488",
+  "created_at": "2025-09-21T11:51:27.070488",
+  "mode_trigger": "fullscreen_or_theater"
+}

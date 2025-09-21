@@ -17,7 +17,7 @@ const Avatar = ({ onClick, src }) => {
     if (typeof onClick === 'function') {
       onClick(e);
     } else {
-      window.electronAPI.showMessageBox("對 Avatar 說些...");
+      window.electronAPI.showMessageBox("打開messagebox");
     }
   };
 

@@ -205,16 +205,54 @@ const MessageBox = ({ isNormalMode = true, onClose, onStart, youtube_id }) => {
 
   useEffect(() => {
     if (!isNormalMode) {
-      // 每次組件 mount 都執行
-      const currentTime = simulatedTimeRef.current;
-      const next = noteData.find(
-        (item) => typeof item.time === "number" && item.time > currentTime
-      );
-      if (next) {
-        setMessage(next.Keyword);
-      } else {
-        setMessage("（已無下一個關鍵字）");
-      }
+      let intervalId = null;
+      console.log("[MessageBox] 啟動關鍵字同步，YouTube ID:", youtube_id);
+      const checkAndUpdateMessage = async () => {
+        try {
+          // 使用 audioPlaybackService 獲取當前影片時間
+          const currentTime = await audioPlaybackService.getCurrentYouTubeTime();
+          
+          // 如果無法獲取時間，使用 simulatedTimeRef 作為後備
+          const timeToCheck = currentTime !== null ? currentTime : simulatedTimeRef.current;
+          
+          const next = noteData.find(
+            (item) => typeof item.time === "number" && item.time > timeToCheck
+          );
+          
+          if (next) {
+            console.log("[MessageBox] 更新 Keyword:", next.Keyword, "at", next.time, "s");
+            setMessage(next.Keyword);
+          } else {
+            setMessage("（已無下一個關鍵字）");
+          }
+        } catch (error) {
+          console.error('[MessageBox] 獲取影片時間失敗:', error);
+          // 發生錯誤時使用 simulatedTimeRef 作為後備
+          const currentTime = simulatedTimeRef.current;
+          const next = noteData.find(
+            (item) => typeof item.time === "number" && item.time > currentTime
+          );
+          if (next) {
+            console.log("[MessageBox] 更新 Keyword:", next.Keyword, "at", next.time, "s");
+            setMessage(next.Keyword);
+          } else {
+            setMessage("（已無下一個關鍵字）");
+          }
+        }
+      };
+      
+      // 立即執行一次檢查
+      checkAndUpdateMessage();
+      
+      // 設定定時檢查（每秒檢查一次）
+      intervalId = setInterval(checkAndUpdateMessage, 1000);
+      
+      // 清理函數
+      return () => {
+        if (intervalId) {
+          clearInterval(intervalId);
+        }
+      };
     }
     // eslint-disable-next-line
   }, []); // 只在 mount 時執行

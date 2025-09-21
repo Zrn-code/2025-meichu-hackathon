@@ -10,6 +10,8 @@ class AudioPlaybackService {
     this.checkInterval = null;
     this.lastPlayedLogId = null;
     this.currentAudio = null;
+    this.replyIndex = 0; // 追蹤當前 reply 索引
+    this.currentVideoId = null; // 追蹤當前影片 ID
     
     // 自動啟動檢查（延遲 2 秒讓應用程式完全載入）
     setTimeout(() => {
@@ -69,6 +71,10 @@ class AudioPlaybackService {
           
           // 先觸發 MessageBox 顯示事件
           this.dispatchMessageBoxEvent(content);
+          console.log('[AudioPlayback] 觸發 MessageBox 顯示事件');
+          
+          // 在播放音檔前顯示對應的 reply
+          await this.showReplyMessage();
           
           await this.playAudio(content);
           this.lastPlayedLogId = content.file_path;
@@ -212,37 +218,116 @@ class AudioPlaybackService {
 
   /**
    * 獲取當前 YouTube 播放時間
-   * 這個方法需要根據實際的 YouTube 整合方式來實現
+   * 通過後端 API 獲取來自 Chrome Extension 的 YouTube 播放時間
    * @returns {Promise<number|null>} 當前播放時間（秒）
    */
   async getCurrentYouTubeTime() {
+    console.log('[AudioPlayback] 嘗試獲取當前 YouTube 播放時間...');
     try {
-      // TODO: 這裡需要根據實際的 YouTube 整合方式來實現
-      // 如果是通過瀏覽器標籤頁，可能需要通過 chrome extension 或其他方式獲取
-      
-      // 可能的實現方式：
-      // 1. 通過 Chrome Extension 與瀏覽器通信
-      // 2. 通過 Electron 主進程獲取瀏覽器標籤頁資訊
-      // 3. 如果有嵌入式播放器，可以直接獲取播放時間
-      
-      // 暫時返回 null，讓系統使用預設的測試時間
-      console.log('[AudioPlayback] getCurrentYouTubeTime 尚未實現，返回 null');
-      return null;
+      // 方法1: 從後端 API 獲取當前 YouTube 狀態
+      const response = await fetch(`${this.baseUrl}/api/youtube/current`);
+      console.log(response);
+      if (response.ok) {
+        const data = await response.json();
+        
+        if (data.success && data.youtube_data) {
+          const youtubeData = data.youtube_data;
+          
+          // 檢查是否有有效的播放時間數據
+          if (youtubeData.hasVideo && 
+              typeof youtubeData.currentTime === 'number' && 
+              youtubeData.currentTime >= 0) {
+            
+            console.log(`[AudioPlayback] ✅ 獲取到 YouTube 時間: ${youtubeData.currentTime}秒 (影片: ${youtubeData.title || youtubeData.videoId})`);
+            return youtubeData.currentTime;
+          } else {
+            console.log('[AudioPlayback] ⚠️ YouTube 數據中沒有有效的播放時間');
+            return null;
+          }
+        } else {
+          console.log('[AudioPlayback] ⚠️ 沒有可用的 YouTube 數據');
+          return null;
+        }
+      } else if (response.status === 404) {
+        console.log('[AudioPlayback] ℹ️ YouTube API 端點尚未實現');
+        // 嘗試方法2
+        return await this.getCurrentYouTubeTimeFromCheck();
+      } else {
+        console.warn(`[AudioPlayback] ⚠️ YouTube API 回應錯誤: ${response.status}`);
+        return null;
+      }
     } catch (error) {
-      console.error('[AudioPlayback] 獲取 YouTube 時間時發生錯誤:', error);
+      if (error.message.includes('fetch') || error.message.includes('Failed to fetch')) {
+        console.log('[AudioPlayback] 🔗 後端連接失敗，嘗試備用方法...');
+        // 嘗試方法2
+        return await this.getCurrentYouTubeTimeFromCheck();
+      } else {
+        console.error('[AudioPlayback] ❌ 獲取 YouTube 時間時發生錯誤:', error);
+        return null;
+      }
+    }
+  }
+
+  /**
+   * 從 check-playback API 獲取 YouTube 時間（備用方法）
+   * @returns {Promise<number|null>} 當前播放時間（秒）
+   */
+  async getCurrentYouTubeTimeFromCheck() {
+    try {
+      const response = await this.fetchCheckPlayback();
+      
+      if (response.success && response.youtube_data) {
+        const youtubeData = response.youtube_data;
+        
+        if (youtubeData.hasVideo && 
+            typeof youtubeData.currentTime === 'number' && 
+            youtubeData.currentTime >= 0) {
+          
+          console.log(`[AudioPlayback] ✅ 從 check-playback 獲取到 YouTube 時間: ${youtubeData.currentTime}秒`);
+          return youtubeData.currentTime;
+        }
+      }
+      
+      console.log('[AudioPlayback] ⚠️ check-playback 中沒有 YouTube 時間數據');
+      return null;
+      
+    } catch (error) {
+      console.log('[AudioPlayback] ℹ️ 無法從 check-playback 獲取時間，使用預設值');
       return null;
     }
   }
 
   /**
    * 獲取當前 YouTube 影片 ID
+   * 通過後端 API 獲取來自 Chrome Extension 的 YouTube 影片 ID
    * @returns {Promise<string|null>} 當前影片 ID
    */
   async getCurrentVideoId() {
     try {
-      // 這裡需要根據實際的 YouTube 整合方式來實現
-      // 暫時返回測試用的影片 ID
-      return 'video_bb4be737';
+      // 方法1: 從後端 API 獲取當前 YouTube 狀態
+      const response = await fetch(`${this.baseUrl}/api/youtube/current`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        
+        if (data.success && data.youtube_data && data.youtube_data.videoId) {
+          console.log(`[AudioPlayback] ✅ 獲取到影片 ID: ${data.youtube_data.videoId}`);
+          return data.youtube_data.videoId;
+        }
+      } else if (response.status !== 404) {
+        console.warn(`[AudioPlayback] ⚠️ YouTube API 回應錯誤: ${response.status}`);
+      }
+      
+      // 方法2: 從 check-playback API 獲取
+      const checkResponse = await this.fetchCheckPlayback();
+      if (checkResponse.success && checkResponse.youtube_data && checkResponse.youtube_data.videoId) {
+        console.log(`[AudioPlayback] ✅ 從 check-playback 獲取到影片 ID: ${checkResponse.youtube_data.videoId}`);
+        return checkResponse.youtube_data.videoId;
+      }
+      
+      console.log('[AudioPlayback] ⚠️ 無法獲取當前影片 ID');
+      return null;
+      
     } catch (error) {
       console.error('[AudioPlayback] 獲取影片 ID 時發生錯誤:', error);
       return null;
@@ -321,6 +406,78 @@ class AudioPlaybackService {
   }
 
   /**
+   * 顯示對應的 reply 訊息
+   */
+  async showReplyMessage() {
+    try {
+      // 獲取當前影片 ID
+      const videoId = await this.getCurrentVideoId();
+      console.log(`[AudioPlayback] 當前影片 ID: ${videoId}`);
+      
+      if (!videoId) {
+        console.warn('[AudioPlayback] 無法獲取影片 ID，跳過 MessageBox 顯示');
+        return;
+      }
+
+      // 如果是新的影片，重置 reply 索引
+      if (this.currentVideoId !== videoId) {
+        this.currentVideoId = videoId;
+        this.replyIndex = 0;
+        console.log(`[AudioPlayback] 切換到新影片: ${videoId}，重置 reply 索引`);
+      }
+
+      // 嘗試載入對應的 avatar_talk JSON 檔案
+      const avatarTalkPath = `/src/data/avatar_talk/${videoId}.json`;
+      
+      try {
+        const response = await fetch(avatarTalkPath);
+        if (response.ok) {
+          const avatarTalkData = await response.json();
+          
+          // 檢查是否有對應索引的 reply
+          if (this.replyIndex < avatarTalkData.length && avatarTalkData[this.replyIndex]) {
+            const replyData = avatarTalkData[this.replyIndex];
+            const replyMessage = replyData.Reply || replyData.reply || '';
+            
+            console.log(`[AudioPlayback] 📨 顯示 Reply ${this.replyIndex}: "${replyMessage}"`);
+            
+            // 使用 Electron API 顯示 MessageBox
+            if (window.electronAPI && window.electronAPI.showMessageBox) {
+              await window.electronAPI.showMessageBox(replyMessage);
+              console.log(`[AudioPlayback] ✅ MessageBox 已顯示 Reply ${this.replyIndex}`);
+            } else {
+              console.warn('[AudioPlayback] Electron API 不可用，無法顯示 MessageBox');
+            }
+            
+            // 增加 reply 索引
+            this.replyIndex++;
+          } else {
+            console.log(`[AudioPlayback] ⚠️ 沒有更多 Reply 可顯示 (索引: ${this.replyIndex})`);
+          }
+        } else {
+          console.log(`[AudioPlayback] ⚠️ 找不到 avatar_talk 檔案: ${avatarTalkPath}`);
+        }
+      } catch (fetchError) {
+        console.log(`[AudioPlayback] ℹ️ 無法載入 avatar_talk 檔案: ${fetchError.message}`);
+      }
+    } catch (error) {
+      console.error('[AudioPlayback] 顯示 Reply 時發生錯誤:', error);
+    }
+  }
+
+  /**
+   * 重置 reply 索引（當切換影片時使用）
+   * @param {string} videoId - 新的影片 ID
+   */
+  resetReplyIndex(videoId = null) {
+    if (videoId) {
+      this.currentVideoId = videoId;
+    }
+    this.replyIndex = 0;
+    console.log(`[AudioPlayback] 🔄 重置 reply 索引為 0 (影片: ${this.currentVideoId})`);
+  }
+
+  /**
    * 檢查服務狀態
    * @returns {Object} 服務狀態資訊
    */
@@ -329,7 +486,9 @@ class AudioPlaybackService {
       isChecking: this.isChecking,
       hasInterval: !!this.checkInterval,
       currentlyPlaying: !!this.currentAudio,
-      lastPlayedLogId: this.lastPlayedLogId
+      lastPlayedLogId: this.lastPlayedLogId,
+      replyIndex: this.replyIndex,
+      currentVideoId: this.currentVideoId
     };
   }
 }

@@ -491,7 +491,7 @@ const startTabsMonitoring = () => {
               }
             });
             
-            console.log('📊 標籤頁數據已更新:', result.data?.totalTabs || 0, '個標籤頁');
+            // console.log('📊 標籤頁數據已更新:', result.data?.totalTabs || 0, '個標籤頁');
           }
         }
       }
