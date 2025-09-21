@@ -210,28 +210,6 @@ const MessageBox = ({ isNormalMode = true, onClose, onStart, youtube_id }) => {
     };
   }, []);
 
-  // 監聽 audioPlaybackService 的 showMessageBox 事件
-  useEffect(() => {
-    const handleShowMessageBox = (event) => {
-      const { message: eventMessage } = event.detail;
-      console.log('[MessageBox] 收到 showMessageBox 事件:', eventMessage);
-      setMessage(eventMessage);
-    };
-
-    // 添加事件監聽器
-    if (typeof window !== 'undefined') {
-      window.addEventListener('showMessageBox', handleShowMessageBox);
-      console.log('[MessageBox] 已添加 showMessageBox 事件監聽器');
-    }
-
-    return () => {
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('showMessageBox', handleShowMessageBox);
-        console.log('[MessageBox] 已移除 showMessageBox 事件監聽器');
-      }
-    };
-  }, []);
-
   // useEffect(() => {
   //   if (!isNormalMode) {
   //     let intervalId = null;
