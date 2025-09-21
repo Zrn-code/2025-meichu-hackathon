@@ -16,10 +16,6 @@
     "Keyword": "agentic"
   },
   {
-    "time": 20880,
-    "Keyword": "null"
-  },
-  {
     "time": 23760,
     "Keyword": "video"
   },
@@ -44,16 +40,8 @@
     "Keyword": "AI workflows"
   },
   {
-    "time": 49640,
-    "Keyword": "Domain-specific"
-  },
-  {
     "time": 52879,
     "Keyword": "Medical"
-  },
-  {
-    "time": 56960,
-    "Keyword": "Professional Term"
   },
   {
     "time": 58800,
@@ -68,20 +56,12 @@
     "Keyword": "level"
   },
   {
-    "time": 68400,
-    "Keyword": "None"
-  },
-  {
     "time": 70799,
     "Keyword": "Applications"
   },
   {
     "time": 74320,
     "Keyword": "LLMs"
-  },
-  {
-    "time": 77040,
-    "Keyword": "Professional"
   },
   {
     "time": 79439,
@@ -96,307 +76,7 @@
     "Keyword": "LLM"
   },
   {
-    "time": 89360,
-    "Keyword": "Professional_"
-  },
-  {
     "time": 91439,
     "Keyword": "coffee"
-  },
-  {
-    "time": 97600,
-    "Keyword": "So far so good"
-  },
-  {
-    "time": 100640,
-    "Keyword": "Cybersecurity"
-  },
-  {
-    "time": 103439,
-    "Keyword": "BT"
-  },
-  {
-    "time": 109360,
-    "Keyword": "PT"
-  },
-  {
-    "time": 116240,
-    "Keyword": "software development"
-  },
-  {
-    "time": 118320,
-    "Keyword": "NLP"
-  },
-  {
-    "time": 124880,
-    "Keyword": "intellectual property"
-  },
-  {
-    "time": 127040,
-    "Keyword": "\"Data Security\""
-  },
-  {
-    "time": 132720,
-    "Keyword": "prompt"
-  },
-  {
-    "time": 139200,
-    "Keyword": "Agile"
-  },
-  {
-    "time": 141920,
-    "Keyword": "\"LM\""
-  },
-  {
-    "time": 149200,
-    "Keyword": "calendar"
-  },
-  {
-    "time": 151599,
-    "Keyword": "Logic"
-  },
-  {
-    "time": 158160,
-    "Keyword": "Language Model"
-  },
-  {
-    "time": 160319,
-    "Keyword": "Google"
-  },
-  {
-    "time": 170400,
-    "Keyword": "Meteorology"
-  },
-  {
-    "time": 173280,
-    "Keyword": "answer"
-  },
-  {
-    "time": 192640,
-    "Keyword": "Technical"
-  },
-  {
-    "time": 202080,
-    "Keyword": "API"
-  },
-  {
-    "time": 208959,
-    "Keyword": "weather"
-  },
-  {
-    "time": 211599,
-    "Keyword": "Good Boy"
-  },
-  {
-    "time": 213680,
-    "Keyword": "thing"
-  },
-  {
-    "time": 219200,
-    "Keyword": "workflow"
-  },
-  {
-    "time": 221599,
-    "Keyword": "if"
-  },
-  {
-    "time": 229920,
-    "Keyword": "augmented generation"
-  },
-  {
-    "time": 232640,
-    "Keyword": "data science."
-  },
-  {
-    "time": 234560,
-    "Keyword": "rag"
-  },
-  {
-    "time": 236480,
-    "Keyword": "AI model"
-  },
-  {
-    "time": 240640,
-    "Keyword": "Weather Service"
-  },
-  {
-    "time": 247760,
-    "Keyword": "data science"
-  },
-  {
-    "time": 249200,
-    "Keyword": "I'll"
-  },
-  {
-    "time": 252879,
-    "Keyword": "Helena"
-  },
-  {
-    "time": 257120,
-    "Keyword": "AI workflow"
-  },
-  {
-    "time": 261600,
-    "Keyword": "\"Specifically\""
-  },
-  {
-    "time": 268000,
-    "Keyword": "Perplexity"
-  },
-  {
-    "time": 271040,
-    "Keyword": "summarization"
-  },
-  {
-    "time": 276800,
-    "Keyword": "contract."
-  },
-  {
-    "time": 289360,
-    "Keyword": "'path'"
-  },
-  {
-    "time": 295440,
-    "Keyword": "programming"
-  },
-  {
-    "time": 297680,
-    "Keyword": "\"last\" is not a"
-  },
-  {
-    "time": 305520,
-    "Keyword": "Career Development"
-  },
-  {
-    "time": 310000,
-    "Keyword": "comedy"
-  },
-  {
-    "time": 327360,
-    "Keyword": "Artificial Intelligence."
-  },
-  {
-    "time": 331520,
-    "Keyword": "project"
-  },
-  {
-    "time": 333280,
-    "Keyword": "expert"
-  },
-  {
-    "time": 336000,
-    "Keyword": "social media"
-  },
-  {
-    "time": 337680,
-    "Keyword": "news"
-  },
-  {
-    "time": 339919,
-    "Keyword": "philosophy"
-  },
-  {
-    "time": 343280,
-    "Keyword": "extract"
-  },
-  {
-    "time": 344800,
-    "Keyword": "compile"
-  },
-  {
-    "time": 346400,
-    "Keyword": "Software Engineering"
-  },
-  {
-    "time": 348320,
-    "Keyword": "posts"
-  },
-  {
-    "time": 353600,
-    "Keyword": "Sheets"
-  },
-  {
-    "time": 358160,
-    "Keyword": "law"
-  },
-  {
-    "time": 364560,
-    "Keyword": "\"reorganization\""
-  },
-  {
-    "time": 373039,
-    "Keyword": "replacement"
-  },
-  {
-    "time": 384800,
-    "Keyword": "\"Semantic Web\""
-  },
-  {
-    "time": 386400,
-    "Keyword": "Extraction"
-  },
-  {
-    "time": 390960,
-    "Keyword": "sense"
-  },
-  {
-    "time": 397039,
-    "Keyword": "compiler"
-  },
-  {
-    "time": 399120,
-    "Keyword": "science"
-  },
-  {
-    "time": 405440,
-    "Keyword": "finance"
-  },
-  {
-    "time": 409759,
-    "Keyword": "most common configuration"
-  },
-  {
-    "time": 426160,
-    "Keyword": "Professional-"
-  },
-  {
-    "time": 428400,
-    "Keyword": "job search"
-  },
-  {
-    "time": 435280,
-    "Keyword": "job"
-  },
-  {
-    "time": 439599,
-    "Keyword": "autonomous"
-  },
-  {
-    "time": 454240,
-    "Keyword": "Critique"
-  },
-  {
-    "time": 462560,
-    "Keyword": "\"Cycles\""
-  },
-  {
-    "time": 465280,
-    "Keyword": "output."
-  },
-  {
-    "time": 480319,
-    "Keyword": "keyword"
-  },
-  {
-    "time": 482560,
-    "Keyword": "vision"
-  },
-  {
-    "time": 487680,
-    "Keyword": "reasoning"
-  },
-  {
-    "time": 492720,
-    "Keyword": "Winter"
   }
 ]

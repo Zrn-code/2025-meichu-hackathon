@@ -1,12 +1,17 @@
-
 import React from 'react';
+import noteData from './data/note/FwOTs4UxQS4.json';
 import './index.css';
 
 const Inform = () => {
-  const handleClick = (type) => {
-    // 這裡可以自訂觸發事件，例如彈窗、console.log 或其他行為
-    alert(`你點擊了「${type}」按鈕！`);
+  // 取前六個有 Keyword 和 url 的項目
+  const topSix = noteData
+    .filter(item => item.Keyword && item.url)
+    .slice(0, 6);
+
+  const handleClick = (url) => {
+    window.open(url, '_blank');
   };
+
   return (
     <div
       style={{
@@ -26,22 +31,46 @@ const Inform = () => {
         gap: '8px',
       }}
     >
-      {['劇情', '恐怖', '懸疑', '首映', '鬼魂'].map((t) => (
+      {topSix.map((item) => (
         <button
-          key={t}
+          key={item.Keyword}
           type="button"
-          onClick={() => handleClick(t)}
+          onClick={() => handleClick(item.url)}
           style={{
-            cursor: 'pointer',        // ✅ 游標變手指
+            cursor: 'pointer',
+            width: '70px',
+            height: '38px',
             padding: '6px 10px',
             borderRadius: '8px',
             border: 'none',
             background: '#ffffff',
             color: '#333',
             WebkitAppRegion: 'no-drag',
+            fontSize: 'clamp(12px, 3vw, 15px)', // 自動縮放字體
+            fontWeight: 'bold',
+            boxSizing: 'border-box',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            wordBreak: 'break-all',
+            textAlign: 'center',
+            lineHeight: 1.1,
           }}
         >
-          {t}
+          <span
+            style={{
+              width: '100%',
+              display: 'block',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'normal', // 允許換行
+              wordBreak: 'break-all',
+            }}
+          >
+            {item.Keyword}
+          </span>
         </button>
       ))}
       <div aria-hidden />

@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, shell } from 'electron';
+import { app, BrowserWindow, ipcMain, shell, screen } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
 const fs = require("fs");
@@ -205,9 +205,18 @@ const createAvatarWindow = () => {
     return;
   }
 
+  // 取得螢幕資訊
+  const display = screen.getPrimaryDisplay();
+  const { x: screenX, y: screenY, width: screenW } = display.workArea;
+  const avatarW = 80, avatarH = 80;
+  const marginX = 16; // 距離螢幕邊緣的距離
+  const marginY = 200; // 距離螢幕邊緣的距離
+
   avatarWindow = new BrowserWindow({
-    width: 80,
-    height: 80,
+    width: avatarW,
+    height: avatarH,
+    x: screenX + screenW - avatarW - marginX, // 右上角
+    y: screenY + marginY,
     frame: false,
     transparent: true,
     alwaysOnTop: true,
@@ -221,23 +230,15 @@ const createAvatarWindow = () => {
     },
   });
 
-  // // 加載avatar窗口 - 使用主窗口的開發服務器
-  // if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-  //   avatarWindow.loadURL(`${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/avatar.html`);
-  // } else {
-  //   avatarWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/avatar.html`));
-  // }
   loadAvatarImage(); // 使用預設圖片
 
   avatarWindow.on('closed', () => {
     avatarWindow = null;
-    // 通知主窗口 avatar 已關閉
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send('avatar-closed');
     }
   });
 
-  // 監聽 Avatar 窗口移動，同步更新 MessageBox 位置
   avatarWindow.on('moved', () => {
     updateMessageBoxPosition();
   });
