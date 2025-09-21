@@ -45,4 +45,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   listNotebook: () => ipcRenderer.invoke("notebook:list"),
   // Youtube metadata 相關
   fetchYoutubeMetadata: () => ipcRenderer.invoke('fetch-youtube-metadata'),
+
+  // MessagePanel 相關
+  showMessagePanel: (message) => ipcRenderer.invoke('show-message-panel', message),
+  closeMessagePanel: () => ipcRenderer.invoke('close-message-panel'),
+  isMessagePanelVisible: () => ipcRenderer.invoke('is-message-panel-visible'),
 });

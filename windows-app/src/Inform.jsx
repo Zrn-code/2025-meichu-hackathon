@@ -1,8 +1,17 @@
-
 import React from 'react';
+import noteData from './data/note/FwOTs4UxQS4.json';
 import './index.css';
 
 const Inform = () => {
+  // 取前六個有 Keyword 和 url 的項目
+  const topSix = noteData
+    .filter(item => item.Keyword && item.url)
+    .slice(0, 6);
+
+  const handleClick = (url) => {
+    window.open(url, '_blank');
+  };
+
   return (
     <div
       style={{
@@ -22,12 +31,49 @@ const Inform = () => {
         gap: '8px',
       }}
     >
-      <div>劇情</div>
-      <div>恐怖</div>
-      <div>懸疑</div>
-      <div>首映</div>
-      <div>鬼魂</div>
-      <div></div>
+      {topSix.map((item) => (
+        <button
+          key={item.Keyword}
+          type="button"
+          onClick={() => handleClick(item.url)}
+          style={{
+            cursor: 'pointer',
+            width: '70px',
+            height: '38px',
+            padding: '6px 10px',
+            borderRadius: '8px',
+            border: 'none',
+            background: '#ffffff',
+            color: '#333',
+            WebkitAppRegion: 'no-drag',
+            fontSize: 'clamp(12px, 3vw, 15px)', // 自動縮放字體
+            fontWeight: 'bold',
+            boxSizing: 'border-box',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            wordBreak: 'break-all',
+            textAlign: 'center',
+            lineHeight: 1.1,
+          }}
+        >
+          <span
+            style={{
+              width: '100%',
+              display: 'block',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'normal', // 允許換行
+              wordBreak: 'break-all',
+            }}
+          >
+            {item.Keyword}
+          </span>
+        </button>
+      ))}
+      <div aria-hidden />
     </div>
   );
 };

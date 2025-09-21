@@ -6,6 +6,8 @@ import audioPlaybackService from './services/audioPlaybackService';
 
 import VideoStats from './VideoStats.jsx';
 import Note from "./Note.jsx";
+import MessageBox from "./MessageBox";
+import MessagePanel from "./MessagePanel";
 
 const MODEL = import.meta.env.VITE_STT_MODEL || 'whisper-1'
 const LANGUAGE = import.meta.env.VITE_LANGUAGE || 'zh'
@@ -681,6 +683,8 @@ function App() {
         </div>
       </div>
 
+      {/* <MessagePanel /> */}
+      {/* <MessageBox onClose={() => setShowPanel(false)} /> */}
     </div>
   );
 }

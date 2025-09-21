@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, shell } from 'electron';
+import { app, BrowserWindow, ipcMain, shell, screen } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
 const fs = require("fs");
@@ -20,6 +20,7 @@ let mainWindow;
 let avatarWindow = null;
 let messageBoxWindow = null;
 let informWindow = null;
+let messagePanelWindow = null;
 // informWindow 建立
 const createInformWindow = (message = "") => {
   if (informWindow) {
@@ -81,16 +82,6 @@ const createInformWindow = (message = "") => {
     informWindow = null;
   });
 
-  // 初始穿透
-  informWindow.setIgnoreMouseEvents(true, { forward: true });
-
-  informWindow.webContents.once('dom-ready', () => {
-    informWindow.webContents.send('message-received', message);
-    setTimeout(() => {
-      setupInformClickRegion();
-    }, 100);
-  });
-
   // 若 messageBox 存在，放在 messageBox 左側
   // if (messageBoxWindow) {
   //   updateInformPosition();
@@ -146,19 +137,6 @@ const updateInformPosition = () => {
   }
 };
 
-// inform page 點擊區域設置
-const setupInformClickRegion = () => {
-  if (informWindow && !informWindow.isDestroyed()) {
-    informWindow.setIgnoreMouseEvents(true, { forward: true });
-    informWindow.webContents.on('ipc-message', (event, channel) => {
-      if (channel === 'mouse-enter-inform') {
-        informWindow.setIgnoreMouseEvents(false);
-      } else if (channel === 'mouse-leave-inform') {
-        informWindow.setIgnoreMouseEvents(true, { forward: true });
-      }
-    });
-  }
-};
 // IPC handlers for inform window
 ipcMain.handle('show-inform', () => {
   if (informWindow && !informWindow.isDestroyed()) {
@@ -227,9 +205,18 @@ const createAvatarWindow = () => {
     return;
   }
 
+  // 取得螢幕資訊
+  const display = screen.getPrimaryDisplay();
+  const { x: screenX, y: screenY, width: screenW } = display.workArea;
+  const avatarW = 80, avatarH = 80;
+  const marginX = 16; // 距離螢幕邊緣的距離
+  const marginY = 200; // 距離螢幕邊緣的距離
+
   avatarWindow = new BrowserWindow({
-    width: 80,
-    height: 80,
+    width: avatarW,
+    height: avatarH,
+    x: screenX + screenW - avatarW - marginX, // 右上角
+    y: screenY + marginY,
     frame: false,
     transparent: true,
     alwaysOnTop: true,
@@ -243,30 +230,18 @@ const createAvatarWindow = () => {
     },
   });
 
-  // // 加載avatar窗口 - 使用主窗口的開發服務器
-  // if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-  //   avatarWindow.loadURL(`${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/avatar.html`);
-  // } else {
-  //   avatarWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/avatar.html`));
-  // }
   loadAvatarImage(); // 使用預設圖片
 
   avatarWindow.on('closed', () => {
     avatarWindow = null;
-    // 通知主窗口 avatar 已關閉
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send('avatar-closed');
     }
   });
 
-  // 監聽 Avatar 窗口移動，同步更新 MessageBox 位置
   avatarWindow.on('moved', () => {
     updateMessageBoxPosition();
-    updateInformPosition();
   });
-
-  // 設置窗口可拖動
-  avatarWindow.setIgnoreMouseEvents(false);
 };
 
 const closeAvatarWindow = () => {
@@ -284,6 +259,7 @@ const closeAvatarWindow = () => {
 };
 
 const createMessageBoxWindow = (message = "你好！我是你的桌面小助手 🐱") => {
+  console.log("Creating MessageBox window with message:", message);
   if (messageBoxWindow) {
     messageBoxWindow.show();
     // 發送新訊息到現有窗口
@@ -317,23 +293,11 @@ const createMessageBoxWindow = (message = "你好！我是你的桌面小助手 
   messageBoxWindow.on('closed', () => {
     messageBoxWindow = null;
   });
-
-  // 設置初始鼠標穿透 - 整個窗口都穿透點擊
-  messageBoxWindow.setIgnoreMouseEvents(true, { forward: true });
-
-  // 窗口加載完成後發送訊息並設置點擊區域
-  messageBoxWindow.webContents.once('dom-ready', () => {
-    messageBoxWindow.webContents.send('message-received', message);
-    // 設置只有對話框區域可以點擊，其他區域穿透
-    setTimeout(() => {
-      setupMessageBoxClickRegion();
-    }, 100);
-  });
-
+  
   // 如果 avatar 窗口存在，將 MessageBox 放在 avatar 左邊
   if (avatarWindow) {
     updateMessageBoxPosition();
-    updateInformPosition();
+    updateMessagePanelPosition();
   }
 };
 
@@ -343,6 +307,49 @@ const closeMessageBoxWindow = () => {
     messageBoxWindow = null;
     // 關閉 messageBox 時自動關閉 inform
     closeInformWindow();
+  }
+};
+
+const updateMessagePanelPosition = () => {
+  if (messagePanelWindow && !messagePanelWindow.isDestroyed() && avatarWindow && !avatarWindow.isDestroyed()) {
+    const avatarBounds = messagePanelWindow.getBounds();
+    const currentBounds = messagePanelWindow.getBounds();
+    const targetBounds = {
+      x: avatarBounds.x - 310, // MessageBox 寬度 (300) + 10px 間距
+      y: avatarBounds.y,
+      width: 300,
+      height: 300  // 增加高度
+    };
+
+    // 添加動畫效果：使用 requestAnimationFrame 實現平滑移動
+    const animatePosition = (startTime) => {
+      const duration = 200; // 動畫持續時間 200ms
+      const progress = Math.min((Date.now() - startTime) / duration, 1);
+      
+      // 使用 easeOutCubic 緩動函數
+      const easeProgress = 1 - Math.pow(1 - progress, 3);
+      
+      const currentX = currentBounds.x + (targetBounds.x - currentBounds.x) * easeProgress;
+      const currentY = currentBounds.y + (targetBounds.y - currentBounds.y) * easeProgress;
+      
+      if (messagePanelWindow && !messagePanelWindow.isDestroyed()) {
+        messagePanelWindow.setBounds({
+          x: Math.round(currentX),
+          y: Math.round(currentY),
+          width: targetBounds.width,
+          height: targetBounds.height
+        });
+        
+        if (progress < 1) {
+          setTimeout(() => animatePosition(startTime), 16); // 約 60fps
+        }
+      }
+    };
+    
+    // 只有當位置實際發生變化時才執行動畫
+    if (Math.abs(currentBounds.x - targetBounds.x) > 2 || Math.abs(currentBounds.y - targetBounds.y) > 2) {
+      animatePosition(Date.now());
+    }
   }
 };
 
@@ -389,24 +396,74 @@ const updateMessageBoxPosition = () => {
   }
 };
 
-// 設定 MessageBox 窗口的點擊區域
-const setupMessageBoxClickRegion = () => {
-  if (messageBoxWindow && !messageBoxWindow.isDestroyed()) {
-    // 預設穿透所有點擊
-    messageBoxWindow.setIgnoreMouseEvents(true, { forward: true });
-    
-    // 監聽來自 renderer 的訊息來切換點擊狀態
-    messageBoxWindow.webContents.on('ipc-message', (event, channel) => {
-      if (channel === 'mouse-enter-message') {
-        // 滑鼠進入對話框區域，禁用穿透
-        messageBoxWindow.setIgnoreMouseEvents(false);
-      } else if (channel === 'mouse-leave-message') {
-        // 滑鼠離開對話框區域，啟用穿透
-        messageBoxWindow.setIgnoreMouseEvents(true, { forward: true });
-      }
+// 建立 messagePanelWindow
+const createMessagePanelWindow = (message = "") => {
+  console.log("Creating MessagePanel window with message:", message);
+  if (messagePanelWindow) {
+    messagePanelWindow.show();
+    // 發送新訊息到現有窗口
+    messagePanelWindow.webContents.send('message-received', message);
+    return;
+  }
+
+  messagePanelWindow = new BrowserWindow({
+    width: 300,
+    height: 300,
+    frame: false,
+    transparent: true,
+    alwaysOnTop: true,
+    skipTaskbar: true,
+    resizable: false,
+    hasShadow: false,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js'),
+    },
+  });
+
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+    messagePanelWindow.loadURL(`${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/messagePanel.html`);
+  } else {
+    messagePanelWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/messagePanel.html`));
+  }
+
+  messagePanelWindow.on('closed', () => {
+    messagePanelWindow = null;
+  });
+  // 可根據 avatarWindow 位置定位
+  if (avatarWindow) {
+    const av = avatarWindow.getBounds();
+    messagePanelWindow.setBounds({
+      x: av.x + av.width + 20,
+      y: av.y,
+      width: 400,
+      height: 200,
     });
   }
 };
+
+const closeMessagePanelWindow = () => {
+  if (messagePanelWindow) {
+    messagePanelWindow.close();
+    messagePanelWindow = null;
+  }
+};
+
+// IPC handlers for MessagePanel window
+ipcMain.handle('show-message-panel', (event, message) => {
+  createMessagePanelWindow(message);
+  return { success: true };
+});
+
+ipcMain.handle('close-message-panel', () => {
+  closeMessagePanelWindow();
+  return { success: true };
+});
+
+ipcMain.handle('is-message-panel-visible', () => {
+  return { visible: messagePanelWindow !== null && !messagePanelWindow.isDestroyed() };
+});
 
 // 定期從後端服務器獲取標籤頁數據
 let tabsUpdateTimer = null;
@@ -589,9 +646,9 @@ ipcMain.handle('open-external-url', async (_event, url) => {
 
 function resolveNotebookDir() {
   const candidates = [
-    path.join(app.getAppPath(), "public", "notebook"),
-    path.join(process.resourcesPath || "", "public", "notebook"),
-    path.join(__dirname, "public", "notebook"),
+    path.join(app.getAppPath(), "src", "data", "note"),
+    path.join(process.resourcesPath || "", "src", "data", "note"),
+    path.join(__dirname, "src", "data", "note"),
   ];
   for (const p of candidates) {
     try { fs.accessSync(p, fs.constants.R_OK); return p; } catch {}
@@ -603,8 +660,8 @@ function resolveNotebookDir() {
 function extractNotePairs(data) {
   const out = [];
   const pushCandidate = (obj) => {
-    if (obj && typeof obj === "object" && obj.keywords != null && obj.url != null) {
-      out.push({ keywords: String(obj.keywords), url: String(obj.url) });
+    if (obj && typeof obj === "object" && obj.Keyword != null && obj.url != null) {
+      out.push({ keywords: String(obj.Keyword), url: String(obj.url) });
     }
   };
 
@@ -633,6 +690,7 @@ ipcMain.handle("notebook:list", async () => {
           keywords: p.keywords,
           url: p.url,
         });
+        console.log(p.keywords, p.url);
       });
     } catch (e) {
       console.error("[notebook:list] 讀取失敗:", filename, e);

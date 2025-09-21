@@ -1,7 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import './index.css';
 import llmService from './services/llmService';
 import { getAuthHeader } from './services/apikey'
+import noteData from "./data/note/FwOTs4UxQS4.json";
+import audioPlaybackService from "./services/audioPlaybackService";
 
 const MODEL = import.meta.env.VITE_STT_MODEL || 'whisper-1'
 const LANGUAGE = import.meta.env.VITE_LANGUAGE || 'zh'
@@ -20,7 +22,7 @@ function pickSupportedMime() {
   return ''
 }
 
-const MessageBox = ({ onStart, onSend }) => {
+const MessageBox = ({ isNormalMode = true, onClose, onStart, youtube_id }) => {
   const [message, setMessage] = useState("你好！我是你的桌面小助手🐱");
   const [running, setRunning] = useState(false);
   const [inputText, setInputText] = useState('');
@@ -40,12 +42,27 @@ const MessageBox = ({ onStart, onSend }) => {
   // 直接綁定 API Key
   const userKey = ""; // REMOVED: Do not hardcode secrets. Use environment variables or secure storage.
 
+  // 用 ref 記錄目前模擬的時間
+  const simulatedTimeRef = useRef(0);
+
+  // 關閉時，模擬將 time 推進到下一個 keyword 的時間
   const handleCloseClick = () => {
+    if (!isNormalMode) {
+      // 找到下一個 keyword
+      const currentTime = simulatedTimeRef.current;
+      const next = noteData.find(
+        (item) => typeof item.time === "number" && item.time > currentTime
+      );
+      if (next) {
+        simulatedTimeRef.current = next.time;
+      }
+    }
     if (window.electronAPI && window.electronAPI.closeMessageBox) {
       window.electronAPI.closeMessageBox();
     } else {
       window.close();
     }
+    if (typeof onClose === "function") onClose();
   };
 
   const handleInformClick = () => {
@@ -63,7 +80,6 @@ const MessageBox = ({ onStart, onSend }) => {
       window.electronAPI.sendMessage('mouse-leave-message');
     }
   };
-
 
   async function startRecording() {
       setMessage("錄音中...");
@@ -116,7 +132,6 @@ const MessageBox = ({ onStart, onSend }) => {
       }
     }
 
-
   const handleStartClick = () => {
     if (running) return;
     setRunning(true);
@@ -140,8 +155,8 @@ const MessageBox = ({ onStart, onSend }) => {
     }
   };
 
-const handleSend = async () => {
-  if (!inputText.trim() || isLoading) return;
+  const handleSend = async () => {
+    if (!inputText.trim() || isLoading) return;
 
     const message = inputText.trim();
     setInputText('');
@@ -163,7 +178,7 @@ const handleSend = async () => {
     } finally {
       setIsLoading(false);
     }
-};
+  }; 
 
   const handleKeyDown = (e) => {
     // Enter 發送，Shift+Enter 換行
@@ -188,7 +203,46 @@ const handleSend = async () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (!isNormalMode) {
+      // 每次組件 mount 都執行
+      const currentTime = simulatedTimeRef.current;
+      const next = noteData.find(
+        (item) => typeof item.time === "number" && item.time > currentTime
+      );
+      if (next) {
+        setMessage(next.Keyword);
+      } else {
+        setMessage("（已無下一個關鍵字）");
+      }
+    }
+    // eslint-disable-next-line
+  }, []); // 只在 mount 時執行
+
   const lines = message.split('\n');
+
+  if (!isNormalMode) {
+    // 精簡模式：只顯示 message 和關閉按鈕
+    return (
+      <div className="w-full h-full flex items-center justify-center overflow-hidden">
+        <div className="message-box p-4 rounded-lg shadow-md relative flex flex-col"
+          style={{ background: 'rgba(51, 51, 51, 0.75)', color: '#ffffff' }}>
+          <button
+            onClick={handleCloseClick}
+            className="btn btn-xs btn-ghost text-white absolute right-3 top-3"
+            style={{ WebkitAppRegion: 'no-drag' }}
+            title="Close"
+          >
+            ❌
+          </button>
+          <div className="text-base text-white leading-relaxed overflow-auto mb-3 flex-1 mt-5"
+            style={{ maxHeight: '100%', whiteSpace: 'pre-wrap', textAlign: "center", fontSize: 24 }}>
+            {message}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full h-full flex items-center justify-center overflow-hidden">

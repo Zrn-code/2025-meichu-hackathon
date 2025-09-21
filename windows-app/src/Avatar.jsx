@@ -44,6 +44,7 @@ const Avatar = ({ onClick, src }) => {
             padding: 0,
             zIndex: 2,
             cursor: 'pointer',
+            WebkitAppRegion: 'no-drag',
           }}
         >
           <img

@@ -1,0 +1,1505 @@
+{
+  "video_id": "FwOTs4UxQS4",
+  "video_url": "https://www.youtube.com/watch?v=FwOTs4UxQS4",
+  "video_title": "AI Agents, Clearly Explained",
+  "transcript_type": "supadata_api",
+  "transcript_data": {
+    "lang": "en",
+    "availableLangs": [
+      "en"
+    ],
+    "content": [
+      {
+        "lang": "en",
+        "text": "AI. AI. AI. AI. AI.",
+        "offset": 3760,
+        "duration": 6879
+      },
+      {
+        "lang": "en",
+        "text": "AI. You know, more agentic. Agentic",
+        "offset": 7960,
+        "duration": 4920
+      },
+      {
+        "lang": "en",
+        "text": "capabilities. An AI agent. Agents.",
+        "offset": 10639,
+        "duration": 4801
+      },
+      {
+        "lang": "en",
+        "text": "Agentic workflows. Agents. Agents.",
+        "offset": 12880,
+        "duration": 6159
+      },
+      {
+        "lang": "en",
+        "text": "Agent. Agent. Agent. Agent. Agentic.",
+        "offset": 15440,
+        "duration": 5440
+      },
+      {
+        "lang": "en",
+        "text": "All right. Most explanations of AI",
+        "offset": 19039,
+        "duration": 4721
+      },
+      {
+        "lang": "en",
+        "text": "agents is either too technical or too",
+        "offset": 20880,
+        "duration": 5200
+      },
+      {
+        "lang": "en",
+        "text": "basic. This video is meant for people",
+        "offset": 23760,
+        "duration": 4640
+      },
+      {
+        "lang": "en",
+        "text": "like myself. You have zero technical",
+        "offset": 26080,
+        "duration": 4840
+      },
+      {
+        "lang": "en",
+        "text": "background, but you use AI tools",
+        "offset": 28400,
+        "duration": 5200
+      },
+      {
+        "lang": "en",
+        "text": "regularly and you want to learn just",
+        "offset": 30920,
+        "duration": 5479
+      },
+      {
+        "lang": "en",
+        "text": "enough about AI agents to see how it",
+        "offset": 33600,
+        "duration": 5279
+      },
+      {
+        "lang": "en",
+        "text": "affects you. In this video, we'll follow",
+        "offset": 36399,
+        "duration": 5201
+      },
+      {
+        "lang": "en",
+        "text": "a simple one, two, three learning path",
+        "offset": 38879,
+        "duration": 5041
+      },
+      {
+        "lang": "en",
+        "text": "by building on concepts you already",
+        "offset": 41600,
+        "duration": 5200
+      },
+      {
+        "lang": "en",
+        "text": "understand like chatbt and then moving",
+        "offset": 43920,
+        "duration": 5720
+      },
+      {
+        "lang": "en",
+        "text": "on to AI workflows and then finally AI",
+        "offset": 46800,
+        "duration": 6079
+      },
+      {
+        "lang": "en",
+        "text": "agents. All the while using examples you",
+        "offset": 49640,
+        "duration": 5800
+      },
+      {
+        "lang": "en",
+        "text": "will actually encounter in real life.",
+        "offset": 52879,
+        "duration": 4081
+      },
+      {
+        "lang": "en",
+        "text": "And believe me when I tell you those",
+        "offset": 55440,
+        "duration": 3360
+      },
+      {
+        "lang": "en",
+        "text": "intimidating terms you see everywhere",
+        "offset": 56960,
+        "duration": 5439
+      },
+      {
+        "lang": "en",
+        "text": "like rag, rag, or react, they're a lot",
+        "offset": 58800,
+        "duration": 5439
+      },
+      {
+        "lang": "en",
+        "text": "simpler than you think. Let's get",
+        "offset": 62399,
+        "duration": 3441
+      },
+      {
+        "lang": "en",
+        "text": "started. Kicking things off at level",
+        "offset": 64239,
+        "duration": 4161
+      },
+      {
+        "lang": "en",
+        "text": "one, large language models. Popular AI",
+        "offset": 65840,
+        "duration": 4959
+      },
+      {
+        "lang": "en",
+        "text": "chatbots like CHBT, Google Gemini, and",
+        "offset": 68400,
+        "duration": 5920
+      },
+      {
+        "lang": "en",
+        "text": "Claude are applications built on top of",
+        "offset": 70799,
+        "duration": 6241
+      },
+      {
+        "lang": "en",
+        "text": "large language models, LLMs, and they're",
+        "offset": 74320,
+        "duration": 5119
+      },
+      {
+        "lang": "en",
+        "text": "fantastic at generating and editing",
+        "offset": 77040,
+        "duration": 4800
+      },
+      {
+        "lang": "en",
+        "text": "text. Here's a simple visualization.",
+        "offset": 79439,
+        "duration": 5040
+      },
+      {
+        "lang": "en",
+        "text": "You, the human, provides an input and",
+        "offset": 81840,
+        "duration": 5760
+      },
+      {
+        "lang": "en",
+        "text": "the LLM produces an output based on its",
+        "offset": 84479,
+        "duration": 4881
+      },
+      {
+        "lang": "en",
+        "text": "training data. For example, if I were to",
+        "offset": 87600,
+        "duration": 3839
+      },
+      {
+        "lang": "en",
+        "text": "ask Chachi BT to draft an email",
+        "offset": 89360,
+        "duration": 4560
+      },
+      {
+        "lang": "en",
+        "text": "requesting a coffee chat, my prompt is",
+        "offset": 91439,
+        "duration": 4801
+      },
+      {
+        "lang": "en",
+        "text": "the input and the resulting email that's",
+        "offset": 93920,
+        "duration": 3680
+      },
+      {
+        "lang": "en",
+        "text": "way more polite than I would ever be in",
+        "offset": 96240,
+        "duration": 4400
+      },
+      {
+        "lang": "en",
+        "text": "real life is the output. So far so good",
+        "offset": 97600,
+        "duration": 5839
+      },
+      {
+        "lang": "en",
+        "text": "right? Simple stuff. But what if I asked",
+        "offset": 100640,
+        "duration": 6720
+      },
+      {
+        "lang": "en",
+        "text": "Chachi BT when my next coffee chat is?",
+        "offset": 103439,
+        "duration": 5921
+      },
+      {
+        "lang": "en",
+        "text": "Even without seeing the response, both",
+        "offset": 107360,
+        "duration": 4719
+      },
+      {
+        "lang": "en",
+        "text": "you and I know Chachi PT is gonna fail",
+        "offset": 109360,
+        "duration": 4240
+      },
+      {
+        "lang": "en",
+        "text": "because it doesn't know that",
+        "offset": 112079,
+        "duration": 4161
+      },
+      {
+        "lang": "en",
+        "text": "information. It doesn't have access to",
+        "offset": 113600,
+        "duration": 4720
+      },
+      {
+        "lang": "en",
+        "text": "my calendar. This highlights two key",
+        "offset": 116240,
+        "duration": 4640
+      },
+      {
+        "lang": "en",
+        "text": "traits of large language models. First",
+        "offset": 118320,
+        "duration": 4479
+      },
+      {
+        "lang": "en",
+        "text": "despite being trained on vast amounts of",
+        "offset": 120880,
+        "duration": 4000
+      },
+      {
+        "lang": "en",
+        "text": "data, they have limited knowledge of",
+        "offset": 122799,
+        "duration": 4241
+      },
+      {
+        "lang": "en",
+        "text": "proprietary information like our",
+        "offset": 124880,
+        "duration": 4400
+      },
+      {
+        "lang": "en",
+        "text": "personal information or internal company",
+        "offset": 127040,
+        "duration": 5680
+      },
+      {
+        "lang": "en",
+        "text": "data. Second, LLMs are passive. They",
+        "offset": 129280,
+        "duration": 5520
+      },
+      {
+        "lang": "en",
+        "text": "wait for our prompt and then respond.",
+        "offset": 132720,
+        "duration": 4320
+      },
+      {
+        "lang": "en",
+        "text": "Right? Keep these two traits in mind",
+        "offset": 134800,
+        "duration": 4400
+      },
+      {
+        "lang": "en",
+        "text": "moving forward. Moving to level two, AI",
+        "offset": 137040,
+        "duration": 4880
+      },
+      {
+        "lang": "en",
+        "text": "workflows. Let's build on our example.",
+        "offset": 139200,
+        "duration": 5920
+      },
+      {
+        "lang": "en",
+        "text": "What if I, a human, told the LM, \"Every",
+        "offset": 141920,
+        "duration": 4959
+      },
+      {
+        "lang": "en",
+        "text": "time I ask about a personal event",
+        "offset": 145120,
+        "duration": 4080
+      },
+      {
+        "lang": "en",
+        "text": "perform a search query and fetch data",
+        "offset": 146879,
+        "duration": 4720
+      },
+      {
+        "lang": "en",
+        "text": "from my Google calendar before providing",
+        "offset": 149200,
+        "duration": 4160
+      },
+      {
+        "lang": "en",
+        "text": "a response.\" With this logic",
+        "offset": 151599,
+        "duration": 4000
+      },
+      {
+        "lang": "en",
+        "text": "implemented, the next time I ask, \"When",
+        "offset": 153360,
+        "duration": 4800
+      },
+      {
+        "lang": "en",
+        "text": "is my coffee chat with Elon Husky?\" I'll",
+        "offset": 155599,
+        "duration": 4720
+      },
+      {
+        "lang": "en",
+        "text": "get the correct answer because the LLM",
+        "offset": 158160,
+        "duration": 4480
+      },
+      {
+        "lang": "en",
+        "text": "will now first go into my Google",
+        "offset": 160319,
+        "duration": 5280
+      },
+      {
+        "lang": "en",
+        "text": "calendar to find that information. But",
+        "offset": 162640,
+        "duration": 5360
+      },
+      {
+        "lang": "en",
+        "text": "here's where it gets tricky. What if my",
+        "offset": 165599,
+        "duration": 4801
+      },
+      {
+        "lang": "en",
+        "text": "next follow-up question is, \"What will",
+        "offset": 168000,
+        "duration": 5280
+      },
+      {
+        "lang": "en",
+        "text": "the weather be like that day?\" The LM",
+        "offset": 170400,
+        "duration": 5040
+      },
+      {
+        "lang": "en",
+        "text": "will now fail at answering the query",
+        "offset": 173280,
+        "duration": 3920
+      },
+      {
+        "lang": "en",
+        "text": "because the path we told the LM to",
+        "offset": 175440,
+        "duration": 4799
+      },
+      {
+        "lang": "en",
+        "text": "follow is to always search my Google",
+        "offset": 177200,
+        "duration": 5039
+      },
+      {
+        "lang": "en",
+        "text": "calendar, which does not have",
+        "offset": 180239,
+        "duration": 4561
+      },
+      {
+        "lang": "en",
+        "text": "information about the weather. This is a",
+        "offset": 182239,
+        "duration": 5201
+      },
+      {
+        "lang": "en",
+        "text": "fundamental trait of AI workflows. They",
+        "offset": 184800,
+        "duration": 6159
+      },
+      {
+        "lang": "en",
+        "text": "can only follow predefined paths set by",
+        "offset": 187440,
+        "duration": 5200
+      },
+      {
+        "lang": "en",
+        "text": "humans. And if you want to get",
+        "offset": 190959,
+        "duration": 4481
+      },
+      {
+        "lang": "en",
+        "text": "technical, this path is also called the",
+        "offset": 192640,
+        "duration": 5040
+      },
+      {
+        "lang": "en",
+        "text": "control logic. Pushing my example",
+        "offset": 195440,
+        "duration": 4640
+      },
+      {
+        "lang": "en",
+        "text": "further, what if I added more steps into",
+        "offset": 197680,
+        "duration": 4400
+      },
+      {
+        "lang": "en",
+        "text": "the workflow by allowing the LM to",
+        "offset": 200080,
+        "duration": 4320
+      },
+      {
+        "lang": "en",
+        "text": "access the weather via an API and then",
+        "offset": 202080,
+        "duration": 4879
+      },
+      {
+        "lang": "en",
+        "text": "just for fun use a text to audio model",
+        "offset": 204400,
+        "duration": 4559
+      },
+      {
+        "lang": "en",
+        "text": "to speak the answer. The weather",
+        "offset": 206959,
+        "duration": 4640
+      },
+      {
+        "lang": "en",
+        "text": "forecast for seeing Elon Husky is sunny",
+        "offset": 208959,
+        "duration": 4721
+      },
+      {
+        "lang": "en",
+        "text": "with a chance of being a good boy.",
+        "offset": 211599,
+        "duration": 4161
+      },
+      {
+        "lang": "en",
+        "text": "Here's the thing. No matter how many",
+        "offset": 213680,
+        "duration": 5520
+      },
+      {
+        "lang": "en",
+        "text": "steps we add, this is still just an AI",
+        "offset": 215760,
+        "duration": 5839
+      },
+      {
+        "lang": "en",
+        "text": "workflow. Even if there were hundreds or",
+        "offset": 219200,
+        "duration": 5679
+      },
+      {
+        "lang": "en",
+        "text": "thousands of steps, if a human is the",
+        "offset": 221599,
+        "duration": 6321
+      },
+      {
+        "lang": "en",
+        "text": "decision maker, there is no AI agent",
+        "offset": 224879,
+        "duration": 5041
+      },
+      {
+        "lang": "en",
+        "text": "involvement. Pro tip: retrieval",
+        "offset": 227920,
+        "duration": 4720
+      },
+      {
+        "lang": "en",
+        "text": "augmented generation or rag is a fancy",
+        "offset": 229920,
+        "duration": 4640
+      },
+      {
+        "lang": "en",
+        "text": "term that's thrown around a lot. In",
+        "offset": 232640,
+        "duration": 3840
+      },
+      {
+        "lang": "en",
+        "text": "simple terms, rag is a process that",
+        "offset": 234560,
+        "duration": 4239
+      },
+      {
+        "lang": "en",
+        "text": "helps AI models look things up before",
+        "offset": 236480,
+        "duration": 4160
+      },
+      {
+        "lang": "en",
+        "text": "they answer, like accessing my calendar",
+        "offset": 238799,
+        "duration": 4241
+      },
+      {
+        "lang": "en",
+        "text": "or the weather service. Essentially, Rag",
+        "offset": 240640,
+        "duration": 5440
+      },
+      {
+        "lang": "en",
+        "text": "is just a type of AI workflow. By the",
+        "offset": 243040,
+        "duration": 4720
+      },
+      {
+        "lang": "en",
+        "text": "way, I have a free AI toolkit that cuts",
+        "offset": 246080,
+        "duration": 3120
+      },
+      {
+        "lang": "en",
+        "text": "through the noise and helps you master",
+        "offset": 247760,
+        "duration": 3199
+      },
+      {
+        "lang": "en",
+        "text": "essential AI tools and workflows. I'll",
+        "offset": 249200,
+        "duration": 3679
+      },
+      {
+        "lang": "en",
+        "text": "leave a link to that down below. Here's",
+        "offset": 250959,
+        "duration": 4000
+      },
+      {
+        "lang": "en",
+        "text": "a real world example. Following Helena",
+        "offset": 252879,
+        "duration": 4241
+      },
+      {
+        "lang": "en",
+        "text": "Louu's amazing tutorial, I created a",
+        "offset": 254959,
+        "duration": 4960
+      },
+      {
+        "lang": "en",
+        "text": "simple AI workflow using make.com. Here",
+        "offset": 257120,
+        "duration": 4480
+      },
+      {
+        "lang": "en",
+        "text": "you can see that first I'm using Google",
+        "offset": 259919,
+        "duration": 3521
+      },
+      {
+        "lang": "en",
+        "text": "Sheets to do something. Specifically",
+        "offset": 261600,
+        "duration": 4240
+      },
+      {
+        "lang": "en",
+        "text": "I'm compiling links to news articles in",
+        "offset": 263440,
+        "duration": 4560
+      },
+      {
+        "lang": "en",
+        "text": "a Google sheet. And this is that Google",
+        "offset": 265840,
+        "duration": 5200
+      },
+      {
+        "lang": "en",
+        "text": "sheet. Second, I'm using Perplexity to",
+        "offset": 268000,
+        "duration": 6479
+      },
+      {
+        "lang": "en",
+        "text": "summarize those news articles. Then",
+        "offset": 271040,
+        "duration": 5760
+      },
+      {
+        "lang": "en",
+        "text": "using Claude and using a prompt that I",
+        "offset": 274479,
+        "duration": 4160
+      },
+      {
+        "lang": "en",
+        "text": "wrote, I'm asking Claude to draft a",
+        "offset": 276800,
+        "duration": 5520
+      },
+      {
+        "lang": "en",
+        "text": "LinkedIn and Instagram post. Finally, I",
+        "offset": 278639,
+        "duration": 5921
+      },
+      {
+        "lang": "en",
+        "text": "can schedule this to run automatically",
+        "offset": 282320,
+        "duration": 4640
+      },
+      {
+        "lang": "en",
+        "text": "every day at 8 a.m. As you can see, this",
+        "offset": 284560,
+        "duration": 4800
+      },
+      {
+        "lang": "en",
+        "text": "is an AI workflow because it follows a",
+        "offset": 286960,
+        "duration": 5920
+      },
+      {
+        "lang": "en",
+        "text": "predefined path set by me. Step one, you",
+        "offset": 289360,
+        "duration": 6080
+      },
+      {
+        "lang": "en",
+        "text": "do this. Step two, you do this. Step",
+        "offset": 292880,
+        "duration": 4800
+      },
+      {
+        "lang": "en",
+        "text": "three, you do this. And finally",
+        "offset": 295440,
+        "duration": 4400
+      },
+      {
+        "lang": "en",
+        "text": "remember to run daily at 8 am. One last",
+        "offset": 297680,
+        "duration": 4720
+      },
+      {
+        "lang": "en",
+        "text": "thing, if I test this workflow and I",
+        "offset": 299840,
+        "duration": 5680
+      },
+      {
+        "lang": "en",
+        "text": "don't like the final output of the",
+        "offset": 302400,
+        "duration": 6000
+      },
+      {
+        "lang": "en",
+        "text": "LinkedIn post, for example, as you can",
+        "offset": 305520,
+        "duration": 4480
+      },
+      {
+        "lang": "en",
+        "text": "see right here, uh, it's not funny",
+        "offset": 308400,
+        "duration": 3200
+      },
+      {
+        "lang": "en",
+        "text": "enough and I'm naturally hilarious",
+        "offset": 310000,
+        "duration": 6120
+      },
+      {
+        "lang": "en",
+        "text": "right? I'd have to manually go back and",
+        "offset": 311600,
+        "duration": 8720
+      },
+      {
+        "lang": "en",
+        "text": "rewrite the prompt for Claude. Okay? And",
+        "offset": 316120,
+        "duration": 7000
+      },
+      {
+        "lang": "en",
+        "text": "this trial and error iteration is",
+        "offset": 320320,
+        "duration": 5439
+      },
+      {
+        "lang": "en",
+        "text": "currently being done by me, a human. So",
+        "offset": 323120,
+        "duration": 4240
+      },
+      {
+        "lang": "en",
+        "text": "keep that in mind moving forward. All",
+        "offset": 325759,
+        "duration": 3521
+      },
+      {
+        "lang": "en",
+        "text": "right, level three, AI agents.",
+        "offset": 327360,
+        "duration": 4160
+      },
+      {
+        "lang": "en",
+        "text": "Continuing the make.com example, let's",
+        "offset": 329280,
+        "duration": 4000
+      },
+      {
+        "lang": "en",
+        "text": "break down what I've been doing so far",
+        "offset": 331520,
+        "duration": 4480
+      },
+      {
+        "lang": "en",
+        "text": "as the human decision maker. With the",
+        "offset": 333280,
+        "duration": 4400
+      },
+      {
+        "lang": "en",
+        "text": "goal of creating social media posts",
+        "offset": 336000,
+        "duration": 3919
+      },
+      {
+        "lang": "en",
+        "text": "based off of news articles, I need to do",
+        "offset": 337680,
+        "duration": 5600
+      },
+      {
+        "lang": "en",
+        "text": "two things. First, reason or think about",
+        "offset": 339919,
+        "duration": 4881
+      },
+      {
+        "lang": "en",
+        "text": "the best approach. I need to first",
+        "offset": 343280,
+        "duration": 3120
+      },
+      {
+        "lang": "en",
+        "text": "compile the news articles, then",
+        "offset": 344800,
+        "duration": 3520
+      },
+      {
+        "lang": "en",
+        "text": "summarize them, then write the final",
+        "offset": 346400,
+        "duration": 5040
+      },
+      {
+        "lang": "en",
+        "text": "posts. Second, take action using tools.",
+        "offset": 348320,
+        "duration": 5280
+      },
+      {
+        "lang": "en",
+        "text": "I need to find and link to those news",
+        "offset": 351440,
+        "duration": 4319
+      },
+      {
+        "lang": "en",
+        "text": "articles in Google Sheets. Use",
+        "offset": 353600,
+        "duration": 4560
+      },
+      {
+        "lang": "en",
+        "text": "Perplexity for real-time summarization",
+        "offset": 355759,
+        "duration": 4481
+      },
+      {
+        "lang": "en",
+        "text": "and then claw for copyrightiting. So",
+        "offset": 358160,
+        "duration": 3599
+      },
+      {
+        "lang": "en",
+        "text": "and this is the most important sentence",
+        "offset": 360240,
+        "duration": 4320
+      },
+      {
+        "lang": "en",
+        "text": "in this entire video. The one massive",
+        "offset": 361759,
+        "duration": 4961
+      },
+      {
+        "lang": "en",
+        "text": "change that has to happen in order for",
+        "offset": 364560,
+        "duration": 5120
+      },
+      {
+        "lang": "en",
+        "text": "this AI workflow to become an AI agent",
+        "offset": 366720,
+        "duration": 6319
+      },
+      {
+        "lang": "en",
+        "text": "is for me, the human decision maker, to",
+        "offset": 369680,
+        "duration": 6720
+      },
+      {
+        "lang": "en",
+        "text": "be replaced by an LLM. In other words",
+        "offset": 373039,
+        "duration": 6081
+      },
+      {
+        "lang": "en",
+        "text": "the AI agent must reason. What's the",
+        "offset": 376400,
+        "duration": 4239
+      },
+      {
+        "lang": "en",
+        "text": "most efficient way to compile these news",
+        "offset": 379120,
+        "duration": 3440
+      },
+      {
+        "lang": "en",
+        "text": "articles? Should I copy and paste each",
+        "offset": 380639,
+        "duration": 4161
+      },
+      {
+        "lang": "en",
+        "text": "article into a word document? No, it's",
+        "offset": 382560,
+        "duration": 3840
+      },
+      {
+        "lang": "en",
+        "text": "probably easier to compile links to",
+        "offset": 384800,
+        "duration": 3519
+      },
+      {
+        "lang": "en",
+        "text": "those articles and then use another tool",
+        "offset": 386400,
+        "duration": 4560
+      },
+      {
+        "lang": "en",
+        "text": "to fetch the data. Yes, that makes more",
+        "offset": 388319,
+        "duration": 5921
+      },
+      {
+        "lang": "en",
+        "text": "sense. The AI agent must act, aka do",
+        "offset": 390960,
+        "duration": 6079
+      },
+      {
+        "lang": "en",
+        "text": "things via tools. Should I use Microsoft",
+        "offset": 394240,
+        "duration": 4880
+      },
+      {
+        "lang": "en",
+        "text": "Word to compile links? No. Inserting",
+        "offset": 397039,
+        "duration": 4000
+      },
+      {
+        "lang": "en",
+        "text": "links directly into rows is way more",
+        "offset": 399120,
+        "duration": 4960
+      },
+      {
+        "lang": "en",
+        "text": "efficient. What about Excel? M. So the",
+        "offset": 401039,
+        "duration": 4401
+      },
+      {
+        "lang": "en",
+        "text": "user has already connected their Google",
+        "offset": 404080,
+        "duration": 3360
+      },
+      {
+        "lang": "en",
+        "text": "account with make.com. So Google Sheets",
+        "offset": 405440,
+        "duration": 4319
+      },
+      {
+        "lang": "en",
+        "text": "is a better option. Pro tip. Because of",
+        "offset": 407440,
+        "duration": 4400
+      },
+      {
+        "lang": "en",
+        "text": "this, the most common configuration for",
+        "offset": 409759,
+        "duration": 5521
+      },
+      {
+        "lang": "en",
+        "text": "AI agents is the react framework. All AI",
+        "offset": 411840,
+        "duration": 7560
+      },
+      {
+        "lang": "en",
+        "text": "agents must reason and act. So",
+        "offset": 415280,
+        "duration": 6479
+      },
+      {
+        "lang": "en",
+        "text": "react. Sounds simple once we break it",
+        "offset": 419400,
+        "duration": 4519
+      },
+      {
+        "lang": "en",
+        "text": "down, right? A third key trait of AI",
+        "offset": 421759,
+        "duration": 4401
+      },
+      {
+        "lang": "en",
+        "text": "agents is their ability to iterate.",
+        "offset": 423919,
+        "duration": 4481
+      },
+      {
+        "lang": "en",
+        "text": "Remember when I had to manually rewrite",
+        "offset": 426160,
+        "duration": 3920
+      },
+      {
+        "lang": "en",
+        "text": "the prompt to make the LinkedIn post",
+        "offset": 428400,
+        "duration": 4880
+      },
+      {
+        "lang": "en",
+        "text": "funnier? I, the human, probably need to",
+        "offset": 430080,
+        "duration": 5200
+      },
+      {
+        "lang": "en",
+        "text": "repeat this iterative process a few",
+        "offset": 433280,
+        "duration": 3840
+      },
+      {
+        "lang": "en",
+        "text": "times to get something I'm happy with",
+        "offset": 435280,
+        "duration": 4319
+      },
+      {
+        "lang": "en",
+        "text": "right? An AI agent will be able to do",
+        "offset": 437120,
+        "duration": 5440
+      },
+      {
+        "lang": "en",
+        "text": "the same thing autonomously. In our",
+        "offset": 439599,
+        "duration": 5440
+      },
+      {
+        "lang": "en",
+        "text": "example, the AI agent would autonomously",
+        "offset": 442560,
+        "duration": 5440
+      },
+      {
+        "lang": "en",
+        "text": "add in another LM to critique its own",
+        "offset": 445039,
+        "duration": 5521
+      },
+      {
+        "lang": "en",
+        "text": "output. Okay, I've drafted V1 of a",
+        "offset": 448000,
+        "duration": 4080
+      },
+      {
+        "lang": "en",
+        "text": "LinkedIn post. How do I make sure it's",
+        "offset": 450560,
+        "duration": 3680
+      },
+      {
+        "lang": "en",
+        "text": "good? Oh, I know. I'll add another step",
+        "offset": 452080,
+        "duration": 4559
+      },
+      {
+        "lang": "en",
+        "text": "where an LM will critique the post based",
+        "offset": 454240,
+        "duration": 4560
+      },
+      {
+        "lang": "en",
+        "text": "on LinkedIn best practices. And let's",
+        "offset": 456639,
+        "duration": 3601
+      },
+      {
+        "lang": "en",
+        "text": "repeat this until the best practices",
+        "offset": 458800,
+        "duration": 3760
+      },
+      {
+        "lang": "en",
+        "text": "criteria are all met. And after a few",
+        "offset": 460240,
+        "duration": 5040
+      },
+      {
+        "lang": "en",
+        "text": "cycles of that, we have the final",
+        "offset": 462560,
+        "duration": 5039
+      },
+      {
+        "lang": "en",
+        "text": "output. That was a hypothetical example.",
+        "offset": 465280,
+        "duration": 4800
+      },
+      {
+        "lang": "en",
+        "text": "So let's move on to a real world AI",
+        "offset": 467599,
+        "duration": 5681
+      },
+      {
+        "lang": "en",
+        "text": "agent example. Andrew is a preeeminent",
+        "offset": 470080,
+        "duration": 5519
+      },
+      {
+        "lang": "en",
+        "text": "figure in AI and he created this demo",
+        "offset": 473280,
+        "duration": 5359
+      },
+      {
+        "lang": "en",
+        "text": "website that illustrates how an AI agent",
+        "offset": 475599,
+        "duration": 4720
+      },
+      {
+        "lang": "en",
+        "text": "works. I'll link the full video down",
+        "offset": 478639,
+        "duration": 3921
+      },
+      {
+        "lang": "en",
+        "text": "below, but when I search for a keyword",
+        "offset": 480319,
+        "duration": 7361
+      },
+      {
+        "lang": "en",
+        "text": "like skier, enter the AI vision agent in",
+        "offset": 482560,
+        "duration": 7919
+      },
+      {
+        "lang": "en",
+        "text": "the background is first reasoning what a",
+        "offset": 487680,
+        "duration": 5040
+      },
+      {
+        "lang": "en",
+        "text": "skier looks like. A person on skis going",
+        "offset": 490479,
+        "duration": 4000
+      },
+      {
+        "lang": "en",
+        "text": "really, fast, in, snow,, for example,, right?",
+        "offset": 492720,
+        "duration": 5759
+      },
+      {
+        "lang": "en",
+        "text": "I'm not sure. And then it's acting by",
+        "offset": 494479,
+        "duration": 7521
+      },
+      {
+        "lang": "en",
+        "text": "looking at clips in video footage",
+        "offset": 498479,
+        "duration": 6241
+      },
+      {
+        "lang": "en",
+        "text": "trying to identify what it thinks a",
+        "offset": 502000,
+        "duration": 7319
+      },
+      {
+        "lang": "en",
+        "text": "skier is, indexing that clip, and then",
+        "offset": 504720,
+        "duration": 7679
+      },
+      {
+        "lang": "en",
+        "text": "returning that clip to us. Although this",
+        "offset": 509319,
+        "duration": 5080
+      },
+      {
+        "lang": "en",
+        "text": "might not feel impressive, remember that",
+        "offset": 512399,
+        "duration": 4281
+      },
+      {
+        "lang": "en",
+        "text": "an AI agent did all that instead of a",
+        "offset": 514399,
+        "duration": 5361
+      },
+      {
+        "lang": "en",
+        "text": "human reviewing the footage beforehand",
+        "offset": 516680,
+        "duration": 5560
+      },
+      {
+        "lang": "en",
+        "text": "manually identifying the skier, and",
+        "offset": 519760,
+        "duration": 5680
+      },
+      {
+        "lang": "en",
+        "text": "adding tags like skier, mountain, ski",
+        "offset": 522240,
+        "duration": 5599
+      },
+      {
+        "lang": "en",
+        "text": "snow. The programming is obviously a lot",
+        "offset": 525440,
+        "duration": 4079
+      },
+      {
+        "lang": "en",
+        "text": "more technical and complicated than what",
+        "offset": 527839,
+        "duration": 3841
+      },
+      {
+        "lang": "en",
+        "text": "we see in the front end, but that's the",
+        "offset": 529519,
+        "duration": 4320
+      },
+      {
+        "lang": "en",
+        "text": "point of this demo, right? The average",
+        "offset": 531680,
+        "duration": 5040
+      },
+      {
+        "lang": "en",
+        "text": "user like myself wants a simple app that",
+        "offset": 533839,
+        "duration": 5041
+      },
+      {
+        "lang": "en",
+        "text": "just works without me having to",
+        "offset": 536720,
+        "duration": 3760
+      },
+      {
+        "lang": "en",
+        "text": "understand what's going on in the back",
+        "offset": 538880,
+        "duration": 3600
+      },
+      {
+        "lang": "en",
+        "text": "end. Speaking of examples, I'm also",
+        "offset": 540480,
+        "duration": 4560
+      },
+      {
+        "lang": "en",
+        "text": "building my very own basic AI agent",
+        "offset": 542480,
+        "duration": 4720
+      },
+      {
+        "lang": "en",
+        "text": "using Nan. So, let me know in the",
+        "offset": 545040,
+        "duration": 3680
+      },
+      {
+        "lang": "en",
+        "text": "comments what type of AI agent you'd",
+        "offset": 547200,
+        "duration": 4079
+      },
+      {
+        "lang": "en",
+        "text": "like me to make a tutorial on next. To",
+        "offset": 548720,
+        "duration": 4000
+      },
+      {
+        "lang": "en",
+        "text": "wrap up, here's a simplified",
+        "offset": 551279,
+        "duration": 3441
+      },
+      {
+        "lang": "en",
+        "text": "visualization of the three levels we",
+        "offset": 552720,
+        "duration": 4400
+      },
+      {
+        "lang": "en",
+        "text": "covered today. Level one, we provide an",
+        "offset": 554720,
+        "duration": 4799
+      },
+      {
+        "lang": "en",
+        "text": "input and the LM responds with an",
+        "offset": 557120,
+        "duration": 5040
+      },
+      {
+        "lang": "en",
+        "text": "output. Easy. Level two, for AI",
+        "offset": 559519,
+        "duration": 5361
+      },
+      {
+        "lang": "en",
+        "text": "workflows, we provide an input and tell",
+        "offset": 562160,
+        "duration": 5280
+      },
+      {
+        "lang": "en",
+        "text": "the LM to follow a predefined path that",
+        "offset": 564880,
+        "duration": 4399
+      },
+      {
+        "lang": "en",
+        "text": "may involve in retrieving information",
+        "offset": 567440,
+        "duration": 4480
+      },
+      {
+        "lang": "en",
+        "text": "from external tools. The key trait here",
+        "offset": 569279,
+        "duration": 5361
+      },
+      {
+        "lang": "en",
+        "text": "is that the human programs a path for LM",
+        "offset": 571920,
+        "duration": 5760
+      },
+      {
+        "lang": "en",
+        "text": "to follow. Level three, the AI agent",
+        "offset": 574640,
+        "duration": 5280
+      },
+      {
+        "lang": "en",
+        "text": "receives a goal and the LM performs",
+        "offset": 577680,
+        "duration": 4159
+      },
+      {
+        "lang": "en",
+        "text": "reasoning to determine how best to",
+        "offset": 579920,
+        "duration": 4240
+      },
+      {
+        "lang": "en",
+        "text": "achieve the goal, takes action using",
+        "offset": 581839,
+        "duration": 4801
+      },
+      {
+        "lang": "en",
+        "text": "tools to produce an interim result",
+        "offset": 584160,
+        "duration": 4720
+      },
+      {
+        "lang": "en",
+        "text": "observes that interim result, and",
+        "offset": 586640,
+        "duration": 5120
+      },
+      {
+        "lang": "en",
+        "text": "decides whether iterations are required",
+        "offset": 588880,
+        "duration": 4959
+      },
+      {
+        "lang": "en",
+        "text": "and produces a final output that",
+        "offset": 591760,
+        "duration": 4720
+      },
+      {
+        "lang": "en",
+        "text": "achieves the initial goal. The key trait",
+        "offset": 593839,
+        "duration": 4801
+      },
+      {
+        "lang": "en",
+        "text": "here is that the LLM is a decision maker",
+        "offset": 596480,
+        "duration": 4080
+      },
+      {
+        "lang": "en",
+        "text": "in the workflow. If you found this",
+        "offset": 598640,
+        "duration": 3360
+      },
+      {
+        "lang": "en",
+        "text": "helpful, you might want to learn how to",
+        "offset": 600560,
+        "duration": 3760
+      },
+      {
+        "lang": "en",
+        "text": "build a prompts database in Notion. See",
+        "offset": 602000,
+        "duration": 3959
+      },
+      {
+        "lang": "en",
+        "text": "you on the next video. In the",
+        "offset": 604320,
+        "duration": 5920
+      },
+      {
+        "lang": "en",
+        "text": "meantime, have a great one.",
+        "offset": 605959,
+        "duration": 4281
+      }
+    ]
+  },
+  "timestamp": "2025-09-20T22:59:21.920084",
+  "created_at": "2025-09-20T22:59:21.921092",
+  "mode_trigger": "fullscreen_or_theater"
+}
